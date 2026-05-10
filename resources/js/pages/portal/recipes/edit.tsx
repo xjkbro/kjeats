@@ -1,0 +1,366 @@
+import { router, useForm } from '@inertiajs/react';
+import { useState } from 'react';
+import type { ReactNode } from 'react';
+import * as RecipeController from '@/actions/App/Http/Controllers/RecipeController';
+import PortalLayout from '@/layouts/portal/portal-layout';
+import type { Recipe } from '@/types/portal';
+
+interface Props {
+    recipe: Recipe;
+}
+
+interface IngredientInput {
+    amount: string;
+    unit: string;
+    name: string;
+}
+
+interface StepInput {
+    instruction: string;
+}
+
+interface FormValues {
+    emoji: string;
+    name: string;
+    category: string;
+    difficulty: string;
+    description: string;
+    prep_time: string;
+    cook_time: string;
+    rest_time: string;
+    servings: string;
+    tags: string;
+    ingredients: IngredientInput[];
+    steps: StepInput[];
+    has_nutrition: boolean;
+    serving_size: string;
+    servings_per_container: string;
+    calories: string;
+    total_fat_g: string;
+    saturated_fat_g: string;
+    trans_fat_g: string;
+    cholesterol_mg: string;
+    sodium_mg: string;
+    total_carbohydrate_g: string;
+    dietary_fiber_g: string;
+    total_sugars_g: string;
+    added_sugars_g: string;
+    protein_g: string;
+    vitamin_d_mcg: string;
+    calcium_mg: string;
+    iron_mg: string;
+    potassium_mg: string;
+}
+
+const EMOJIS = ['📋', '🍕', '🍣', '🌮', '🍜', '🥩', '🥗', '🍔', '🥐', '🍱', '🍛', '🍝', '🥧', '🧁', '🍰'];
+const CATEGORIES = ['Breakfast', 'Lunch', 'Dinner', 'Dessert', 'Snack', 'Drink', 'Side', 'Other'];
+const DIFFICULTIES = ['Easy', 'Medium', 'Hard'];
+
+export default function RecipeEdit({ recipe }: Props) {
+    const n = recipe.nutrition;
+
+    const { data, setData, put, processing, errors } = useForm<FormValues>({
+        emoji: recipe.emoji,
+        name: recipe.name,
+        category: recipe.category,
+        difficulty: recipe.difficulty,
+        description: recipe.description ?? '',
+        prep_time: String(recipe.prep_time),
+        cook_time: String(recipe.cook_time),
+        rest_time: String(recipe.rest_time),
+        servings: String(recipe.servings),
+        tags: recipe.tags.join(', '),
+        ingredients: recipe.ingredients.map((i) => ({ amount: i.amount, unit: i.unit, name: i.name })),
+        steps: recipe.steps.map((s) => ({ instruction: s.instruction })),
+        has_nutrition: !!n,
+        serving_size: n?.serving_size ?? '',
+        servings_per_container: n?.servings_per_container != null ? String(n.servings_per_container) : '',
+        calories: n?.calories != null ? String(n.calories) : '',
+        total_fat_g: n?.total_fat_g ?? '',
+        saturated_fat_g: n?.saturated_fat_g ?? '',
+        trans_fat_g: n?.trans_fat_g ?? '',
+        cholesterol_mg: n?.cholesterol_mg ?? '',
+        sodium_mg: n?.sodium_mg ?? '',
+        total_carbohydrate_g: n?.total_carbohydrate_g ?? '',
+        dietary_fiber_g: n?.dietary_fiber_g ?? '',
+        total_sugars_g: n?.total_sugars_g ?? '',
+        added_sugars_g: n?.added_sugars_g ?? '',
+        protein_g: n?.protein_g ?? '',
+        vitamin_d_mcg: n?.vitamin_d_mcg ?? '',
+        calcium_mg: n?.calcium_mg ?? '',
+        iron_mg: n?.iron_mg ?? '',
+        potassium_mg: n?.potassium_mg ?? '',
+    });
+
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
+    function addIngredient() {
+        setData('ingredients', [...data.ingredients, { amount: '', unit: '', name: '' }]);
+    }
+
+    function updateIngredient(idx: number, field: keyof IngredientInput, value: string) {
+        const ingredients = [...data.ingredients];
+        ingredients[idx] = { ...ingredients[idx], [field]: value };
+        setData('ingredients', ingredients);
+    }
+
+    function removeIngredient(idx: number) {
+        setData('ingredients', data.ingredients.filter((_, i) => i !== idx));
+    }
+
+    function addStep() {
+        setData('steps', [...data.steps, { instruction: '' }]);
+    }
+
+    function updateStep(idx: number, value: string) {
+        const steps = [...data.steps];
+        steps[idx] = { instruction: value };
+        setData('steps', steps);
+    }
+
+    function removeStep(idx: number) {
+        setData('steps', data.steps.filter((_, i) => i !== idx));
+    }
+
+    function submit(e: React.FormEvent) {
+        e.preventDefault();
+        put(RecipeController.update(recipe.id).url);
+    }
+
+    function handleDelete() {
+        if (!confirm(`Delete "${recipe.name}"? This cannot be undone.`)) {
+            return;
+        }
+
+        router.delete(RecipeController.destroy(recipe.id).url);
+    }
+
+    return (
+        <form className="fl-view fl-form" onSubmit={submit}>
+            <div className="fl-fsec">
+                <h3 className="fl-fsec-ttl">Basic Information</h3>
+
+                <div className="fl-fgrp fl-emoji-grp">
+                    <label className="fl-flbl">Icon</label>
+                    <button type="button" className="fl-emoji-btn" onClick={() => setShowEmojiPicker((v) => !v)}>
+                        {data.emoji}
+                    </button>
+                    {showEmojiPicker && (
+                        <div className="fl-emoji-picker">
+                            {EMOJIS.map((e) => (
+                                <button
+                                    key={e}
+                                    type="button"
+                                    onClick={() => {
+                                        setData('emoji', e);
+                                        setShowEmojiPicker(false);
+                                    }}
+                                >
+                                    {e}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                <div className="fl-fgrp">
+                    <label className="fl-flbl" htmlFor="name">Recipe Name *</label>
+                    <input
+                        id="name"
+                        className={`fl-fi${errors.name ? ' error' : ''}`}
+                        type="text"
+                        value={data.name}
+                        onChange={(e) => setData('name', e.target.value)}
+                        required
+                    />
+                    {errors.name && <span className="fl-ferr">{errors.name}</span>}
+                </div>
+
+                <div className="fl-frow">
+                    <div className="fl-fgrp">
+                        <label className="fl-flbl" htmlFor="category">Category</label>
+                        <select id="category" className="fl-fi" value={data.category} onChange={(e) => setData('category', e.target.value)}>
+                            {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
+                        </select>
+                    </div>
+                    <div className="fl-fgrp">
+                        <label className="fl-flbl">Difficulty</label>
+                        <div className="fl-seg">
+                            {DIFFICULTIES.map((d) => (
+                                <button key={d} type="button" className={`fl-seg-btn${data.difficulty === d ? ' active' : ''}`} onClick={() => setData('difficulty', d)}>
+                                    {d}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="fl-fgrp">
+                    <label className="fl-flbl" htmlFor="description">Description</label>
+                    <textarea
+                        id="description"
+                        className="fl-fi fl-ftxt"
+                        value={data.description}
+                        onChange={(e) => setData('description', e.target.value)}
+                        placeholder="A short description of the recipe…"
+                        rows={3}
+                    />
+                </div>
+
+                <div className="fl-fgrp">
+                    <label className="fl-flbl" htmlFor="tags">Tags (comma-separated)</label>
+                    <input
+                        id="tags"
+                        className="fl-fi"
+                        type="text"
+                        value={data.tags}
+                        onChange={(e) => setData('tags', e.target.value)}
+                        placeholder="e.g. Vegetarian, Quick, Comfort Food"
+                    />
+                </div>
+            </div>
+
+            <div className="fl-fsec">
+                <h3 className="fl-fsec-ttl">Timing &amp; Servings</h3>
+                <div className="fl-frow fl-frow-4">
+                    {[
+                        { id: 'prep_time', label: 'Prep (min)', field: 'prep_time' as const },
+                        { id: 'cook_time', label: 'Cook (min)', field: 'cook_time' as const },
+                        { id: 'rest_time', label: 'Rest (min)', field: 'rest_time' as const },
+                        { id: 'servings', label: 'Servings', field: 'servings' as const },
+                    ].map(({ id, label, field }) => (
+                        <div key={id} className="fl-fgrp">
+                            <label className="fl-flbl" htmlFor={id}>{label}</label>
+                            <input
+                                id={id}
+                                className="fl-fi"
+                                type="number"
+                                min="0"
+                                value={data[field]}
+                                onChange={(e) => setData(field, e.target.value)}
+                            />
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <div className="fl-fsec">
+                <div className="fl-fsec-hdr">
+                    <h3 className="fl-fsec-ttl">Ingredients</h3>
+                    <button type="button" className="fl-btn fl-btn-ghost fl-btn-sm" onClick={addIngredient}>
+                        + Add
+                    </button>
+                </div>
+                {data.ingredients.map((ing, idx) => (
+                    <div key={idx} className="fl-ing-form">
+                        <div className="fl-fgrp" style={{ flex: '0 0 70px' }}>
+                            <label className="fl-flbl">Amount</label>
+                            <input className="fl-fi" type="text" value={ing.amount} onChange={(e) => updateIngredient(idx, 'amount', e.target.value)} placeholder="1" />
+                        </div>
+                        <div className="fl-fgrp" style={{ flex: '0 0 80px' }}>
+                            <label className="fl-flbl">Unit</label>
+                            <input className="fl-fi" type="text" value={ing.unit} onChange={(e) => updateIngredient(idx, 'unit', e.target.value)} placeholder="cup" />
+                        </div>
+                        <div className="fl-fgrp" style={{ flex: 1 }}>
+                            <label className="fl-flbl">Ingredient</label>
+                            <input className="fl-fi" type="text" value={ing.name} onChange={(e) => updateIngredient(idx, 'name', e.target.value)} placeholder="Flour" />
+                        </div>
+                        <button type="button" className="fl-dish-remove" onClick={() => removeIngredient(idx)}>✕</button>
+                    </div>
+                ))}
+                {data.ingredients.length === 0 && <p className="fl-empty-inline">No ingredients added yet.</p>}
+            </div>
+
+            <div className="fl-fsec">
+                <div className="fl-fsec-hdr">
+                    <h3 className="fl-fsec-ttl">Instructions</h3>
+                    <button type="button" className="fl-btn fl-btn-ghost fl-btn-sm" onClick={addStep}>
+                        + Add Step
+                    </button>
+                </div>
+                {data.steps.map((step, idx) => (
+                    <div key={idx} className="fl-step-form">
+                        <div className="fl-step-num-badge">{idx + 1}</div>
+                        <div className="fl-fgrp" style={{ flex: 1 }}>
+                            <textarea
+                                className="fl-fi fl-ftxt"
+                                value={step.instruction}
+                                onChange={(e) => updateStep(idx, e.target.value)}
+                                placeholder={`Describe step ${idx + 1}…`}
+                                rows={2}
+                            />
+                        </div>
+                        <button type="button" className="fl-dish-remove" onClick={() => removeStep(idx)}>✕</button>
+                    </div>
+                ))}
+                {data.steps.length === 0 && <p className="fl-empty-inline">No steps added yet.</p>}
+            </div>
+
+            <div className="fl-fsec">
+                <div className="fl-fsec-hdr">
+                    <h3 className="fl-fsec-ttl">Nutrition Facts</h3>
+                    <label className="fl-toggle">
+                        <input type="checkbox" checked={data.has_nutrition} onChange={(e) => setData('has_nutrition', e.target.checked)} />
+                        <span>Add</span>
+                    </label>
+                </div>
+                {data.has_nutrition && (
+                    <div className="fl-nutrition-form">
+                        <div className="fl-frow">
+                            <div className="fl-fgrp">
+                                <label className="fl-flbl">Serving Size</label>
+                                <input className="fl-fi" type="text" value={data.serving_size} onChange={(e) => setData('serving_size', e.target.value)} placeholder="e.g. 1 slice (85g)" />
+                            </div>
+                            <div className="fl-fgrp">
+                                <label className="fl-flbl">Servings per Container</label>
+                                <input className="fl-fi" type="number" value={data.servings_per_container} onChange={(e) => setData('servings_per_container', e.target.value)} />
+                            </div>
+                        </div>
+                        <div className="fl-fgrp">
+                            <label className="fl-flbl">Calories</label>
+                            <input className="fl-fi" type="number" value={data.calories} onChange={(e) => setData('calories', e.target.value)} />
+                        </div>
+                        {([
+                            ['Total Fat (g)', 'total_fat_g'],
+                            ['Saturated Fat (g)', 'saturated_fat_g'],
+                            ['Trans Fat (g)', 'trans_fat_g'],
+                            ['Cholesterol (mg)', 'cholesterol_mg'],
+                            ['Sodium (mg)', 'sodium_mg'],
+                            ['Total Carbohydrate (g)', 'total_carbohydrate_g'],
+                            ['Dietary Fiber (g)', 'dietary_fiber_g'],
+                            ['Total Sugars (g)', 'total_sugars_g'],
+                            ['Added Sugars (g)', 'added_sugars_g'],
+                            ['Protein (g)', 'protein_g'],
+                            ['Vitamin D (mcg)', 'vitamin_d_mcg'],
+                            ['Calcium (mg)', 'calcium_mg'],
+                            ['Iron (mg)', 'iron_mg'],
+                            ['Potassium (mg)', 'potassium_mg'],
+                        ] as [string, keyof FormValues][]).map(([label, field]) => (
+                            <div key={field} className="fl-fgrp">
+                                <label className="fl-flbl">{label}</label>
+                                <input
+                                    className="fl-fi"
+                                    type="number"
+                                    step="any"
+                                    value={data[field] as string}
+                                    onChange={(e) => setData(field, e.target.value)}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            <div className="fl-form-footer">
+                <button type="submit" className="fl-btn fl-btn-p" disabled={processing}>
+                    {processing ? 'Saving…' : 'Save Changes'}
+                </button>
+                <button type="button" className="fl-btn fl-btn-danger" onClick={handleDelete}>
+                    Delete
+                </button>
+            </div>
+        </form>
+    );
+}
+
+RecipeEdit.layout = (page: ReactNode) => <PortalLayout showBack title="Edit Recipe">{page}</PortalLayout>;

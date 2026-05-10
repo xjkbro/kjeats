@@ -1,0 +1,115 @@
+import { Link } from '@inertiajs/react';
+import { useState } from 'react';
+import type { ReactNode } from 'react';
+import * as RestaurantController from '@/actions/App/Http/Controllers/RestaurantController';
+import PortalLayout from '@/layouts/portal/portal-layout';
+import type { Restaurant } from '@/types/portal';
+
+interface Props {
+    restaurants: Restaurant[];
+}
+
+function StarDisplay({ rating }: { rating: number | string }) {
+    const r = parseFloat(String(rating));
+
+    return (
+        <div className="fl-stars">
+            {[1, 2, 3, 4, 5].map((i) => (
+                <span key={i} className={i <= Math.round(r) ? 'filled' : ''}>
+                    ★
+                </span>
+            ))}
+        </div>
+    );
+}
+
+const ALL_CUISINES = 'All';
+
+export default function RestaurantsIndex({ restaurants }: Props) {
+    const cuisines = [ALL_CUISINES, ...Array.from(new Set(restaurants.map((r) => r.cuisine)))];
+    const [filter, setFilter] = useState(ALL_CUISINES);
+    const [sort, setSort] = useState<'recent' | 'rating'>('recent');
+
+    const filtered = restaurants
+        .filter((r) => filter === ALL_CUISINES || r.cuisine === filter)
+        .sort((a, b) => {
+            if (sort === 'rating') {
+                return parseFloat(b.overall_rating) - parseFloat(a.overall_rating);
+            }
+
+            return new Date(b.date_visited).getTime() - new Date(a.date_visited).getTime();
+        });
+
+    return (
+        <div className="fl-view">
+            <div className="fl-view-hdr">
+                <h2 className="fl-view-ttl">Restaurant Reviews</h2>
+                <Link href={RestaurantController.create().url} className="fl-btn fl-btn-p fl-btn-sm">
+                    + Add
+                </Link>
+            </div>
+
+            <div className="fl-chips">
+                {cuisines.map((c) => (
+                    <button
+                        key={c}
+                        className={`fl-chip${filter === c ? ' active' : ''}`}
+                        onClick={() => setFilter(c)}
+                    >
+                        {c}
+                    </button>
+                ))}
+                <button
+                    className={`fl-chip${sort === 'rating' ? ' active' : ''}`}
+                    onClick={() => setSort((s) => (s === 'rating' ? 'recent' : 'rating'))}
+                >
+                    {sort === 'rating' ? '★ Top Rated' : 'Recent'}
+                </button>
+            </div>
+
+            {filtered.length > 0 ? (
+                <div className="fl-card-list">
+                    {filtered.map((r) => (
+                        <Link key={r.id} href={RestaurantController.show(r.id).url} className="fl-card">
+                            <div className="fl-card-emoji">{r.emoji}</div>
+                            <div className="fl-card-body">
+                                <div className="fl-card-name">{r.name}</div>
+                                <div className="fl-card-meta">
+                                    <StarDisplay rating={r.overall_rating} />
+                                    <span className="fl-badge fl-badge-org">{r.cuisine}</span>
+                                </div>
+                                <div className="fl-card-sub">
+                                    {r.location} · {r.price_range} · {r.dishes.length} dish{r.dishes.length !== 1 ? 'es' : ''}
+                                </div>
+                                {r.tags.length > 0 && (
+                                    <div className="fl-card-tags">
+                                        {r.tags.slice(0, 3).map((tag) => (
+                                            <span key={tag} className="fl-badge fl-badge-def">
+                                                {tag}
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                            <svg className="fl-card-chev" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
+                                <polyline points="9 18 15 12 9 6" />
+                            </svg>
+                        </Link>
+                    ))}
+                </div>
+            ) : (
+                <div className="fl-empty">
+                    <span>🍽️</span>
+                    <p>{filter !== ALL_CUISINES ? `No ${filter} restaurants` : 'No restaurants yet'}</p>
+                    {filter === ALL_CUISINES && (
+                        <Link href={RestaurantController.create().url} className="fl-btn fl-btn-p">
+                            Add your first review
+                        </Link>
+                    )}
+                </div>
+            )}
+        </div>
+    );
+}
+
+RestaurantsIndex.layout = (page: ReactNode) => <PortalLayout>{page}</PortalLayout>;
