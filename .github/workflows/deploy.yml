@@ -1,0 +1,21 @@
+name: Build & Deploy
+on:
+  push:
+    branches:
+      - 'main'
+jobs:
+  build:
+    name: Deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Execute remote SSH commands using password
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: 22
+          script: |
+            echo "Connected to instance!"
+            bash deploy.sh
