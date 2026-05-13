@@ -720,13 +720,19 @@ select.fl-fi {
 .fl-avatar-sm   { width: 34px; height: 34px; font-size: 12px; font-weight: 800; border-radius: var(--fl-r2); background: linear-gradient(135deg, var(--fl-p), var(--fl-gold)); color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
 /* ── Revision history ────────────────────────────────────── */
-.fl-revision-list { display: flex; flex-direction: column; gap: 8px; }
-.fl-revision-row  { display: flex; flex-direction: column; gap: 6px; padding: 12px 14px; background: var(--fl-s1); border: 1px solid var(--fl-bdr-s); border-radius: var(--fl-r3); }
-.fl-revision-meta { display: flex; align-items: center; justify-content: space-between; }
-.fl-revision-user { font-size: 13px; font-weight: 600; color: var(--fl-tx); }
-.fl-revision-time { font-size: 11px; color: var(--fl-tx3); }
+.fl-revision-list    { display: flex; flex-direction: column; gap: 8px; }
+.fl-revision-row     { display: flex; flex-direction: column; gap: 6px; padding: 12px 14px; background: var(--fl-s1); border: 1px solid var(--fl-bdr-s); border-radius: var(--fl-r3); }
+.fl-revision-meta    { display: flex; align-items: center; justify-content: space-between; }
+.fl-revision-user    { font-size: 13px; font-weight: 600; color: var(--fl-tx); }
+.fl-revision-time    { font-size: 11px; color: var(--fl-tx3); }
 .fl-revision-summary { font-size: 12px; color: var(--fl-tx2); }
 .fl-revision-row .fl-btn { align-self: flex-start; }
+.fl-revision-changes { display: flex; flex-direction: column; gap: 4px; margin: 2px 0; }
+.fl-revision-change  { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px; font-size: 12px; line-height: 1.5; }
+.fl-revision-field   { font-weight: 700; color: var(--fl-tx2); flex-shrink: 0; min-width: 72px; }
+.fl-revision-old     { color: var(--fl-red); text-decoration: line-through; word-break: break-all; }
+.fl-revision-arrow   { color: var(--fl-tx3); flex-shrink: 0; }
+.fl-revision-new     { color: var(--fl-grn); word-break: break-all; }
 
 /* ── Ghost button variant ────────────────────────────────── */
 .fl-btn-ghost { background: var(--fl-s3); color: var(--fl-tx2); border: 1.5px solid var(--fl-bdr); }

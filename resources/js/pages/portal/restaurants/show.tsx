@@ -5,6 +5,88 @@ import * as RevisionController from '@/actions/App/Http/Controllers/RevisionCont
 import PortalLayout from '@/layouts/portal/portal-layout';
 import type { Restaurant, Revision } from '@/types/portal';
 
+type DiffEntry = { label: string; before: string; after: string };
+
+function parseRaw(v: unknown): unknown {
+    if (typeof v === 'string') {
+        try {
+            return JSON.parse(v);
+        } catch {
+            return v;
+        }
+    }
+
+    return v;
+}
+
+const COUNT_KEYS = new Set(['dishes', 'ingredients', 'steps']);
+
+function cmpVal(key: string, raw: unknown): string {
+    const v = parseRaw(raw);
+
+    if (COUNT_KEYS.has(key)) {
+        return String(Array.isArray(v) ? v.length : Number(v));
+    }
+
+    if (Array.isArray(v)) {
+        return JSON.stringify(v);
+    }
+
+    return String(v ?? '');
+}
+
+function fmtVal(key: string, raw: unknown): string {
+    const v = parseRaw(raw);
+
+    if (v === null || v === undefined || v === '') {
+        return '—';
+    }
+
+    if (COUNT_KEYS.has(key)) {
+        const n = Array.isArray(v) ? v.length : Number(v);
+
+        return `${n}`;
+    }
+
+    if (Array.isArray(v)) {
+        return v.length === 0 ? '(none)' : v.map(String).join(', ');
+    }
+
+    const s = String(v);
+
+    return s.length > 80 ? s.slice(0, 80) + '…' : s;
+}
+
+function diffSnapshots(
+    before: Record<string, unknown>,
+    after: Record<string, unknown>,
+    fields: { key: string; label: string }[],
+): DiffEntry[] {
+    return fields.flatMap(({ key, label }) => {
+        if (cmpVal(key, before[key]) === cmpVal(key, after[key])) {
+            return [];
+        }
+
+        return [{ label, before: fmtVal(key, before[key]), after: fmtVal(key, after[key]) }];
+    });
+}
+
+const RESTAURANT_FIELDS = [
+    { key: 'name', label: 'Name' },
+    { key: 'emoji', label: 'Emoji' },
+    { key: 'cuisine', label: 'Cuisine' },
+    { key: 'location', label: 'Location' },
+    { key: 'date_visited', label: 'Date visited' },
+    { key: 'overall_rating', label: 'Rating' },
+    { key: 'price_range', label: 'Price range' },
+    { key: 'atmosphere_rating', label: 'Atmosphere' },
+    { key: 'service_rating', label: 'Service' },
+    { key: 'value_rating', label: 'Value' },
+    { key: 'review', label: 'Review' },
+    { key: 'tags', label: 'Tags' },
+    { key: 'dishes', label: 'Dishes' },
+];
+
 interface Props {
     restaurant: Restaurant;
 }
@@ -150,27 +232,47 @@ export default function RestaurantShow({ restaurant }: Props) {
                 <section className="fl-section">
                     <h3 className="fl-section-ttl">History ({restaurant.revisions.length})</h3>
                     <div className="fl-revision-list">
-                        {restaurant.revisions.map((revision: Revision) => (
-                            <div key={revision.id} className="fl-revision-row">
-                                <div className="fl-revision-meta">
-                                    <span className="fl-revision-user">{revision.user.name}</span>
-                                    <span className="fl-revision-time">
-                                        {new Date(revision.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                                    </span>
+                        {restaurant.revisions.map((revision: Revision, i: number) => {
+                            const afterSnap: Record<string, unknown> = i === 0
+                                ? { name: restaurant.name, emoji: restaurant.emoji, cuisine: restaurant.cuisine, location: restaurant.location, date_visited: restaurant.date_visited, overall_rating: restaurant.overall_rating, price_range: restaurant.price_range, atmosphere_rating: restaurant.atmosphere_rating, service_rating: restaurant.service_rating, value_rating: restaurant.value_rating, review: restaurant.review, tags: restaurant.tags, dishes: restaurant.dishes }
+                                : (restaurant.revisions![i - 1].snapshot as Record<string, unknown>);
+                            const changes = diffSnapshots(revision.snapshot as Record<string, unknown>, afterSnap, RESTAURANT_FIELDS);
+
+                            return (
+                                <div key={revision.id} className="fl-revision-row">
+                                    <div className="fl-revision-meta">
+                                        <span className="fl-revision-user">{revision.user.name}</span>
+                                        <span className="fl-revision-time">
+                                            {new Date(revision.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                        </span>
+                                    </div>
+                                    {changes.length > 0 ? (
+                                        <div className="fl-revision-changes">
+                                            {changes.map((c) => (
+                                                <div key={c.label} className="fl-revision-change">
+                                                    <span className="fl-revision-field">{c.label}</span>
+                                                    <span className="fl-revision-old">{c.before}</span>
+                                                    <span className="fl-revision-arrow">&rarr;</span>
+                                                    <span className="fl-revision-new">{c.after}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="fl-revision-summary">{revision.summary}</div>
+                                    )}
+                                    <button
+                                        className="fl-btn fl-btn-ghost fl-btn-sm"
+                                        onClick={() => {
+                                            if (confirm('Revert to this version?')) {
+                                                router.post(RevisionController.revert(revision.id).url);
+                                            }
+                                        }}
+                                    >
+                                        Revert
+                                    </button>
                                 </div>
-                                {revision.summary && <div className="fl-revision-summary">{revision.summary}</div>}
-                                <button
-                                    className="fl-btn fl-btn-ghost fl-btn-sm"
-                                    onClick={() => {
-                                        if (confirm('Revert to this version?')) {
-                                            router.post(RevisionController.revert(revision.id).url);
-                                        }
-                                    }}
-                                >
-                                    Revert
-                                </button>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </section>
             )}
