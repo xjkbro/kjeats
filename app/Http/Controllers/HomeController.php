@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Group;
+use App\Models\Recipe;
+use App\Models\Restaurant;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -22,13 +24,15 @@ class HomeController extends Controller
             if ($foundGroup) {
                 $group = ['id' => $foundGroup->id, 'name' => $foundGroup->name];
 
-                $restaurants = $foundGroup->restaurants()
+                $memberIds = $foundGroup->members()->pluck('users.id');
+
+                $restaurants = Restaurant::whereIn('user_id', $memberIds)
                     ->with('user')
                     ->latest()
                     ->limit(100)
                     ->get();
 
-                $recipes = $foundGroup->recipes()
+                $recipes = Recipe::whereIn('user_id', $memberIds)
                     ->with('user')
                     ->latest()
                     ->limit(100)

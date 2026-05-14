@@ -13,14 +13,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('settings/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('settings/profile', [ProfileController::class, 'update'])->name('profile.update');
 
-    Route::get('user/profile', function (Request $request) {
+    Route::get('app/user/profile', function (Request $request) {
         return Inertia::render('portal/profile/edit', [
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => $request->session()->get('status'),
         ]);
     })->name('portal.profile.edit');
 
-    Route::get('user/password', function () {
+    Route::get('app/user/password', function () {
         return Inertia::render('portal/profile/password');
     })->name('portal.profile.password');
 });

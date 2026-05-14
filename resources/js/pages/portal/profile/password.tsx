@@ -35,7 +35,7 @@ export default function ChangePassword() {
 
     return (
         <div className="fl-view">
-            <Link href="/profile" className="fl-back-btn">
+            <Link href="/app/profile" className="fl-back-btn">
                 <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                     <polyline points="15 18 9 12 15 6" />
                 </svg>

@@ -86,7 +86,7 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
                                 </svg>
                             </button>
                         )}
-                        <Link href="/profile" className="fl-avatar">
+                        <Link href="/app/profile" className="fl-avatar">
                             {getInitials(auth.user.name)}
                         </Link>
                     </div>

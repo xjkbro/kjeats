@@ -113,7 +113,7 @@ export default function GroupsShow({ group, isOwner, maxMembers }: Props) {
                     <h3 className="fl-section-ttl">Restaurant Reviews ({group.restaurants.length})</h3>
                     <div className="fl-card-list">
                         {group.restaurants.map((r) => (
-                            <a key={r.id} href={`/restaurants/${r.id}`} className="fl-card" style={{ textDecoration: 'none', color: 'inherit' }}>
+                            <a key={r.id} href={`/app/restaurants/${r.id}`} className="fl-card" style={{ textDecoration: 'none', color: 'inherit' }}>
                                 <div className="fl-card-emoji">{r.emoji}</div>
                                 <div className="fl-card-body">
                                     <div className="fl-card-name">{r.name}</div>
@@ -130,7 +130,7 @@ export default function GroupsShow({ group, isOwner, maxMembers }: Props) {
                     <h3 className="fl-section-ttl">Recipes ({group.recipes.length})</h3>
                     <div className="fl-card-list">
                         {group.recipes.map((recipe) => (
-                            <a key={recipe.id} href={`/recipes/${recipe.id}`} className="fl-card" style={{ textDecoration: 'none', color: 'inherit' }}>
+                            <a key={recipe.id} href={`/app/recipes/${recipe.id}`} className="fl-card" style={{ textDecoration: 'none', color: 'inherit' }}>
                                 <div className="fl-card-emoji">{recipe.emoji}</div>
                                 <div className="fl-card-body">
                                     <div className="fl-card-name">{recipe.name}</div>
