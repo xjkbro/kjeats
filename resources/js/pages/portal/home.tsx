@@ -3,7 +3,259 @@ import type { ReactNode } from 'react';
 import * as RecipeController from '@/actions/App/Http/Controllers/RecipeController';
 import * as RestaurantController from '@/actions/App/Http/Controllers/RestaurantController';
 import PortalLayout, { getGreeting } from '@/layouts/portal/portal-layout';
-import type { Restaurant, Recipe } from '@/types/portal';
+import type { FeedItem, FeedItemRecipe, FeedItemRestaurant, Recipe, Restaurant } from '@/types/portal';
+
+interface Props {
+    group: { id: number; name: string } | null;
+    feed: FeedItem[] | null;
+    restaurants?: Restaurant[];
+    recipes?: Recipe[];
+    stats: {
+        restaurant_count: number;
+        avg_rating: string | null;
+        recipe_count: number;
+        total_dishes: number;
+    };
+}
+
+function timeAgo(isoDate: string): string {
+    const diff = Date.now() - new Date(isoDate).getTime();
+    const days = Math.floor(diff / 86400000);
+    const hours = Math.floor(diff / 3600000);
+    const minutes = Math.floor(diff / 60000);
+
+    if (days >= 30) {
+        return `${Math.floor(days / 30)}mo ago`;
+    }
+
+    if (days >= 1) {
+        return `${days}d ago`;
+    }
+
+    if (hours >= 1) {
+        return `${hours}h ago`;
+    }
+
+    if (minutes >= 1) {
+        return `${minutes}m ago`;
+    }
+
+    return 'just now';
+}
+
+function formatVisitDate(dateStr: string): string {
+    return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function StarDisplay({ rating }: { rating: number | string }) {
+    const r = parseFloat(String(rating));
+
+    return (
+        <div className="fl-stars">
+            {[1, 2, 3, 4, 5].map((i) => (
+                <span key={i} className={i <= Math.round(r) ? 'filled' : ''}>
+                    ★
+                </span>
+            ))}
+        </div>
+    );
+}
+
+function RestaurantFeedItem({ item }: { item: FeedItemRestaurant }) {
+    return (
+        <Link href={RestaurantController.show(item.id).url} className="fl-feed-item">
+            <div className="fl-feed-ico">{item.emoji}</div>
+            <div className="fl-feed-body">
+                <div className="fl-feed-actor">
+                    <span className="fl-feed-user">{item.user.name}</span>
+                    <span>·</span>
+                    <span>restaurant visit</span>
+                </div>
+                <div className="fl-feed-name">{item.name}</div>
+                <div className="fl-feed-meta">
+                    <StarDisplay rating={item.overall_rating} />
+                    <span className="fl-badge fl-badge-org">{item.cuisine}</span>
+                    <span className="fl-badge fl-badge-def">{item.price_range}</span>
+                </div>
+                <div className="fl-feed-time">Visited {formatVisitDate(item.date_visited)} · {timeAgo(item.created_at)}</div>
+            </div>
+            <svg className="fl-feed-chev" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
+                <polyline points="9 18 15 12 9 6" />
+            </svg>
+        </Link>
+    );
+}
+
+function RecipeFeedItem({ item }: { item: FeedItemRecipe }) {
+    const diffColor = item.difficulty === 'Easy' ? 'grn' : item.difficulty === 'Hard' ? 'red' : 'gold';
+
+    return (
+        <Link href={RecipeController.show(item.id).url} className="fl-feed-item">
+            <div className="fl-feed-ico">{item.emoji}</div>
+            <div className="fl-feed-body">
+                <div className="fl-feed-actor">
+                    <span className="fl-feed-user">{item.user.name}</span>
+                    <span>·</span>
+                    <span>new recipe</span>
+                </div>
+                <div className="fl-feed-name">{item.name}</div>
+                <div className="fl-feed-meta">
+                    <span className={`fl-badge fl-badge-${diffColor}`}>{item.difficulty}</span>
+                    <span className="fl-badge fl-badge-def">{item.category}</span>
+                    <span className="fl-badge fl-badge-def">{item.total_time} min</span>
+                </div>
+                <div className="fl-feed-time">{timeAgo(item.created_at)}</div>
+            </div>
+            <svg className="fl-feed-chev" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
+                <polyline points="9 18 15 12 9 6" />
+            </svg>
+        </Link>
+    );
+}
+
+function RestaurantCard({ restaurant }: { restaurant: Restaurant }) {
+    return (
+        <Link href={RestaurantController.show(restaurant.id).url} className="fl-card">
+            <div className="fl-card-emoji">{restaurant.emoji}</div>
+            <div className="fl-card-body">
+                <div className="fl-card-name">{restaurant.name}</div>
+                <div className="fl-card-meta">
+                    <StarDisplay rating={restaurant.overall_rating} />
+                    <span className="fl-badge fl-badge-org">{restaurant.cuisine}</span>
+                </div>
+                <div className="fl-card-sub">{restaurant.location}</div>
+            </div>
+            <svg className="fl-card-chev" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
+                <polyline points="9 18 15 12 9 6" />
+            </svg>
+        </Link>
+    );
+}
+
+function RecipeCard({ recipe }: { recipe: Recipe }) {
+    const totalTime = recipe.prep_time + recipe.cook_time + recipe.rest_time;
+
+    return (
+        <Link href={RecipeController.show(recipe.id).url} className="fl-card">
+            <div className="fl-card-emoji">{recipe.emoji}</div>
+            <div className="fl-card-body">
+                <div className="fl-card-name">{recipe.name}</div>
+                <div className="fl-card-meta">
+                    <span className="fl-badge fl-badge-teal">{recipe.difficulty}</span>
+                    <span className="fl-badge fl-badge-def">{totalTime} min</span>
+                </div>
+                <div className="fl-card-sub">{recipe.category}</div>
+            </div>
+            <svg className="fl-card-chev" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
+                <polyline points="9 18 15 12 9 6" />
+            </svg>
+        </Link>
+    );
+}
+
+export default function Home({ group, feed, restaurants = [], recipes = [], stats }: Props) {
+    const recentRestaurants = restaurants.slice(0, 2);
+    const recentRecipes = recipes.slice(0, 2);
+
+    return (
+        <div className="fl-view">
+            <div className="fl-greeting">
+                <h2 className="fl-greeting-text">Good {getGreeting()} 👋</h2>
+                <p className="fl-greeting-sub">{group ? group.name : 'Your Food Journal'}</p>
+            </div>
+
+            <div className="fl-stats-grid">
+                <div className="fl-stat fl-s-org">
+                    <div className="fl-stat-val">{stats.restaurant_count}</div>
+                    <div className="fl-stat-lbl">Restaurants</div>
+                </div>
+                <div className="fl-stat fl-s-gold">
+                    <div className="fl-stat-val">{stats.avg_rating ? parseFloat(stats.avg_rating).toFixed(1) : '—'}</div>
+                    <div className="fl-stat-lbl">Avg Rating</div>
+                </div>
+                <div className="fl-stat fl-s-teal">
+                    <div className="fl-stat-val">{stats.recipe_count}</div>
+                    <div className="fl-stat-lbl">Recipes</div>
+                </div>
+                <div className="fl-stat fl-s-purp">
+                    <div className="fl-stat-val">{stats.total_dishes}</div>
+                    <div className="fl-stat-lbl">Dishes</div>
+                </div>
+            </div>
+
+            {feed !== null ? (
+                <section className="fl-section">
+                    <h3 className="fl-section-ttl">Activity</h3>
+                    {feed.length > 0 ? (
+                        <div className="fl-feed">
+                            {feed.map((item) =>
+                                item.type === 'restaurant' ? (
+                                    <RestaurantFeedItem key={`r-${item.id}`} item={item} />
+                                ) : (
+                                    <RecipeFeedItem key={`rec-${item.id}`} item={item} />
+                                ),
+                            )}
+                        </div>
+                    ) : (
+                        <div className="fl-empty">
+                            <span>🍽️</span>
+                            <p>No activity yet in this group</p>
+                        </div>
+                    )}
+                </section>
+            ) : (
+                <>
+                    <section className="fl-section">
+                        <div className="fl-section-hdr">
+                            <h3 className="fl-section-ttl">Recent Reviews</h3>
+                            <Link href={RestaurantController.index().url} className="fl-see-all">
+                                See all →
+                            </Link>
+                        </div>
+                        {recentRestaurants.length > 0 ? (
+                            <div className="fl-card-list">
+                                {recentRestaurants.map((r) => <RestaurantCard key={r.id} restaurant={r} />)}
+                            </div>
+                        ) : (
+                            <div className="fl-empty">
+                                <span>🍽️</span>
+                                <p>No restaurants yet</p>
+                                <Link href={RestaurantController.create().url} className="fl-btn fl-btn-p">
+                                    Add your first review
+                                </Link>
+                            </div>
+                        )}
+                    </section>
+
+                    <section className="fl-section">
+                        <div className="fl-section-hdr">
+                            <h3 className="fl-section-ttl">Recent Recipes</h3>
+                            <Link href={RecipeController.index().url} className="fl-see-all">
+                                See all →
+                            </Link>
+                        </div>
+                        {recentRecipes.length > 0 ? (
+                            <div className="fl-card-list">
+                                {recentRecipes.map((r) => <RecipeCard key={r.id} recipe={r} />)}
+                            </div>
+                        ) : (
+                            <div className="fl-empty">
+                                <span>📋</span>
+                                <p>No recipes yet</p>
+                                <Link href={RecipeController.create().url} className="fl-btn fl-btn-p">
+                                    Add your first recipe
+                                </Link>
+                            </div>
+                        )}
+                    </section>
+                </>
+            )}
+        </div>
+    );
+}
+
+Home.layout = (page: ReactNode) => <PortalLayout>{page}</PortalLayout>;
+
 
 interface Props {
     restaurants: Restaurant[];

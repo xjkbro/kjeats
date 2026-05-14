@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Group;
+use App\Models\Recipe;
+use App\Models\Restaurant;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -11,6 +14,66 @@ class DashboardController extends Controller
     public function __invoke(Request $request): Response
     {
         $user = $request->user();
+        $groupId = (int) config('app.frontend_group_id', 0);
+
+        if ($groupId > 0) {
+            $foundGroup = Group::find($groupId);
+
+            if ($foundGroup && $foundGroup->isMember($user)) {
+                $memberIds = $foundGroup->members()->pluck('users.id');
+
+                $restaurants = Restaurant::whereIn('user_id', $memberIds)
+                    ->with('user')
+                    ->latest()
+                    ->limit(200)
+                    ->get();
+
+                $recipes = Recipe::whereIn('user_id', $memberIds)
+                    ->with('user')
+                    ->latest()
+                    ->limit(200)
+                    ->get();
+
+                $feed = collect()
+                    ->merge($restaurants->map(fn ($r) => [
+                        'type' => 'restaurant',
+                        'id' => $r->id,
+                        'emoji' => $r->emoji,
+                        'name' => $r->name,
+                        'cuisine' => $r->cuisine,
+                        'location' => $r->location,
+                        'date_visited' => $r->date_visited->format('Y-m-d'),
+                        'overall_rating' => (string) $r->overall_rating,
+                        'price_range' => $r->price_range,
+                        'user' => ['name' => $r->user->name],
+                        'created_at' => $r->created_at->toISOString(),
+                    ]))
+                    ->merge($recipes->map(fn ($r) => [
+                        'type' => 'recipe',
+                        'id' => $r->id,
+                        'emoji' => $r->emoji,
+                        'name' => $r->name,
+                        'category' => $r->category,
+                        'difficulty' => $r->difficulty,
+                        'total_time' => $r->prep_time + $r->cook_time + $r->rest_time,
+                        'user' => ['name' => $r->user->name],
+                        'created_at' => $r->created_at->toISOString(),
+                    ]))
+                    ->sortByDesc('created_at')
+                    ->values();
+
+                return Inertia::render('portal/home', [
+                    'group' => ['id' => $foundGroup->id, 'name' => $foundGroup->name],
+                    'feed' => $feed,
+                    'stats' => [
+                        'restaurant_count' => $restaurants->count(),
+                        'avg_rating' => $restaurants->avg('overall_rating'),
+                        'recipe_count' => $recipes->count(),
+                        'total_dishes' => 0,
+                    ],
+                ]);
+            }
+        }
 
         $restaurants = $user->restaurants()
             ->with('dishes')
@@ -23,6 +86,8 @@ class DashboardController extends Controller
             ->get();
 
         return Inertia::render('portal/home', [
+            'group' => null,
+            'feed' => null,
             'restaurants' => $restaurants,
             'recipes' => $recipes,
             'stats' => [
