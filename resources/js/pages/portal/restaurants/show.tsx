@@ -1,5 +1,6 @@
-import { Link, router } from '@inertiajs/react';
+import { Link, useForm, router } from '@inertiajs/react';
 import type { ReactNode } from 'react';
+import * as DishController from '@/actions/App/Http/Controllers/DishController';
 import * as RestaurantController from '@/actions/App/Http/Controllers/RestaurantController';
 import * as RevisionController from '@/actions/App/Http/Controllers/RevisionController';
 import PortalLayout from '@/layouts/portal/portal-layout';
@@ -89,6 +90,8 @@ const RESTAURANT_FIELDS = [
 
 interface Props {
     restaurant: Restaurant;
+    can_add_dish: boolean;
+    current_user_id: number;
 }
 
 function StarDisplay({ rating }: { rating: number | string }) {
@@ -121,7 +124,7 @@ function RatingBar({ label, value }: { label: string; value: number }) {
     );
 }
 
-export default function RestaurantShow({ restaurant }: Props) {
+export default function RestaurantShow({ restaurant, can_add_dish, current_user_id }: Props) {
     const dateLabel = new Date(restaurant.date_visited + 'T00:00:00').toLocaleDateString('en-US', {
         month: 'long',
         day: 'numeric',
@@ -134,6 +137,24 @@ export default function RestaurantShow({ restaurant }: Props) {
         }
 
         router.delete(RestaurantController.show(restaurant.id).url);
+    }
+
+    const dishForm = useForm({ name: '', rating: '5', notes: '' });
+
+    function addDish(e: React.FormEvent) {
+        e.preventDefault();
+        dishForm.post(DishController.store(restaurant.id).url, {
+            preserveScroll: true,
+            onSuccess: () => dishForm.reset(),
+        });
+    }
+
+    function deleteDish(dishId: number) {
+        if (!confirm('Remove this dish?')) {
+            return;
+        }
+
+        router.delete(DishController.destroy({ restaurant: restaurant.id, dish: dishId }).url, { preserveScroll: true });
     }
 
     return (
@@ -194,28 +215,75 @@ export default function RestaurantShow({ restaurant }: Props) {
                 </div>
             )}
 
-            {restaurant.dishes.length > 0 && (
+            {(restaurant.dishes.length > 0 || can_add_dish) && (
                 <section className="fl-section">
                     <h3 className="fl-section-ttl">
                         Dishes ({restaurant.dishes.length})
                     </h3>
-                    <div className="fl-dish-list">
-                        {restaurant.dishes.map((dish) => (
-                            <div key={dish.id} className="fl-dish-card">
-                                <div className="fl-dish-top">
-                                    <span className="fl-dish-name">{dish.name}</span>
-                                    <span className="fl-dish-rating">
-                                        {Array.from({ length: 5 }, (_, i) => (
-                                            <span key={i} className={i < Math.round(parseFloat(dish.rating)) ? 'filled' : ''}>
-                                                ★
-                                            </span>
-                                        ))}
-                                    </span>
+                    {restaurant.dishes.length > 0 && (
+                        <div className="fl-dish-list">
+                            {restaurant.dishes.map((dish) => (
+                                <div key={dish.id} className="fl-dish-card">
+                                    <div className="fl-dish-top">
+                                        <span className="fl-dish-name">{dish.name}</span>
+                                        <span className="fl-dish-rating">
+                                            {Array.from({ length: 5 }, (_, i) => (
+                                                <span key={i} className={i < Math.round(parseFloat(dish.rating)) ? 'filled' : ''}>
+                                                    ★
+                                                </span>
+                                            ))}
+                                        </span>
+                                        {dish.user && dish.user.id === current_user_id && (
+                                            <button
+                                                className="fl-btn fl-btn-ghost fl-btn-sm"
+                                                style={{ marginLeft: 'auto', fontSize: '11px', padding: '2px 8px' }}
+                                                onClick={() => deleteDish(dish.id)}
+                                            >
+                                                Remove
+                                            </button>
+                                        )}
+                                    </div>
+                                    {dish.user && dish.user.id !== current_user_id && (
+                                        <p className="fl-dish-by">by {dish.user.name}</p>
+                                    )}
+                                    {dish.notes && <p className="fl-dish-notes">{dish.notes}</p>}
                                 </div>
-                                {dish.notes && <p className="fl-dish-notes">{dish.notes}</p>}
+                            ))}
+                        </div>
+                    )}
+                    {can_add_dish && (
+                        <form onSubmit={addDish} className="fl-dish-add-form">
+                            <div className="fl-dish-add-fields">
+                                <input
+                                    className="fl-input"
+                                    type="text"
+                                    placeholder="Dish name"
+                                    value={dishForm.data.name}
+                                    onChange={(e) => dishForm.setData('name', e.target.value)}
+                                    required
+                                />
+                                <select
+                                    className="fl-input"
+                                    value={dishForm.data.rating}
+                                    onChange={(e) => dishForm.setData('rating', e.target.value)}
+                                >
+                                    {['1', '2', '3', '4', '5'].map((v) => (
+                                        <option key={v} value={v}>{v} ★</option>
+                                    ))}
+                                </select>
+                                <input
+                                    className="fl-input"
+                                    type="text"
+                                    placeholder="Notes (optional)"
+                                    value={dishForm.data.notes}
+                                    onChange={(e) => dishForm.setData('notes', e.target.value)}
+                                />
                             </div>
-                        ))}
-                    </div>
+                            <button type="submit" className="fl-btn fl-btn-p fl-btn-sm" disabled={dishForm.processing}>
+                                + Add dish
+                            </button>
+                        </form>
+                    )}
                 </section>
             )}
 

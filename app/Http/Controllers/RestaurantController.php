@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Group;
 use App\Models\Restaurant;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -23,12 +24,21 @@ class RestaurantController extends Controller
         ]);
     }
 
-    public function show(Restaurant $restaurant): Response
+    public function show(Request $request, Restaurant $restaurant): Response
     {
         $this->authorize('view', $restaurant);
 
+        $groupId = (int) config('app.frontend_group_id', 0);
+        $canAddDish = false;
+        if ($groupId > 0) {
+            $group = Group::find($groupId);
+            $canAddDish = $group && $group->isMember($request->user());
+        }
+
         return Inertia::render('portal/restaurants/show', [
-            'restaurant' => $restaurant->load(['dishes', 'revisions.user']),
+            'restaurant' => $restaurant->load(['dishes.user', 'revisions.user']),
+            'can_add_dish' => $canAddDish,
+            'current_user_id' => $request->user()->id,
         ]);
     }
 
@@ -77,7 +87,10 @@ class RestaurantController extends Controller
         ]);
 
         foreach ($dishes as $dish) {
-            $restaurant->dishes()->create($dish);
+            $restaurant->dishes()->create([
+                ...$dish,
+                'user_id' => $request->user()->id,
+            ]);
         }
 
         return redirect()->route('restaurants.show', $restaurant)

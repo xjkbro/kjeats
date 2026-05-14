@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DishController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
@@ -16,6 +17,9 @@ Route::middleware(['auth', 'verified'])->prefix('app')->group(function () {
 
     Route::resource('restaurants', RestaurantController::class)
         ->only(['index', 'show', 'create', 'store', 'edit', 'update']);
+
+    Route::post('restaurants/{restaurant}/dishes', [DishController::class, 'store'])->name('dishes.store');
+    Route::delete('restaurants/{restaurant}/dishes/{dish}', [DishController::class, 'destroy'])->name('dishes.destroy');
 
     Route::resource('recipes', RecipeController::class)
         ->only(['index', 'show', 'create', 'store', 'edit', 'update', 'destroy']);

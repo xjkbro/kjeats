@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Dish;
 use App\Models\Group;
 use App\Models\Recipe;
 use App\Models\Restaurant;
@@ -38,6 +39,16 @@ class HomeController extends Controller
                     ->limit(100)
                     ->get();
 
+                $dishRatings = Dish::join('restaurants', 'restaurants.id', '=', 'dishes.restaurant_id')
+                    ->whereIn('dishes.user_id', $memberIds)
+                    ->whereIn('restaurants.user_id', $memberIds)
+                    ->whereColumn('dishes.user_id', '!=', 'restaurants.user_id')
+                    ->with(['user', 'restaurant.user'])
+                    ->select('dishes.*')
+                    ->latest('dishes.created_at')
+                    ->limit(100)
+                    ->get();
+
                 $feed = collect()
                     ->merge($restaurants->map(fn ($r) => [
                         'type' => 'restaurant',
@@ -62,6 +73,18 @@ class HomeController extends Controller
                         'total_time' => $r->prep_time + $r->cook_time + $r->rest_time,
                         'user' => ['name' => $r->user->name],
                         'created_at' => $r->created_at->toISOString(),
+                    ]))
+                    ->merge($dishRatings->map(fn ($d) => [
+                        'type' => 'dish_rating',
+                        'id' => $d->id,
+                        'name' => $d->name,
+                        'rating' => (string) $d->rating,
+                        'restaurant_id' => $d->restaurant_id,
+                        'restaurant_name' => $d->restaurant->name,
+                        'restaurant_emoji' => $d->restaurant->emoji,
+                        'restaurant_owner' => $d->restaurant->user->name,
+                        'user' => ['name' => $d->user->name],
+                        'created_at' => $d->created_at->toISOString(),
                     ]))
                     ->sortByDesc('created_at')
                     ->values();

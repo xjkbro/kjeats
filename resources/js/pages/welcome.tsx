@@ -1,6 +1,6 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import { dashboard, login, register } from '@/routes';
-import type { FeedItem, FeedItemRecipe, FeedItemRestaurant } from '@/types/portal';
+import type { FeedItem, FeedItemDishRating, FeedItemRecipe, FeedItemRestaurant } from '@/types/portal';
 
 interface Props {
     canRegister?: boolean;
@@ -95,6 +95,27 @@ function RecipeItem({ item }: { item: FeedItemRecipe }) {
     );
 }
 
+function DishRatingItem({ item }: { item: FeedItemDishRating }) {
+    return (
+        <div className="wlc-feed-item">
+            <div className="wlc-feed-ico">{item.restaurant_emoji}</div>
+            <div className="wlc-feed-body">
+                <div className="wlc-feed-actor">
+                    <span className="wlc-feed-user">{item.user.name}</span>
+                    <span className="wlc-feed-dot">·</span>
+                    <span>rated a dish</span>
+                </div>
+                <div className="wlc-feed-name">{item.name}</div>
+                <div className="wlc-feed-meta">
+                    <Stars rating={item.rating} />
+                    <span className="wlc-badge wlc-badge-def">at {item.restaurant_name}</span>
+                </div>
+                <div className="wlc-feed-time">in {item.restaurant_owner}'s review · {timeAgo(item.created_at)}</div>
+            </div>
+        </div>
+    );
+}
+
 export default function Welcome({ canRegister = true, feed, group }: Props) {
     const { auth } = usePage().props;
 
@@ -139,8 +160,10 @@ export default function Welcome({ canRegister = true, feed, group }: Props) {
                                     {feed.map((item) =>
                                         item.type === 'restaurant' ? (
                                             <RestaurantItem key={`r-${item.id}`} item={item} />
-                                        ) : (
+                                        ) : item.type === 'recipe' ? (
                                             <RecipeItem key={`rec-${item.id}`} item={item} />
+                                        ) : (
+                                            <DishRatingItem key={`d-${item.id}`} item={item} />
                                         ),
                                     )}
                                 </div>

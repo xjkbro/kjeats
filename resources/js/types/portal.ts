@@ -3,6 +3,7 @@ export interface Dish {
     name: string;
     rating: string;
     notes: string | null;
+    user: { id: number; name: string } | null;
 }
 
 export interface Restaurant {
@@ -150,4 +151,17 @@ export interface FeedItemRecipe {
     created_at: string;
 }
 
-export type FeedItem = FeedItemRestaurant | FeedItemRecipe;
+export interface FeedItemDishRating {
+    type: 'dish_rating';
+    id: number;
+    name: string;
+    rating: string;
+    restaurant_id: number;
+    restaurant_name: string;
+    restaurant_emoji: string;
+    restaurant_owner: string;
+    user: { name: string };
+    created_at: string;
+}
+
+export type FeedItem = FeedItemRestaurant | FeedItemRecipe | FeedItemDishRating;
