@@ -123,4 +123,6 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'frontend_group_id' => (int) env('FRONTEND_GROUP_ID', 0),
+
 ];

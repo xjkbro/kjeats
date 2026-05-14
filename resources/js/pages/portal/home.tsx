@@ -148,3 +148,4 @@ export default function Home({ restaurants, recipes, stats }: Props) {
 }
 
 Home.layout = (page: ReactNode) => <PortalLayout>{page}</PortalLayout>;
+

@@ -40,6 +40,10 @@ class ProfileController extends Controller
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Profile updated.')]);
 
+        if ($request->boolean('_portal')) {
+            return to_route('portal.profile.edit');
+        }
+
         return to_route('profile.edit');
     }
 

@@ -71,8 +71,7 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
                             </button>
                         ) : (
                             <Link href={dashboard()} className="fl-brand">
-                                <span className="fl-brand-ico">🍽️</span>
-                                <span className="fl-brand-name">FoodLog</span>
+                                <img src="/kjeats-logo.png" alt="kjeats" style={{ height: '22px', objectFit: 'contain' }} />
                             </Link>
                         )}
                         {title && !showBack && null}

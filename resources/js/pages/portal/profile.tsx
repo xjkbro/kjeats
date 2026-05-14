@@ -1,3 +1,4 @@
+import { Link, router } from '@inertiajs/react';
 import type { ReactNode } from 'react';
 import PortalLayout from '@/layouts/portal/portal-layout';
 import type { Restaurant, Recipe } from '@/types/portal';
@@ -96,34 +97,25 @@ export default function Profile({
             <section className="fl-section">
                 <h3 className="fl-section-ttl">Settings</h3>
                 <div className="fl-settings-list">
-                    <a href="/user/profile" className="fl-settings-item">
+                    <Link href="/user/profile" className="fl-settings-item">
                         <span className="fl-settings-ico">👤</span>
                         <span>Edit Profile</span>
                         <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                             <polyline points="9 18 15 12 9 6" />
                         </svg>
-                    </a>
-                    <a href="/user/password" className="fl-settings-item">
+                    </Link>
+                    <Link href="/user/password" className="fl-settings-item">
                         <span className="fl-settings-ico">🔒</span>
                         <span>Change Password</span>
                         <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                             <polyline points="9 18 15 12 9 6" />
                         </svg>
-                    </a>
-                    <a href="/logout" className="fl-settings-item fl-settings-danger" data-method="post"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            const form = document.createElement('form');
-                            form.method = 'POST';
-                            form.action = '/logout';
-                            const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
-                            const input = document.createElement('input');
-                            input.type = 'hidden';
-                            input.name = '_token';
-                            input.value = csrf;
-                            form.appendChild(input);
-                            document.body.appendChild(form);
-                            form.submit();
+                    </Link>
+                    <button
+                        type="button"
+                        className="fl-settings-item fl-settings-danger"
+                        onClick={() => {
+                            router.post('/logout');
                         }}
                     >
                         <span className="fl-settings-ico">🚪</span>
@@ -131,7 +123,7 @@ export default function Profile({
                         <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                             <polyline points="9 18 15 12 9 6" />
                         </svg>
-                    </a>
+                    </button>
                 </div>
             </section>
         </div>

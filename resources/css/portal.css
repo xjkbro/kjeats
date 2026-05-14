@@ -809,6 +809,10 @@ select.fl-fi {
 .fl-frow-4      { grid-template-columns: 1fr 1fr 1fr 1fr; }
 .fl-ftxt        { min-height: 90px; resize: vertical; line-height: 1.55; }
 .fl-fi.error    { border-color: var(--fl-red); box-shadow: 0 0 0 3px var(--fl-red-d); }
+.fl-req         { color: var(--fl-red); margin-left: 2px; }
+.fl-verify-note { font-size: 12px; color: var(--fl-tx2); margin-top: -4px; padding: 8px 10px; background: var(--fl-s2); border: 1px solid var(--fl-bdr-s); border-radius: var(--fl-r2); }
+.fl-toast-inline { font-size: 13px; font-weight: 600; padding: 10px 14px; border-radius: var(--fl-r3); margin-bottom: 12px; }
+.fl-toast-ok    { background: color-mix(in srgb, var(--fl-grn) 12%, transparent); color: var(--fl-grn); border: 1px solid color-mix(in srgb, var(--fl-grn) 30%, transparent); }
 
 /* ── Segmented control ───────────────────────────────────── */
 .fl-seg     { display: flex; gap: 4px; background: var(--fl-s2); border: 1.5px solid var(--fl-bdr); border-radius: var(--fl-r3); padding: 4px; }
@@ -880,6 +884,19 @@ select.fl-fi {
 .fl-settings-item span:nth-child(2) { flex: 1; font-size: 14px; }
 .fl-settings-danger          { color: var(--fl-red) !important; }
 
+/* ── Activity Feed ───────────────────────────────────────── */
+.fl-feed          { display: flex; flex-direction: column; gap: 10px; }
+.fl-feed-item     { background: var(--fl-s1); border: 1px solid var(--fl-bdr-s); border-radius: var(--fl-r4); padding: 14px 16px; display: flex; gap: 14px; align-items: flex-start; text-decoration: none; color: inherit; transition: border-color var(--fl-t1), background var(--fl-t1); cursor: pointer; }
+.fl-feed-item:active { background: var(--fl-s2); border-color: var(--fl-bdr); }
+.fl-feed-ico      { font-size: 22px; flex-shrink: 0; width: 44px; height: 44px; border-radius: var(--fl-r3); background: var(--fl-s2); border: 1px solid var(--fl-bdr-s); display: flex; align-items: center; justify-content: center; }
+.fl-feed-body     { flex: 1; min-width: 0; }
+.fl-feed-actor    { font-size: 11px; font-weight: 600; color: var(--fl-tx3); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 3px; display: flex; align-items: center; gap: 5px; }
+.fl-feed-user     { color: var(--fl-tx2); font-weight: 700; }
+.fl-feed-name     { font-size: 15px; font-weight: 800; color: var(--fl-tx); letter-spacing: -.2px; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fl-feed-meta     { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 4px; }
+.fl-feed-time     { font-size: 11px; color: var(--fl-tx3); }
+.fl-feed-chev     { color: var(--fl-tx3); flex-shrink: 0; align-self: center; margin-left: 2px; }
+
 /* ── Animations ──────────────────────────────────────────── */
 @keyframes fl-bob      { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-9px)} }
 @keyframes fl-viewin   { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
@@ -924,13 +941,13 @@ select.fl-fi {
     }
 
     .fl-nav::before {
-        content: '🍽️  FoodLog';
+        content: '';
         display: block;
-        font-size: 15px; font-weight: 900; letter-spacing: -.3px;
+        height: 36px;
         padding: 20px 10px 16px; margin: 0 0 8px;
         border-bottom: 1px solid var(--fl-bdr-s);
-        background: linear-gradient(135deg, var(--fl-p), var(--fl-gold));
-        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        background: url('/kjeats-logo.png') no-repeat left center;
+        background-size: auto 28px;
         flex-shrink: 0;
     }
 

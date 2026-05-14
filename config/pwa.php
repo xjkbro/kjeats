@@ -19,12 +19,12 @@ return [
     */
 
     'manifest' => [
-        'name' => 'Laravel PWA',
-        'short_name' => 'LPT',
-        'background_color' => '#6777ef',
-        'display' => 'fullscreen',
-        'description' => 'A Progressive Web Application setup for Laravel projects.',
-        'theme_color' => '#6777ef',
+        'name' => 'kjeats',
+        'short_name' => 'kjeats',
+        'background_color' => '#0f0f11',
+        'display' => 'standalone',
+        'description' => 'Your personal food log — restaurant reviews and recipes.',
+        'theme_color' => '#ff6040',
         'icons' => [
             [
                 'src' => 'logo.png',

@@ -123,3 +123,31 @@ export interface Group {
     restaurants_count?: number;
     recipes_count?: number;
 }
+
+export interface FeedItemRestaurant {
+    type: 'restaurant';
+    id: number;
+    emoji: string;
+    name: string;
+    cuisine: string;
+    location: string;
+    date_visited: string;
+    overall_rating: string;
+    price_range: string;
+    user: { name: string };
+    created_at: string;
+}
+
+export interface FeedItemRecipe {
+    type: 'recipe';
+    id: number;
+    emoji: string;
+    name: string;
+    category: string;
+    difficulty: 'Easy' | 'Medium' | 'Hard';
+    total_time: number;
+    user: { name: string };
+    created_at: string;
+}
+
+export type FeedItem = FeedItemRestaurant | FeedItemRecipe;

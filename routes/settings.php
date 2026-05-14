@@ -2,13 +2,27 @@
 
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\SecurityController;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', '/settings/profile');
 
     Route::get('settings/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('settings/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    Route::get('user/profile', function (Request $request) {
+        return Inertia::render('portal/profile/edit', [
+            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
+            'status' => $request->session()->get('status'),
+        ]);
+    })->name('portal.profile.edit');
+
+    Route::get('user/password', function () {
+        return Inertia::render('portal/profile/password');
+    })->name('portal.profile.password');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
