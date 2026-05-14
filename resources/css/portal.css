@@ -455,10 +455,46 @@
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .fl-dish-note { font-size: 12px; color: var(--fl-tx2); line-height: 1.4; margin-bottom: 6px; }
+.fl-dish-by   { font-size: 11px; color: var(--fl-tx3); margin: 2px 0 0; }
 .fl-dish-score {
     align-self: center; flex-shrink: 0;
     background: var(--fl-gld-d); color: var(--fl-gold);
     font-size: 13px; font-weight: 800; padding: 4px 10px; border-radius: var(--fl-rp);
+}
+
+/* ── Generic portal input ─────────────────────────────────── */
+.fl-input {
+    width: 100%;
+    background: var(--fl-bg);
+    border: 1.5px solid var(--fl-bdr);
+    border-radius: var(--fl-r2);
+    color: var(--fl-tx);
+    font-size: 14px;
+    padding: 9px 12px;
+    outline: none;
+    transition: border-color .15s;
+    -webkit-appearance: none;
+    appearance: none;
+}
+.fl-input:focus { border-color: var(--fl-p); box-shadow: 0 0 0 3px rgba(255,96,64,.12); }
+.fl-input::placeholder { color: var(--fl-tx3); }
+.fl-input option { background: var(--fl-s1); color: var(--fl-tx); }
+
+/* ── Dish add form ────────────────────────────────────────── */
+.fl-dish-add-form {
+    margin-top: 12px;
+    padding: 14px;
+    background: var(--fl-s2);
+    border: 1.5px dashed var(--fl-bdr);
+    border-radius: var(--fl-r3);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.fl-dish-add-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 /* ── Recipe Steps ────────────────────────────────────────── */

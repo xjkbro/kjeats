@@ -36,7 +36,7 @@ class RestaurantController extends Controller
         }
 
         return Inertia::render('portal/restaurants/show', [
-            'restaurant' => $restaurant->load(['dishes.user', 'revisions.user']),
+            'restaurant' => $restaurant->load(['dishes.user', 'dishes.images', 'revisions.user', 'images']),
             'can_add_dish' => $canAddDish,
             'current_user_id' => $request->user()->id,
         ]);
@@ -62,6 +62,8 @@ class RestaurantController extends Controller
             'cuisine' => 'required|string|max:100',
             'location' => 'nullable|string|max:255',
             'date_visited' => 'required|date',
+            'visit_dates' => 'nullable|array',
+            'visit_dates.*' => 'date',
             'overall_rating' => 'required|numeric|min:0|max:5',
             'price_range' => 'required|in:$,$$,$$$,$$$$',
             'review' => 'nullable|string|max:5000',
@@ -79,6 +81,16 @@ class RestaurantController extends Controller
 
         $dishes = $validated['dishes'] ?? [];
         unset($validated['dishes']);
+
+        // Sync visit_dates: if provided, update date_visited to the latest date
+        if (! empty($validated['visit_dates'])) {
+            $sorted = $validated['visit_dates'];
+            sort($sorted);
+            $validated['visit_dates'] = $sorted;
+            $validated['date_visited'] = end($sorted);
+        } else {
+            $validated['visit_dates'] = [$validated['date_visited']];
+        }
 
         $restaurant = $request->user()->restaurants()->create([
             ...$validated,
@@ -124,6 +136,8 @@ class RestaurantController extends Controller
             'cuisine' => 'required|string|max:100',
             'location' => 'nullable|string|max:255',
             'date_visited' => 'required|date',
+            'visit_dates' => 'nullable|array',
+            'visit_dates.*' => 'date',
             'overall_rating' => 'required|numeric|min:0|max:5',
             'price_range' => 'required|in:$,$$,$$$,$$$$',
             'review' => 'nullable|string|max:5000',
@@ -138,6 +152,16 @@ class RestaurantController extends Controller
             $request->user(),
             ['dishes' => $restaurant->dishes->toArray()],
         );
+
+        // Sync visit_dates
+        if (! empty($validated['visit_dates'])) {
+            $sorted = $validated['visit_dates'];
+            sort($sorted);
+            $validated['visit_dates'] = $sorted;
+            $validated['date_visited'] = end($sorted);
+        } else {
+            $validated['visit_dates'] = [$validated['date_visited']];
+        }
 
         $restaurant->update($validated);
 

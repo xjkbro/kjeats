@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 /** @property-read Collection<int, Dish> $dishes */
 class Restaurant extends Model
@@ -24,6 +25,7 @@ class Restaurant extends Model
         'cuisine',
         'location',
         'date_visited',
+        'visit_dates',
         'overall_rating',
         'price_range',
         'review',
@@ -37,6 +39,7 @@ class Restaurant extends Model
     {
         return [
             'tags' => 'array',
+            'visit_dates' => 'array',
             'date_visited' => 'date',
             'overall_rating' => 'decimal:1',
         ];
@@ -55,5 +58,10 @@ class Restaurant extends Model
     public function dishes(): HasMany
     {
         return $this->hasMany(Dish::class);
+    }
+
+    public function images(): MorphMany
+    {
+        return $this->morphMany(Media::class, 'model');
     }
 }

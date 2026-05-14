@@ -28,7 +28,7 @@ class RecipeController extends Controller
         $this->authorize('view', $recipe);
 
         return Inertia::render('portal/recipes/show', [
-            'recipe' => $recipe->load(['ingredients', 'steps', 'nutrition', 'revisions.user']),
+            'recipe' => $recipe->load(['ingredients', 'steps', 'nutrition', 'revisions.user', 'images']),
         ]);
     }
 

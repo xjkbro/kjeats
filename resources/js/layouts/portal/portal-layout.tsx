@@ -1,6 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
 import { useEffect, useRef, useState } from 'react';
-import * as GroupController from '@/actions/App/Http/Controllers/GroupController';
 import * as RecipeController from '@/actions/App/Http/Controllers/RecipeController';
 import * as RestaurantController from '@/actions/App/Http/Controllers/RestaurantController';
 import { dashboard } from '@/routes';
@@ -160,16 +159,14 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
                     <span>Recipes</span>
                 </Link>
 
-                <Link href={GroupController.index().url} className={`fl-nav-btn${isActive('/groups') ? ' active' : ''}`}>
+                <Link href="/app/profile" className={`fl-nav-btn${isActive('/app/profile') ? ' active' : ''}`}>
                     <div className="fl-nav-ico">
                         <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                            <circle cx="9" cy="7" r="4" />
-                            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
                         </svg>
                     </div>
-                    <span>Groups</span>
+                    <span>Profile</span>
                 </Link>
             </nav>
 
@@ -207,20 +204,7 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
                                 <polyline points="9 18 15 12 9 6" />
                             </svg>
                         </Link>
-                        <Link
-                            href={GroupController.create().url}
-                            className="fl-sheet-opt"
-                            onClick={() => setAddOpen(false)}
-                        >
-                            <span className="fl-opt-ico">👥</span>
-                            <div>
-                                <div className="fl-opt-label">New Group</div>
-                                <div className="fl-opt-desc">Collaborate with friends &amp; family</div>
-                            </div>
-                            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
-                                <polyline points="9 18 15 12 9 6" />
-                            </svg>
-                        </Link>
+
                         <button className="fl-sheet-cancel" onClick={() => setAddOpen(false)}>
                             Cancel
                         </button>

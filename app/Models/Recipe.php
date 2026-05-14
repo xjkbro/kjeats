@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 /** @property-read Collection<int, RecipeIngredient> $ingredients
  *  @property-read Collection<int, RecipeStep> $steps
@@ -65,5 +66,10 @@ class Recipe extends Model
     public function nutrition(): HasOne
     {
         return $this->hasOne(RecipeNutrition::class);
+    }
+
+    public function images(): MorphMany
+    {
+        return $this->morphMany(Media::class, 'model');
     }
 }
