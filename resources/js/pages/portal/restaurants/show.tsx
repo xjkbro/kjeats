@@ -219,7 +219,7 @@ export default function RestaurantShow({ restaurant, can_add_dish, current_user_
                 <div className="fl-hero-meta">
                     <span className="fl-badge fl-badge-org">{restaurant.cuisine}</span>
                     <span className="fl-badge fl-badge-def">{restaurant.price_range}</span>
-                    {restaurant.tags.map((t) => (
+                    {(restaurant.tags ?? []).map((t) => (
                         <span key={t} className="fl-badge fl-badge-def">
                             {t}
                         </span>

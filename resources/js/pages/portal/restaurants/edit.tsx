@@ -49,7 +49,7 @@ export default function RestaurantEdit({ restaurant }: Props) {
         overall_rating: String(restaurant.overall_rating),
         price_range: restaurant.price_range,
         review: restaurant.review ?? '',
-        tags: restaurant.tags.join(', '),
+        tags: (restaurant.tags ?? []).join(', '),
         atmosphere_rating: String(restaurant.atmosphere_rating),
         service_rating: String(restaurant.service_rating),
         value_rating: String(restaurant.value_rating),

@@ -5,6 +5,7 @@ use App\Http\Controllers\DishController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MediaController;
+use App\Http\Controllers\NutritionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\RestaurantController;
@@ -29,6 +30,8 @@ Route::middleware(['auth', 'verified'])->prefix('app')->group(function () {
 
     Route::resource('recipes', RecipeController::class)
         ->only(['index', 'show', 'create', 'store', 'edit', 'update', 'destroy']);
+
+    Route::post('recipes/nutrition/calculate', [NutritionController::class, 'calculate'])->name('recipes.nutrition.calculate');
 
     Route::resource('groups', GroupController::class)
         ->only(['index', 'show', 'create', 'store']);

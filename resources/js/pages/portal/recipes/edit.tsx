@@ -1,6 +1,7 @@
 import { router, useForm } from '@inertiajs/react';
 import { useState } from 'react';
 import type { ReactNode } from 'react';
+import * as NutritionController from '@/actions/App/Http/Controllers/NutritionController';
 import * as RecipeController from '@/actions/App/Http/Controllers/RecipeController';
 import PortalLayout from '@/layouts/portal/portal-layout';
 import type { Recipe } from '@/types/portal';
@@ -93,6 +94,63 @@ export default function RecipeEdit({ recipe }: Props) {
     });
 
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const [aiLoading, setAiLoading] = useState(false);
+    const [aiError, setAiError] = useState('');
+
+    async function calculateNutrition() {
+        if (data.ingredients.length === 0) return;
+        setAiLoading(true);
+        setAiError('');
+        try {
+            const xsrfToken = document.cookie
+                .split('; ')
+                .find((row) => row.startsWith('XSRF-TOKEN='))
+                ?.split('=')[1];
+            const response = await fetch(NutritionController.calculate().url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                    'X-XSRF-TOKEN': xsrfToken ? decodeURIComponent(xsrfToken) : '',
+                },
+                body: JSON.stringify({
+                    name: data.name,
+                    servings: parseInt(data.servings) || 4,
+                    ingredients: data.ingredients,
+                }),
+            });
+            const json = await response.json();
+            if (!response.ok) {
+                setAiError(json.error ?? 'Failed to calculate nutrition.');
+                return;
+            }
+            setData((prev) => ({
+                ...prev,
+                has_nutrition: true,
+                serving_size: json.serving_size != null ? String(json.serving_size) : prev.serving_size,
+                servings_per_container: json.servings_per_container != null ? String(json.servings_per_container) : prev.servings_per_container,
+                calories: json.calories != null ? String(json.calories) : prev.calories,
+                total_fat_g: json.total_fat_g != null ? String(json.total_fat_g) : prev.total_fat_g,
+                saturated_fat_g: json.saturated_fat_g != null ? String(json.saturated_fat_g) : prev.saturated_fat_g,
+                trans_fat_g: json.trans_fat_g != null ? String(json.trans_fat_g) : prev.trans_fat_g,
+                cholesterol_mg: json.cholesterol_mg != null ? String(json.cholesterol_mg) : prev.cholesterol_mg,
+                sodium_mg: json.sodium_mg != null ? String(json.sodium_mg) : prev.sodium_mg,
+                total_carbohydrate_g: json.total_carbohydrate_g != null ? String(json.total_carbohydrate_g) : prev.total_carbohydrate_g,
+                dietary_fiber_g: json.dietary_fiber_g != null ? String(json.dietary_fiber_g) : prev.dietary_fiber_g,
+                total_sugars_g: json.total_sugars_g != null ? String(json.total_sugars_g) : prev.total_sugars_g,
+                added_sugars_g: json.added_sugars_g != null ? String(json.added_sugars_g) : prev.added_sugars_g,
+                protein_g: json.protein_g != null ? String(json.protein_g) : prev.protein_g,
+                vitamin_d_mcg: json.vitamin_d_mcg != null ? String(json.vitamin_d_mcg) : prev.vitamin_d_mcg,
+                calcium_mg: json.calcium_mg != null ? String(json.calcium_mg) : prev.calcium_mg,
+                iron_mg: json.iron_mg != null ? String(json.iron_mg) : prev.iron_mg,
+                potassium_mg: json.potassium_mg != null ? String(json.potassium_mg) : prev.potassium_mg,
+            }));
+        } catch {
+            setAiError('Network error. Please try again.');
+        } finally {
+            setAiLoading(false);
+        }
+    }
 
     function addIngredient() {
         setData('ingredients', [...data.ingredients, { amount: '', unit: '', name: '' }]);
@@ -299,11 +357,23 @@ export default function RecipeEdit({ recipe }: Props) {
             <div className="fl-fsec">
                 <div className="fl-fsec-hdr">
                     <h3 className="fl-fsec-ttl">Nutrition Facts</h3>
-                    <label className="fl-toggle">
-                        <input type="checkbox" checked={data.has_nutrition} onChange={(e) => setData('has_nutrition', e.target.checked)} />
-                        <span>Add</span>
-                    </label>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <button
+                            type="button"
+                            className="fl-btn fl-btn-sm fl-btn-sec"
+                            disabled={aiLoading || data.ingredients.length === 0}
+                            onClick={calculateNutrition}
+                            title={data.ingredients.length === 0 ? 'Add ingredients first' : 'Calculate nutrition with AI'}
+                        >
+                            {aiLoading ? 'Calculating…' : '✨ Calculate'}
+                        </button>
+                        <label className="fl-toggle">
+                            <input type="checkbox" checked={data.has_nutrition} onChange={(e) => setData('has_nutrition', e.target.checked)} />
+                            <span>Add</span>
+                        </label>
+                    </div>
                 </div>
+                {aiError && <p style={{ color: 'var(--fl-red)', fontSize: '13px', marginBottom: '8px' }}>{aiError}</p>}
                 {data.has_nutrition && (
                     <div className="fl-nutrition-form">
                         <div className="fl-frow">
