@@ -28,11 +28,12 @@ class RestaurantController extends Controller
     {
         $this->authorize('view', $restaurant);
 
+        $user = $request->user();
         $groupId = (int) config('app.frontend_group_id', 0);
-        $canAddDish = false;
-        if ($groupId > 0) {
+        $canAddDish = $user->id === $restaurant->user_id;
+        if (! $canAddDish && $groupId > 0) {
             $group = Group::find($groupId);
-            $canAddDish = $group && $group->isMember($request->user());
+            $canAddDish = $group && $group->isMember($user);
         }
 
         return Inertia::render('portal/restaurants/show', [

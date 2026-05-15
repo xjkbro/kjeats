@@ -303,7 +303,7 @@ export default function RestaurantShow({ restaurant, can_add_dish, current_user_
                                     )}
                                     {dish.notes && <p className="fl-dish-notes">{dish.notes}</p>}
                                     <ImageGallery images={dish.images} />
-                                    {dish.user && dish.user.id === current_user_id && (
+                                    {can_add_dish && (
                                         <ImageUploadForm action={MediaController.storeDish(dish.id).url} />
                                     )}
                                 </div>
