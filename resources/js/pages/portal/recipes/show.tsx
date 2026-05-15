@@ -1,4 +1,5 @@
 import { Link, useForm, router } from '@inertiajs/react';
+import React from 'react';
 import type { ReactNode } from 'react';
 import * as MediaController from '@/actions/App/Http/Controllers/MediaController';
 import * as RecipeController from '@/actions/App/Http/Controllers/RecipeController';
@@ -220,24 +221,37 @@ function ImageGallery({ images }: { images: MediaItem[] }) {
 
 function ImageUploadForm({ action }: { action: string }) {
     const form = useForm<{ image: File | null }>({ image: null });
+    const inputRef = React.useRef<HTMLInputElement>(null);
 
-    function submit(e: React.FormEvent) {
-        e.preventDefault();
-        form.post(action, { forceFormData: true, preserveScroll: true, onSuccess: () => form.reset() });
+    function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+        const file = e.target.files?.[0] ?? null;
+
+        if (!file) {
+return;
+}
+
+        form.setData('image', file);
+        form.post(action, { forceFormData: true, preserveScroll: true, onSuccess: () => {
+            form.reset();
+
+            if (inputRef.current) {
+inputRef.current.value = '';
+}
+        }});
     }
 
     return (
-        <form onSubmit={submit} className="fl-img-upload">
-            <input
-                type="file"
-                accept="image/*"
-                className="fl-img-file-input"
-                onChange={(e) => form.setData('image', e.target.files?.[0] ?? null)}
-            />
-            <button type="submit" className="fl-btn fl-btn-ghost fl-btn-sm" disabled={!form.data.image || form.processing}>
-                {form.processing ? 'Uploading…' : '+ Photo'}
+        <>
+            <input ref={inputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleChange} />
+            <button
+                type="button"
+                className="fl-btn fl-btn-ghost fl-btn-sm"
+                disabled={form.processing}
+                onClick={() => inputRef.current?.click()}
+            >
+                {form.processing ? 'Uploading…' : '📷 Photo'}
             </button>
-        </form>
+        </>
     );
 }
 
@@ -318,10 +332,12 @@ export default function RecipeShow({ recipe, current_user_id }: Props) {
 
             {(recipe.images.length > 0 || recipe.user_id === current_user_id) && (
                 <section className="fl-section">
-                    <h3 className="fl-section-ttl">Photos</h3>
-                    {recipe.user_id === current_user_id && (
-                        <ImageUploadForm action={MediaController.storeRecipe(recipe.id).url} />
-                    )}
+                    <div className="fl-section-hdr">
+                        <h3 className="fl-section-ttl">Photos</h3>
+                        {recipe.user_id === current_user_id && (
+                            <ImageUploadForm action={MediaController.storeRecipe(recipe.id).url} />
+                        )}
+                    </div>
                     <ImageGallery images={recipe.images} />
                 </section>
             )}
