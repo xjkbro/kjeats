@@ -17,7 +17,7 @@ class MediaController extends Controller
         $this->authorize('view', $restaurant);
 
         $request->validate([
-            'image' => 'required|image|max:8192',
+            'image' => 'required|image|max:20480',
         ]);
 
         $file = $request->file('image');
@@ -39,7 +39,7 @@ class MediaController extends Controller
         $this->authorize('view', $dish->restaurant);
 
         $request->validate([
-            'image' => 'required|image|max:8192',
+            'image' => 'required|image|max:20480',
         ]);
 
         $file = $request->file('image');
@@ -61,7 +61,7 @@ class MediaController extends Controller
         $this->authorize('view', $recipe);
 
         $request->validate([
-            'image' => 'required|image|max:8192',
+            'image' => 'required|image|max:20480',
         ]);
 
         $file = $request->file('image');
