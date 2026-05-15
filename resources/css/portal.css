@@ -1061,10 +1061,10 @@ select.fl-fi {
 
 /* ── Image Upload Form ───────────────────────────────────── */
 .fl-img-upload {
-    display: flex; align-items: center; gap: 8px; margin-top: 8px;
+    display: flex; flex-direction: column; gap: 6px; margin-top: 8px;
 }
 .fl-img-file-input {
-    flex: 1; font-size: 13px; color: var(--fl-tx2);
+    width: 100%; font-size: 13px; color: var(--fl-tx2);
     background: var(--fl-s2); border: 1.5px dashed var(--fl-bdr);
     border-radius: var(--fl-r2); padding: 7px 10px; cursor: pointer;
 }
@@ -1072,4 +1072,7 @@ select.fl-fi {
     background: var(--fl-s3); color: var(--fl-tx2);
     border: none; border-radius: var(--fl-r1);
     padding: 4px 8px; margin-right: 8px; cursor: pointer; font-size: 12px;
+}
+.fl-img-upload .fl-btn {
+    align-self: flex-start;
 }

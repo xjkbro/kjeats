@@ -262,10 +262,8 @@ export default function RestaurantShow({ restaurant, can_add_dish, current_user_
 
             {(restaurant.images.length > 0 || can_add_dish) && (
                 <section className="fl-section">
-                    <div className="fl-section-hdr">
-                        <h3 className="fl-section-ttl">Photos</h3>
-                        <ImageUploadForm action={MediaController.storeRestaurant(restaurant.id).url} />
-                    </div>
+                    <h3 className="fl-section-ttl">Photos</h3>
+                    {can_add_dish && <ImageUploadForm action={MediaController.storeRestaurant(restaurant.id).url} />}
                     <ImageGallery images={restaurant.images} />
                 </section>
             )}

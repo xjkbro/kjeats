@@ -318,12 +318,10 @@ export default function RecipeShow({ recipe, current_user_id }: Props) {
 
             {(recipe.images.length > 0 || recipe.user_id === current_user_id) && (
                 <section className="fl-section">
-                    <div className="fl-section-hdr">
-                        <h3 className="fl-section-ttl">Photos</h3>
-                        {recipe.user_id === current_user_id && (
-                            <ImageUploadForm action={MediaController.storeRecipe(recipe.id).url} />
-                        )}
-                    </div>
+                    <h3 className="fl-section-ttl">Photos</h3>
+                    {recipe.user_id === current_user_id && (
+                        <ImageUploadForm action={MediaController.storeRecipe(recipe.id).url} />
+                    )}
                     <ImageGallery images={recipe.images} />
                 </section>
             )}
