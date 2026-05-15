@@ -144,7 +144,7 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
                             <line x1="5" y1="12" x2="19" y2="12" />
                         </svg>
                     </div>
-                    <span>Add</span>
+                    {/*<span>Add</span>*/}
                 </button>
 
                 <Link href={RecipeController.index().url} className={`fl-nav-btn${isActive('/recipes') ? ' active' : ''}`}>
