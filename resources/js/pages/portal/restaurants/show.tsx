@@ -1,10 +1,11 @@
 import { Link, useForm, router } from '@inertiajs/react';
 import type { ReactNode } from 'react';
 import * as DishController from '@/actions/App/Http/Controllers/DishController';
+import * as MediaController from '@/actions/App/Http/Controllers/MediaController';
 import * as RestaurantController from '@/actions/App/Http/Controllers/RestaurantController';
 import * as RevisionController from '@/actions/App/Http/Controllers/RevisionController';
 import PortalLayout from '@/layouts/portal/portal-layout';
-import type { Restaurant, Revision } from '@/types/portal';
+import type { MediaItem, Restaurant, Revision } from '@/types/portal';
 
 type DiffEntry = { label: string; before: string; after: string };
 
@@ -124,6 +125,45 @@ function RatingBar({ label, value }: { label: string; value: number }) {
     );
 }
 
+function ImageGallery({ images }: { images: MediaItem[] }) {
+    if (images.length === 0) {
+        return null;
+    }
+
+    return (
+        <div className="fl-img-gallery">
+            {images.map((img) => (
+                <a key={img.id} href={img.url} target="_blank" rel="noreferrer" className="fl-img-thumb">
+                    <img src={img.url} alt={img.original_name} />
+                </a>
+            ))}
+        </div>
+    );
+}
+
+function ImageUploadForm({ action }: { action: string }) {
+    const form = useForm<{ image: File | null }>({ image: null });
+
+    function submit(e: React.FormEvent) {
+        e.preventDefault();
+        form.post(action, { forceFormData: true, preserveScroll: true, onSuccess: () => form.reset() });
+    }
+
+    return (
+        <form onSubmit={submit} className="fl-img-upload">
+            <input
+                type="file"
+                accept="image/*"
+                className="fl-img-file-input"
+                onChange={(e) => form.setData('image', e.target.files?.[0] ?? null)}
+            />
+            <button type="submit" className="fl-btn fl-btn-ghost fl-btn-sm" disabled={!form.data.image || form.processing}>
+                {form.processing ? 'Uploading…' : '+ Photo'}
+            </button>
+        </form>
+    );
+}
+
 export default function RestaurantShow({ restaurant, can_add_dish, current_user_id }: Props) {
     const dateLabel = new Date(restaurant.date_visited + 'T00:00:00').toLocaleDateString('en-US', {
         month: 'long',
@@ -185,7 +225,12 @@ export default function RestaurantShow({ restaurant, can_add_dish, current_user_
                     <div className="fl-info-ico">📅</div>
                     <div className="fl-info-body">
                         <div className="fl-info-lbl">Visited</div>
-                        <div className="fl-info-val">{dateLabel}</div>
+                        <div className="fl-info-val">
+                            {restaurant.visit_dates && restaurant.visit_dates.length > 1
+                                ? restaurant.visit_dates.map((d) => new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })).join(' · ')
+                                : dateLabel
+                            }
+                        </div>
                     </div>
                 </div>
                 <div className="fl-info-item">
@@ -213,6 +258,16 @@ export default function RestaurantShow({ restaurant, can_add_dish, current_user_
                     <div className="fl-quote-mark">"</div>
                     <p>{restaurant.review}</p>
                 </div>
+            )}
+
+            {(restaurant.images.length > 0 || can_add_dish) && (
+                <section className="fl-section">
+                    <div className="fl-section-hdr">
+                        <h3 className="fl-section-ttl">Photos</h3>
+                        <ImageUploadForm action={MediaController.storeRestaurant(restaurant.id).url} />
+                    </div>
+                    <ImageGallery images={restaurant.images} />
+                </section>
             )}
 
             {(restaurant.dishes.length > 0 || can_add_dish) && (
@@ -247,6 +302,10 @@ export default function RestaurantShow({ restaurant, can_add_dish, current_user_
                                         <p className="fl-dish-by">by {dish.user.name}</p>
                                     )}
                                     {dish.notes && <p className="fl-dish-notes">{dish.notes}</p>}
+                                    <ImageGallery images={dish.images} />
+                                    {dish.user && dish.user.id === current_user_id && (
+                                        <ImageUploadForm action={MediaController.storeDish(dish.id).url} />
+                                    )}
                                 </div>
                             ))}
                         </div>

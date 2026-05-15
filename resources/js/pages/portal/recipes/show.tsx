@@ -1,9 +1,10 @@
-import { Link, router } from '@inertiajs/react';
+import { Link, useForm, router } from '@inertiajs/react';
 import type { ReactNode } from 'react';
+import * as MediaController from '@/actions/App/Http/Controllers/MediaController';
 import * as RecipeController from '@/actions/App/Http/Controllers/RecipeController';
 import * as RevisionController from '@/actions/App/Http/Controllers/RevisionController';
 import PortalLayout from '@/layouts/portal/portal-layout';
-import type { Recipe, RecipeNutrition, Revision } from '@/types/portal';
+import type { MediaItem, Recipe, RecipeNutrition, Revision } from '@/types/portal';
 
 type DiffEntry = { label: string; before: string; after: string };
 
@@ -88,6 +89,7 @@ const RECIPE_FIELDS = [
 
 interface Props {
     recipe: Recipe;
+    current_user_id: number;
 }
 
 function NutritionLabel({ nutrition }: { nutrition: RecipeNutrition }) {
@@ -200,7 +202,46 @@ function NutritionLabel({ nutrition }: { nutrition: RecipeNutrition }) {
     );
 }
 
-export default function RecipeShow({ recipe }: Props) {
+function ImageGallery({ images }: { images: MediaItem[] }) {
+    if (images.length === 0) {
+        return null;
+    }
+
+    return (
+        <div className="fl-img-gallery">
+            {images.map((img) => (
+                <a key={img.id} href={img.url} target="_blank" rel="noreferrer" className="fl-img-thumb">
+                    <img src={img.url} alt={img.original_name} />
+                </a>
+            ))}
+        </div>
+    );
+}
+
+function ImageUploadForm({ action }: { action: string }) {
+    const form = useForm<{ image: File | null }>({ image: null });
+
+    function submit(e: React.FormEvent) {
+        e.preventDefault();
+        form.post(action, { forceFormData: true, preserveScroll: true, onSuccess: () => form.reset() });
+    }
+
+    return (
+        <form onSubmit={submit} className="fl-img-upload">
+            <input
+                type="file"
+                accept="image/*"
+                className="fl-img-file-input"
+                onChange={(e) => form.setData('image', e.target.files?.[0] ?? null)}
+            />
+            <button type="submit" className="fl-btn fl-btn-ghost fl-btn-sm" disabled={!form.data.image || form.processing}>
+                {form.processing ? 'Uploading…' : '+ Photo'}
+            </button>
+        </form>
+    );
+}
+
+export default function RecipeShow({ recipe, current_user_id }: Props) {
     const totalTime = recipe.prep_time + recipe.cook_time + recipe.rest_time;
 
     function handleDelete() {
@@ -273,6 +314,18 @@ export default function RecipeShow({ recipe }: Props) {
                     <div className="fl-quote-mark">"</div>
                     <p>{recipe.description}</p>
                 </div>
+            )}
+
+            {(recipe.images.length > 0 || recipe.user_id === current_user_id) && (
+                <section className="fl-section">
+                    <div className="fl-section-hdr">
+                        <h3 className="fl-section-ttl">Photos</h3>
+                        {recipe.user_id === current_user_id && (
+                            <ImageUploadForm action={MediaController.storeRecipe(recipe.id).url} />
+                        )}
+                    </div>
+                    <ImageGallery images={recipe.images} />
+                </section>
             )}
 
             {recipe.ingredients.length > 0 && (

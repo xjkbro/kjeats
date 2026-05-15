@@ -40,7 +40,7 @@ class Restaurant extends Model
         return [
             'tags' => 'array',
             'visit_dates' => 'array',
-            'date_visited' => 'date',
+            'date_visited' => 'date:Y-m-d',
             'overall_rating' => 'decimal:1',
         ];
     }

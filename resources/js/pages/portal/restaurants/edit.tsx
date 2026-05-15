@@ -45,6 +45,7 @@ export default function RestaurantEdit({ restaurant }: Props) {
         cuisine: restaurant.cuisine,
         location: restaurant.location,
         date_visited: restaurant.date_visited,
+        visit_dates: restaurant.visit_dates ?? [],
         overall_rating: String(restaurant.overall_rating),
         price_range: restaurant.price_range,
         review: restaurant.review ?? '',
@@ -55,6 +56,7 @@ export default function RestaurantEdit({ restaurant }: Props) {
     });
 
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const [newVisitDate, setNewVisitDate] = useState('');
 
     function submit(e: React.FormEvent) {
         e.preventDefault();
@@ -152,6 +154,45 @@ export default function RestaurantEdit({ restaurant }: Props) {
                             value={data.date_visited}
                             onChange={(e) => setData('date_visited', e.target.value)}
                         />
+                    </div>
+                </div>
+
+                <div className="fl-fgrp">
+                    <label className="fl-flbl">Additional Visit Dates</label>
+                    <div className="fl-visit-dates">
+                        {data.visit_dates.map((d) => (
+                            <span key={d} className="fl-visit-chip">
+                                {new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                <button
+                                    type="button"
+                                    className="fl-visit-chip-rm"
+                                    onClick={() => setData('visit_dates', data.visit_dates.filter((x) => x !== d))}
+                                >
+                                    ✕
+                                </button>
+                            </span>
+                        ))}
+                        <div className="fl-visit-add">
+                            <input
+                                className="fl-fi"
+                                type="date"
+                                value={newVisitDate}
+                                onChange={(e) => setNewVisitDate(e.target.value)}
+                            />
+                            <button
+                                type="button"
+                                className="fl-btn fl-btn-ghost fl-btn-sm"
+                                disabled={!newVisitDate || data.visit_dates.includes(newVisitDate)}
+                                onClick={() => {
+                                    if (newVisitDate && !data.visit_dates.includes(newVisitDate)) {
+                                        setData('visit_dates', [...data.visit_dates, newVisitDate]);
+                                        setNewVisitDate('');
+                                    }
+                                }}
+                            >
+                                + Add
+                            </button>
+                        </div>
                     </div>
                 </div>
 

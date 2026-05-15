@@ -1,9 +1,18 @@
+export interface MediaItem {
+    id: number;
+    url: string;
+    original_name: string;
+    user_id: number;
+    created_at: string;
+}
+
 export interface Dish {
     id: number;
     name: string;
     rating: string;
     notes: string | null;
     user: { id: number; name: string } | null;
+    images: MediaItem[];
 }
 
 export interface Restaurant {
@@ -13,6 +22,7 @@ export interface Restaurant {
     cuisine: string;
     location: string;
     date_visited: string;
+    visit_dates: string[];
     overall_rating: string;
     price_range: string;
     review: string | null;
@@ -24,6 +34,7 @@ export interface Restaurant {
     group_id: number | null;
     group?: { id: number; name: string } | null;
     revisions?: Revision[];
+    images: MediaItem[];
 }
 
 export interface RecipeIngredient {
@@ -79,6 +90,7 @@ export interface RecipeNutrition {
 
 export interface Recipe {
     id: number;
+    user_id: number;
     emoji: string;
     name: string;
     category: string;
@@ -95,6 +107,7 @@ export interface Recipe {
     group_id: number | null;
     group?: { id: number; name: string } | null;
     revisions?: Revision[];
+    images: MediaItem[];
 }
 
 export interface Revision {

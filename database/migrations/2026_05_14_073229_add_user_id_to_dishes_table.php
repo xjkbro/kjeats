@@ -17,7 +17,7 @@ return new class extends Migration
         });
 
         // Back-fill: attribute existing dishes to the restaurant owner
-        DB::statement('UPDATE dishes d JOIN restaurants r ON r.id = d.restaurant_id SET d.user_id = r.user_id WHERE d.user_id IS NULL');
+        DB::statement('UPDATE dishes SET user_id = (SELECT user_id FROM restaurants WHERE restaurants.id = dishes.restaurant_id) WHERE user_id IS NULL');
     }
 
     /**

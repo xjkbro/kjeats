@@ -23,12 +23,13 @@ class RecipeController extends Controller
         ]);
     }
 
-    public function show(Recipe $recipe): Response
+    public function show(Request $request, Recipe $recipe): Response
     {
         $this->authorize('view', $recipe);
 
         return Inertia::render('portal/recipes/show', [
             'recipe' => $recipe->load(['ingredients', 'steps', 'nutrition', 'revisions.user', 'images']),
+            'current_user_id' => $request->user()->id,
         ]);
     }
 

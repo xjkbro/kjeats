@@ -22,6 +22,7 @@ Route::middleware(['auth', 'verified'])->prefix('app')->group(function () {
     Route::post('restaurants/{restaurant}/dishes', [DishController::class, 'store'])->name('dishes.store');
     Route::delete('restaurants/{restaurant}/dishes/{dish}', [DishController::class, 'destroy'])->name('dishes.destroy');
 
+    Route::post('restaurants/{restaurant}/images', [MediaController::class, 'storeRestaurant'])->name('restaurants.images.store');
     Route::post('dishes/{dish}/images', [MediaController::class, 'storeDish'])->name('dishes.images.store');
     Route::post('recipes/{recipe}/images', [MediaController::class, 'storeRecipe'])->name('recipes.images.store');
     Route::delete('media/{media}', [MediaController::class, 'destroy'])->name('media.destroy');
