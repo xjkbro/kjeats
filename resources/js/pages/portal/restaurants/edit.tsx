@@ -1,4 +1,4 @@
-import { useForm } from '@inertiajs/react';
+import { router, useForm } from '@inertiajs/react';
 import { useState } from 'react';
 import type { ReactNode } from 'react';
 import * as RestaurantController from '@/actions/App/Http/Controllers/RestaurantController';
@@ -234,6 +234,9 @@ export default function RestaurantEdit({ restaurant }: Props) {
             <div className="fl-form-footer">
                 <button type="submit" className="fl-btn fl-btn-p" disabled={processing}>
                     {processing ? 'Saving…' : 'Save Changes'}
+                </button>
+                <button type="button" className="fl-btn fl-btn-sec" onClick={() => router.visit(RestaurantController.show(restaurant.id).url)}>
+                    Discard
                 </button>
             </div>
         </form>

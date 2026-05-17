@@ -204,6 +204,21 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
                                 <polyline points="9 18 15 12 9 6" />
                             </svg>
                         </Link>
+                        <Link
+                            href={RestaurantController.index().url + '?revisit=1'}
+                            className="fl-sheet-opt"
+                            style={{ background: 'var(--fl-s3)', borderColor: 'var(--fl-bdr)' }}
+                            onClick={() => setAddOpen(false)}
+                        >
+                            <span className="fl-opt-ico">🔁</span>
+                            <div>
+                                <div className="fl-opt-label">Revisit a Restaurant</div>
+                                <div className="fl-opt-desc">Add a new visit date, dishes or update your review</div>
+                            </div>
+                            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
+                                <polyline points="9 18 15 12 9 6" />
+                            </svg>
+                        </Link>
 
                         <button className="fl-sheet-cancel" onClick={() => setAddOpen(false)}>
                             Cancel

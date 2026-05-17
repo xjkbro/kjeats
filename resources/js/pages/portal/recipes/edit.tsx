@@ -425,6 +425,9 @@ export default function RecipeEdit({ recipe }: Props) {
                 <button type="submit" className="fl-btn fl-btn-p" disabled={processing}>
                     {processing ? 'Saving…' : 'Save Changes'}
                 </button>
+                <button type="button" className="fl-btn fl-btn-sec" onClick={() => router.visit(RecipeController.show(recipe.id).url)}>
+                    Discard
+                </button>
                 <button type="button" className="fl-btn fl-btn-danger" onClick={handleDelete}>
                     Delete
                 </button>

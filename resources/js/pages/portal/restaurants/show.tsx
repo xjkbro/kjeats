@@ -363,6 +363,9 @@ export default function RestaurantShow({ restaurant, can_add_dish, current_user_
             )}
 
             <div className="fl-actions">
+                <Link href={RestaurantController.showRevisit(restaurant.id).url} className="fl-btn fl-btn-p">
+                    🔁 Log Revisit
+                </Link>
                 <Link href={RestaurantController.edit(restaurant.id).url} className="fl-btn fl-btn-sec">
                     Edit Review
                 </Link>

@@ -20,6 +20,9 @@ Route::middleware(['auth', 'verified'])->prefix('app')->group(function () {
     Route::resource('restaurants', RestaurantController::class)
         ->only(['index', 'show', 'create', 'store', 'edit', 'update']);
 
+    Route::get('restaurants/{restaurant}/revisit', [RestaurantController::class, 'showRevisit'])->name('restaurants.revisit');
+    Route::post('restaurants/{restaurant}/revisit', [RestaurantController::class, 'logRevisit'])->name('restaurants.revisit.store');
+
     Route::post('restaurants/{restaurant}/dishes', [DishController::class, 'store'])->name('dishes.store');
     Route::delete('restaurants/{restaurant}/dishes/{dish}', [DishController::class, 'destroy'])->name('dishes.destroy');
 

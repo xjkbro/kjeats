@@ -1,4 +1,4 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import type { ReactNode } from 'react';
 import * as RestaurantController from '@/actions/App/Http/Controllers/RestaurantController';
@@ -26,6 +26,9 @@ function StarDisplay({ rating }: { rating: number | string }) {
 const ALL_CUISINES = 'All';
 
 export default function RestaurantsIndex({ restaurants }: Props) {
+    const { url } = usePage();
+    const revisitMode = new URLSearchParams(url.split('?')[1] ?? '').get('revisit') === '1';
+
     const cuisines = [ALL_CUISINES, ...Array.from(new Set(restaurants.map((r) => r.cuisine)))];
     const [filter, setFilter] = useState(ALL_CUISINES);
     const [sort, setSort] = useState<'recent' | 'rating'>('recent');
@@ -43,11 +46,19 @@ export default function RestaurantsIndex({ restaurants }: Props) {
     return (
         <div className="fl-view">
             <div className="fl-view-hdr">
-                <h2 className="fl-view-ttl">Restaurant Reviews</h2>
-                <Link href={RestaurantController.create().url} className="fl-btn fl-btn-p fl-btn-sm">
-                    + Add
-                </Link>
+                <h2 className="fl-view-ttl">{revisitMode ? 'Select a Restaurant' : 'Restaurant Reviews'}</h2>
+                {!revisitMode && (
+                    <Link href={RestaurantController.create().url} className="fl-btn fl-btn-p fl-btn-sm">
+                        + Add
+                    </Link>
+                )}
             </div>
+
+            {revisitMode && (
+                <div style={{ padding: '10px 14px', background: 'var(--fl-p-dim)', border: '1.5px solid var(--fl-p)', borderRadius: 'var(--fl-r3)', marginBottom: '12px', fontSize: '13px', color: 'var(--fl-p)' }}>
+                    🔁 Tap a restaurant to log a new visit, add dishes or update your rating.
+                </div>
+            )}
 
             <div className="fl-chips">
                 {cuisines.map((c) => (
@@ -70,7 +81,7 @@ export default function RestaurantsIndex({ restaurants }: Props) {
             {filtered.length > 0 ? (
                 <div className="fl-card-list">
                     {filtered.map((r) => (
-                        <Link key={r.id} href={RestaurantController.show(r.id).url} className="fl-card">
+                        <Link key={r.id} href={revisitMode ? RestaurantController.showRevisit(r.id).url : RestaurantController.show(r.id).url} className="fl-card">
                             <div className="fl-card-emoji">{r.emoji}</div>
                             <div className="fl-card-body">
                                 <div className="fl-card-name">{r.name}</div>
@@ -81,9 +92,9 @@ export default function RestaurantsIndex({ restaurants }: Props) {
                                 <div className="fl-card-sub">
                                     {r.location} · {r.price_range} · {r.dishes.length} dish{r.dishes.length !== 1 ? 'es' : ''}
                                 </div>
-                                {r.tags.length > 0 && (
+                                {(r.tags ?? []).length > 0 && (
                                     <div className="fl-card-tags">
-                                        {r.tags.slice(0, 3).map((tag) => (
+                                        {(r.tags ?? []).slice(0, 3).map((tag) => (
                                             <span key={tag} className="fl-badge fl-badge-def">
                                                 {tag}
                                             </span>

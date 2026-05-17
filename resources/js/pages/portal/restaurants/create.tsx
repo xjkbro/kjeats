@@ -1,5 +1,5 @@
 import { useForm } from '@inertiajs/react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import * as RestaurantController from '@/actions/App/Http/Controllers/RestaurantController';
 import PortalLayout from '@/layouts/portal/portal-layout';
@@ -8,6 +8,7 @@ interface DishInput {
     name: string;
     rating: string;
     notes: string;
+    photo?: File | null;
 }
 
 interface FormValues {
@@ -24,6 +25,7 @@ interface FormValues {
     atmosphere_rating: string;
     service_rating: string;
     value_rating: string;
+    restaurant_photo: File | null;
     dishes: DishInput[];
 }
 
@@ -71,19 +73,29 @@ export default function RestaurantCreate() {
         atmosphere_rating: '',
         service_rating: '',
         value_rating: '',
+        restaurant_photo: null,
         dishes: [],
     });
+
+    const restaurantPhotoRef = useRef<HTMLInputElement>(null);
+    const dishPhotoRefs = useRef<(HTMLInputElement | null)[]>([]);
 
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [newVisitDate, setNewVisitDate] = useState('');
 
     function addDish() {
-        setData('dishes', [...data.dishes, { name: '', rating: '3', notes: '' }]);
+        setData('dishes', [...data.dishes, { name: '', rating: '3', notes: '', photo: null }]);
     }
 
     function updateDish(idx: number, field: keyof DishInput, value: string) {
         const dishes = [...data.dishes];
         dishes[idx] = { ...dishes[idx], [field]: value };
+        setData('dishes', dishes);
+    }
+
+    function updateDishPhoto(idx: number, file: File | null) {
+        const dishes = [...data.dishes];
+        dishes[idx] = { ...dishes[idx], photo: file };
         setData('dishes', dishes);
     }
 
@@ -243,6 +255,39 @@ export default function RestaurantCreate() {
                         placeholder="e.g. Date Night, Family Friendly, Outdoor"
                     />
                 </div>
+
+                <div className="fl-fgrp">
+                    <label className="fl-flbl">Photo</label>
+                    <input
+                        ref={restaurantPhotoRef}
+                        type="file"
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                        onChange={(e) => setData('restaurant_photo', e.target.files?.[0] ?? null)}
+                    />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                        <button
+                            type="button"
+                            className="fl-btn fl-btn-ghost fl-btn-sm"
+                            onClick={() => restaurantPhotoRef.current?.click()}
+                        >
+                            📷 {data.restaurant_photo ? 'Change Photo' : 'Add Photo'}
+                        </button>
+                        {data.restaurant_photo && (
+                            <span className="fl-visit-chip">
+                                {data.restaurant_photo.name}
+                                <button
+                                    type="button"
+                                    className="fl-visit-chip-rm"
+                                    onClick={() => {
+                                        setData('restaurant_photo', null);
+                                        if (restaurantPhotoRef.current) restaurantPhotoRef.current.value = '';
+                                    }}
+                                >✕</button>
+                            </span>
+                        )}
+                    </div>
+                </div>
             </div>
 
             <div className="fl-fsec">
@@ -278,6 +323,7 @@ export default function RestaurantCreate() {
                 </div>
                 {data.dishes.map((dish, idx) => (
                     <div key={idx} className="fl-dish-form">
+                        <button type="button" className="fl-dish-remove" onClick={() => removeDish(idx)}>✕</button>
                         <div className="fl-frow">
                             <div className="fl-fgrp" style={{ flex: 2 }}>
                                 <label className="fl-flbl">Dish Name</label>
@@ -295,9 +341,6 @@ export default function RestaurantCreate() {
                                     {[1, 2, 3, 4, 5].map((n) => <option key={n} value={n}>{n} ★</option>)}
                                 </select>
                             </div>
-                            <button type="button" className="fl-dish-remove" onClick={() => removeDish(idx)}>
-                                ✕
-                            </button>
                         </div>
                         <div className="fl-fgrp">
                             <label className="fl-flbl">Notes</label>
@@ -308,6 +351,39 @@ export default function RestaurantCreate() {
                                 onChange={(e) => updateDish(idx, 'notes', e.target.value)}
                                 placeholder="Any notes about this dish?"
                             />
+                        </div>
+                        <div className="fl-fgrp">
+                            <label className="fl-flbl">Photo</label>
+                            <input
+                                ref={(el) => { dishPhotoRefs.current[idx] = el; }}
+                                type="file"
+                                accept="image/*"
+                                style={{ display: 'none' }}
+                                onChange={(e) => updateDishPhoto(idx, e.target.files?.[0] ?? null)}
+                            />
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                                <button
+                                    type="button"
+                                    className="fl-btn fl-btn-ghost fl-btn-sm"
+                                    onClick={() => dishPhotoRefs.current[idx]?.click()}
+                                >
+                                    📷 {dish.photo ? 'Change Photo' : 'Add Photo'}
+                                </button>
+                                {dish.photo && (
+                                    <span className="fl-visit-chip">
+                                        {dish.photo.name}
+                                        <button
+                                            type="button"
+                                            className="fl-visit-chip-rm"
+                                            onClick={() => {
+                                                updateDishPhoto(idx, null);
+                                                const ref = dishPhotoRefs.current[idx];
+                                                if (ref) ref.value = '';
+                                            }}
+                                        >✕</button>
+                                    </span>
+                                )}
+                            </div>
                         </div>
                     </div>
                 ))}

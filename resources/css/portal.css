@@ -612,6 +612,7 @@ select.fl-fi {
     font-size: 15px; font-weight: 700; letter-spacing: -.2px;
     cursor: pointer; border: none; white-space: nowrap;
     transition: transform var(--fl-t1), box-shadow var(--fl-t1), background var(--fl-t1);
+    @apply mt-2;
 }
 .fl-btn svg   { width: 16px; height: 16px; flex-shrink: 0; }
 .fl-btn-full  { width: 100%; }
@@ -864,15 +865,15 @@ select.fl-fi {
 .fl-star-val            { font-size: 13px; font-weight: 700; color: var(--fl-gold); margin-left: 6px; }
 
 /* ── Dish input row (create form) ────────────────────────── */
-.fl-dish-form   { background: var(--fl-s2); border: 1.5px solid var(--fl-bdr); border-radius: var(--fl-r3); padding: 14px; margin-bottom: 10px; }
-.fl-dish-remove { width: 30px; height: 30px; flex-shrink: 0; border-radius: var(--fl-r2); background: var(--fl-red-d); color: var(--fl-red); display: flex; align-items: center; justify-content: center; font-size: 13px; align-self: flex-end; cursor: pointer; transition: background var(--fl-t1); }
+.fl-dish-form   { position: relative; background: var(--fl-s2); border: 1.5px solid var(--fl-bdr); border-radius: var(--fl-r3); padding: 14px; padding-top: 18px; margin-bottom: 10px; }
+.fl-dish-remove { position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; flex-shrink: 0; border-radius: var(--fl-r2); background: var(--fl-red-d); color: var(--fl-red); display: flex; align-items: center; justify-content: center; font-size: 11px; cursor: pointer; transition: background var(--fl-t1); }
 .fl-dish-remove:active { background: rgba(255,69,96,.3); }
 
 /* ── Empty inline (inside forms) ────────────────────────── */
 .fl-empty-inline { font-size: 13px; color: var(--fl-tx3); text-align: center; padding: 12px; }
 
 /* ── Sticky form footer ──────────────────────────────────── */
-.fl-form-footer { position: sticky; bottom: 0; background: linear-gradient(transparent, var(--fl-bg) 40%); padding: 20px 0 8px; margin-top: 8px; }
+.fl-form-footer { position: sticky; bottom: 0; background: var(--fl-bg); border-top: 1px solid var(--fl-bdr); padding: 12px 0 8px; margin-top: 16px; display: flex; gap: 8px; }
 
 /* ── View header (list pages) ────────────────────────────── */
 .fl-view-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
