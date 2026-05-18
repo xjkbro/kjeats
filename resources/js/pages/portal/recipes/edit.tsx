@@ -1,13 +1,15 @@
 import { router, useForm } from '@inertiajs/react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import * as NutritionController from '@/actions/App/Http/Controllers/NutritionController';
 import * as RecipeController from '@/actions/App/Http/Controllers/RecipeController';
+import TagInput from '@/components/tag-input';
 import PortalLayout from '@/layouts/portal/portal-layout';
 import type { Recipe } from '@/types/portal';
 
 interface Props {
     recipe: Recipe;
+    all_tags: string[];
 }
 
 interface IngredientInput {
@@ -30,7 +32,8 @@ interface FormValues {
     cook_time: string;
     rest_time: string;
     servings: string;
-    tags: string;
+    tags: string[];
+    recipe_photo: File | null;
     ingredients: IngredientInput[];
     steps: StepInput[];
     has_nutrition: boolean;
@@ -57,7 +60,7 @@ const EMOJIS = ['📋', '🍕', '🍣', '🌮', '🍜', '🥩', '🥗', '🍔', 
 const CATEGORIES = ['Breakfast', 'Lunch', 'Dinner', 'Dessert', 'Snack', 'Drink', 'Side', 'Other'];
 const DIFFICULTIES = ['Easy', 'Medium', 'Hard'];
 
-export default function RecipeEdit({ recipe }: Props) {
+export default function RecipeEdit({ recipe, all_tags }: Props) {
     const n = recipe.nutrition;
 
     const { data, setData, put, processing, errors } = useForm<FormValues>({
@@ -70,7 +73,8 @@ export default function RecipeEdit({ recipe }: Props) {
         cook_time: String(recipe.cook_time),
         rest_time: String(recipe.rest_time),
         servings: String(recipe.servings),
-        tags: recipe.tags.join(', '),
+        tags: recipe.tags,
+        recipe_photo: null,
         ingredients: recipe.ingredients.map((i) => ({ amount: i.amount, unit: i.unit, name: i.name })),
         steps: recipe.steps.map((s) => ({ instruction: s.instruction })),
         has_nutrition: !!n,
@@ -93,6 +97,7 @@ export default function RecipeEdit({ recipe }: Props) {
         potassium_mg: n?.potassium_mg ?? '',
     });
 
+    const photoRef = useRef<HTMLInputElement>(null);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [aiLoading, setAiLoading] = useState(false);
     const [aiError, setAiError] = useState('');
@@ -266,15 +271,60 @@ export default function RecipeEdit({ recipe }: Props) {
                 </div>
 
                 <div className="fl-fgrp">
-                    <label className="fl-flbl" htmlFor="tags">Tags (comma-separated)</label>
-                    <input
-                        id="tags"
-                        className="fl-fi"
-                        type="text"
+                    <label className="fl-flbl">Tags</label>
+                    <TagInput
                         value={data.tags}
-                        onChange={(e) => setData('tags', e.target.value)}
+                        onChange={(tags) => setData('tags', tags)}
+                        suggestions={all_tags}
                         placeholder="e.g. Vegetarian, Quick, Comfort Food"
                     />
+                </div>
+
+                <div className="fl-fgrp">
+                    <label className="fl-flbl">Photo</label>
+                    {recipe.images && recipe.images.length > 0 && !data.recipe_photo && (
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}>
+                            {recipe.images.map((img) => (
+                                <img
+                                    key={img.id}
+                                    src={img.url}
+                                    alt="Recipe photo"
+                                    style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: 'var(--fl-rp)', border: '1px solid var(--fl-bdr)' }}
+                                />
+                            ))}
+                        </div>
+                    )}
+                    <input
+                        ref={photoRef}
+                        type="file"
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                        onChange={(e) => setData('recipe_photo', e.target.files?.[0] ?? null)}
+                    />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                        <button
+                            type="button"
+                            className="fl-btn fl-btn-ghost fl-btn-sm"
+                            onClick={() => photoRef.current?.click()}
+                        >
+                            {recipe.images && recipe.images.length > 0 ? '📷 Add Another Photo' : '📷 Add Photo'}
+                        </button>
+                        {data.recipe_photo && (
+                            <>
+                                <span style={{ fontSize: '13px', color: 'var(--fl-tx2)' }}>{data.recipe_photo.name}</span>
+                                <button
+                                    type="button"
+                                    className="fl-visit-chip-rm"
+                                    onClick={() => {
+                                        setData('recipe_photo', null);
+                                        if (photoRef.current) photoRef.current.value = '';
+                                    }}
+                                >
+                                    ✕
+                                </button>
+                            </>
+                        )}
+                    </div>
                 </div>
             </div>
 

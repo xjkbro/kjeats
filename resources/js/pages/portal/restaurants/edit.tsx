@@ -2,11 +2,13 @@ import { router, useForm } from '@inertiajs/react';
 import { useState } from 'react';
 import type { ReactNode } from 'react';
 import * as RestaurantController from '@/actions/App/Http/Controllers/RestaurantController';
+import TagInput from '@/components/tag-input';
 import PortalLayout from '@/layouts/portal/portal-layout';
 import type { Restaurant } from '@/types/portal';
 
 interface Props {
     restaurant: Restaurant;
+    all_tags: string[];
 }
 
 const EMOJIS = ['🍽️', '🍕', '🍣', '🌮', '🍜', '🥩', '🥗', '🍔', '🥐', '🍱', '🍛', '🍝'];
@@ -38,7 +40,7 @@ function StarInput({ label, value, onChange }: { label: string; value: string; o
     );
 }
 
-export default function RestaurantEdit({ restaurant }: Props) {
+export default function RestaurantEdit({ restaurant, all_tags }: Props) {
     const { data, setData, put, processing, errors } = useForm({
         emoji: restaurant.emoji,
         name: restaurant.name,
@@ -49,7 +51,7 @@ export default function RestaurantEdit({ restaurant }: Props) {
         overall_rating: String(restaurant.overall_rating),
         price_range: restaurant.price_range,
         review: restaurant.review ?? '',
-        tags: (restaurant.tags ?? []).join(', '),
+        tags: restaurant.tags ?? [],
         atmosphere_rating: String(restaurant.atmosphere_rating),
         service_rating: String(restaurant.service_rating),
         value_rating: String(restaurant.value_rating),
@@ -197,13 +199,11 @@ export default function RestaurantEdit({ restaurant }: Props) {
                 </div>
 
                 <div className="fl-fgrp">
-                    <label className="fl-flbl" htmlFor="tags">Tags (comma-separated)</label>
-                    <input
-                        id="tags"
-                        className="fl-fi"
-                        type="text"
+                    <label className="fl-flbl">Tags</label>
+                    <TagInput
                         value={data.tags}
-                        onChange={(e) => setData('tags', e.target.value)}
+                        onChange={(tags) => setData('tags', tags)}
+                        suggestions={all_tags}
                     />
                 </div>
             </div>

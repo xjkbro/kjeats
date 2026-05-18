@@ -45,7 +45,9 @@ class RestaurantController extends Controller
 
     public function create(): Response
     {
-        return Inertia::render('portal/restaurants/create');
+        return Inertia::render('portal/restaurants/create', [
+            'all_tags' => auth()->user()->restaurants()->pluck('tags')->flatten()->unique()->sort()->values()->toArray(),
+        ]);
     }
 
     public function store(Request $request): RedirectResponse
@@ -145,6 +147,7 @@ class RestaurantController extends Controller
 
         return Inertia::render('portal/restaurants/edit', [
             'restaurant' => $restaurant->load('dishes'),
+            'all_tags' => auth()->user()->restaurants()->pluck('tags')->flatten()->unique()->sort()->values()->toArray(),
         ]);
     }
 

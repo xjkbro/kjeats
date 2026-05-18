@@ -1,4 +1,4 @@
-import { router, useForm } from '@inertiajs/react';
+import { Link, router, useForm } from '@inertiajs/react';
 import { useState } from 'react';
 import type { ReactNode } from 'react';
 import * as GroupController from '@/actions/App/Http/Controllers/GroupController';
@@ -39,59 +39,56 @@ export default function GroupsIndex({ groups }: Props) {
                     <button className="fl-btn fl-btn-sec fl-btn-sm" onClick={() => setShowJoin((v) => !v)}>
                         Join
                     </button>
-                    <a href={GroupController.create().url} className="fl-btn fl-btn-p fl-btn-sm">
+                    <Link href={GroupController.create().url} className="fl-btn fl-btn-p fl-btn-sm">
                         + New
-                    </a>
+                    </Link>
                 </div>
             </div>
 
             {showJoin && (
-                <form className="fl-fsec" onSubmit={submitJoin}>
-                    <h3 className="fl-fsec-ttl">Join with Invite Code</h3>
-                    <div className="fl-frow">
-                        <div className="fl-fgrp" style={{ flex: 1 }}>
-                            <input
-                                className={`fl-fi${errors.invite_code ? ' error' : ''}`}
-                                type="text"
-                                value={data.invite_code}
-                                onChange={(e) => setData('invite_code', e.target.value.toUpperCase())}
-                                placeholder="XXXXXXXX"
-                                maxLength={10}
-                                style={{ letterSpacing: '0.15em', fontFamily: 'monospace' }}
-                            />
-                            {errors.invite_code && <span className="fl-ferr">{errors.invite_code}</span>}
-                        </div>
-                        <button type="submit" className="fl-btn fl-btn-p" disabled={processing} style={{ alignSelf: 'flex-end' }}>
-                            Join
+                <form onSubmit={submitJoin} style={{ marginBottom: '16px' }}>
+                    <p className="fl-flbl" style={{ marginBottom: '8px' }}>Join with invite code</p>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                        <input
+                            className={`fl-fi${errors.invite_code ? ' error' : ''}`}
+                            type="text"
+                            value={data.invite_code}
+                            onChange={(e) => setData('invite_code', e.target.value.toUpperCase())}
+                            placeholder="XXXXXXXX"
+                            maxLength={10}
+                            style={{ flex: 1, letterSpacing: '0.15em', fontFamily: 'monospace' }}
+                            autoFocus
+                        />
+                        <button type="submit" className="fl-btn fl-btn-p fl-btn-sm" disabled={processing || !data.invite_code.trim()}>
+                            {processing ? '…' : 'Join'}
                         </button>
                     </div>
+                    {errors.invite_code && <span className="fl-ferr">{errors.invite_code}</span>}
                 </form>
             )}
 
             {groups.length > 0 ? (
                 <div className="fl-card-list">
                     {groups.map((group) => (
-                        <div key={group.id} className="fl-card" style={{ alignItems: 'flex-start' }}>
-                            <div className="fl-card-emoji">👥</div>
-                            <div className="fl-card-body" style={{ flex: 1 }}>
-                                <a href={GroupController.show(group.id).url} className="fl-card-name" style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}>
-                                    {group.name}
-                                </a>
-                                {group.description && <div className="fl-card-sub">{group.description}</div>}
-                                <div className="fl-card-meta" style={{ marginTop: '6px' }}>
-                                    <span className="fl-badge fl-badge-def">{group.group_members_count} members</span>
-                                    <span className="fl-badge fl-badge-org">{group.restaurants_count} reviews</span>
-                                    <span className="fl-badge fl-badge-teal">{group.recipes_count} recipes</span>
+                        <div key={group.id} className="fl-card" style={{ cursor: 'default' }}>
+                            <Link
+                                href={GroupController.show(group.id).url}
+                                style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: 0, textDecoration: 'none', color: 'inherit' }}
+                            >
+                                <div className="fl-card-emoji">👥</div>
+                                <div className="fl-card-body">
+                                    <div className="fl-card-name">{group.name}</div>
+                                    {group.description && <div className="fl-card-sub" style={{ marginBottom: '5px' }}>{group.description}</div>}
+                                    <div className="fl-card-meta">
+                                        <span className="fl-badge fl-badge-def">{group.group_members_count} member{group.group_members_count !== 1 ? 's' : ''}</span>
+                                        <span className="fl-badge fl-badge-org">{group.restaurants_count} review{group.restaurants_count !== 1 ? 's' : ''}</span>
+                                        <span className="fl-badge fl-badge-teal">{group.recipes_count} recipe{group.recipes_count !== 1 ? 's' : ''}</span>
+                                    </div>
                                 </div>
-                                <div style={{ marginTop: '8px' }}>
-                                    <code style={{ fontSize: '11px', background: 'var(--surface-alt)', padding: '2px 6px', borderRadius: '4px', letterSpacing: '0.1em' }}>
-                                        {group.invite_code}
-                                    </code>
-                                </div>
-                            </div>
+                            </Link>
                             <button
+                                type="button"
                                 className="fl-btn fl-btn-ghost fl-btn-sm"
-                                style={{ color: 'var(--text-muted)', marginTop: '2px' }}
                                 onClick={() => handleLeave(group)}
                             >
                                 Leave
@@ -101,12 +98,12 @@ export default function GroupsIndex({ groups }: Props) {
                 </div>
             ) : (
                 <div className="fl-empty">
-                    <span>👥</span>
-                    <p>No groups yet</p>
-                    <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Create a group to share restaurant reviews and recipes with friends or family.</p>
-                    <a href={GroupController.create().url} className="fl-btn fl-btn-p">
+                    <span className="fl-empty-ico">👥</span>
+                    <p className="fl-empty-ttl">No groups yet</p>
+                    <p className="fl-empty-desc">Create a group to share restaurant reviews and recipes with friends or family.</p>
+                    <Link href={GroupController.create().url} className="fl-btn fl-btn-p">
                         Create a Group
-                    </a>
+                    </Link>
                 </div>
             )}
         </div>
@@ -114,3 +111,4 @@ export default function GroupsIndex({ groups }: Props) {
 }
 
 GroupsIndex.layout = (page: ReactNode) => <PortalLayout title="Groups">{page}</PortalLayout>;
+

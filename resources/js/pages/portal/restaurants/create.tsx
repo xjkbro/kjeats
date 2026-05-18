@@ -2,7 +2,12 @@ import { useForm } from '@inertiajs/react';
 import { useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import * as RestaurantController from '@/actions/App/Http/Controllers/RestaurantController';
+import TagInput from '@/components/tag-input';
 import PortalLayout from '@/layouts/portal/portal-layout';
+
+interface Props {
+    all_tags: string[];
+}
 
 interface DishInput {
     name: string;
@@ -21,7 +26,7 @@ interface FormValues {
     overall_rating: string;
     price_range: string;
     review: string;
-    tags: string;
+    tags: string[];
     atmosphere_rating: string;
     service_rating: string;
     value_rating: string;
@@ -58,7 +63,7 @@ function StarInput({ label, value, onChange }: { label: string; value: string; o
     );
 }
 
-export default function RestaurantCreate() {
+export default function RestaurantCreate({ all_tags }: Props) {
     const { data, setData, post, processing, errors } = useForm<FormValues>({
         emoji: '🍽️',
         name: '',
@@ -69,7 +74,7 @@ export default function RestaurantCreate() {
         overall_rating: '',
         price_range: '$$',
         review: '',
-        tags: '',
+        tags: [],
         atmosphere_rating: '',
         service_rating: '',
         value_rating: '',
@@ -245,13 +250,11 @@ export default function RestaurantCreate() {
                 </div>
 
                 <div className="fl-fgrp">
-                    <label className="fl-flbl" htmlFor="tags">Tags (comma-separated)</label>
-                    <input
-                        id="tags"
-                        className="fl-fi"
-                        type="text"
+                    <label className="fl-flbl">Tags</label>
+                    <TagInput
                         value={data.tags}
-                        onChange={(e) => setData('tags', e.target.value)}
+                        onChange={(tags) => setData('tags', tags)}
+                        suggestions={all_tags}
                         placeholder="e.g. Date Night, Family Friendly, Outdoor"
                     />
                 </div>

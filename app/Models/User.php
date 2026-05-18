@@ -51,6 +51,11 @@ class User extends Authenticatable
             ->withTimestamps();
     }
 
+    public function dishes(): HasMany
+    {
+        return $this->hasMany(Dish::class);
+    }
+
     public function ownedGroups(): HasMany
     {
         return $this->hasMany(GroupMember::class)->where('role', 'owner');

@@ -15,37 +15,34 @@ export default function GroupsCreate() {
     }
 
     return (
-        <form className="fl-form" onSubmit={handleSubmit}>
+        <form className="fl-view fl-form" onSubmit={handleSubmit}>
             <div className="fl-fsec">
                 <h3 className="fl-fsec-ttl">Group Info</h3>
 
                 <div className="fl-fgrp">
-                    <label className="fl-flbl" htmlFor="name">
-                        Name <span className="fl-req">*</span>
-                    </label>
+                    <label className="fl-flbl" htmlFor="name">Name *</label>
                     <input
                         id="name"
                         className={`fl-fi${errors.name ? ' error' : ''}`}
                         type="text"
                         value={data.name}
                         onChange={(e) => setData('name', e.target.value)}
-                        placeholder="Family Eats"
+                        placeholder="e.g. Family Eats"
                         required
                         maxLength={100}
+                        autoFocus
                     />
                     {errors.name && <span className="fl-ferr">{errors.name}</span>}
                 </div>
 
                 <div className="fl-fgrp">
-                    <label className="fl-flbl" htmlFor="description">
-                        Description
-                    </label>
+                    <label className="fl-flbl" htmlFor="description">Description</label>
                     <textarea
                         id="description"
-                        className={`fl-fi${errors.description ? ' error' : ''}`}
+                        className={`fl-fi fl-ftxt${errors.description ? ' error' : ''}`}
                         value={data.description}
                         onChange={(e) => setData('description', e.target.value)}
-                        placeholder="A place to share our favorite spots and recipes"
+                        placeholder="A place to share our favorite spots and recipes…"
                         rows={3}
                         maxLength={500}
                     />
@@ -53,7 +50,7 @@ export default function GroupsCreate() {
                 </div>
             </div>
 
-            <div className="fl-factions">
+            <div className="fl-form-footer">
                 <button type="submit" className="fl-btn fl-btn-p" disabled={processing}>
                     {processing ? 'Creating…' : 'Create Group'}
                 </button>

@@ -35,7 +35,9 @@ class RecipeController extends Controller
 
     public function create(): Response
     {
-        return Inertia::render('portal/recipes/create');
+        return Inertia::render('portal/recipes/create', [
+            'all_tags' => auth()->user()->recipes()->pluck('tags')->flatten()->unique()->sort()->values()->toArray(),
+        ]);
     }
 
     public function store(Request $request): RedirectResponse
@@ -85,7 +87,11 @@ class RecipeController extends Controller
             'iron_mg' => 'nullable|numeric',
             'potassium_mg' => 'nullable|numeric',
             'group_id' => 'nullable|exists:groups,id',
+            'recipe_photo' => 'nullable|image|max:20480',
         ]);
+
+        $recipePhoto = $request->file('recipe_photo');
+        unset($validated['recipe_photo']);
 
         $recipe = $request->user()->recipes()->create([
             'emoji' => $validated['emoji'] ?? '📋',
@@ -129,6 +135,17 @@ class RecipeController extends Controller
             }
         }
 
+        if ($recipePhoto) {
+            $path = $recipePhoto->store('media', 'public');
+            $recipe->images()->create([
+                'user_id' => $request->user()->id,
+                'filename' => $path,
+                'original_name' => $recipePhoto->getClientOriginalName(),
+                'mime_type' => $recipePhoto->getMimeType(),
+                'size' => $recipePhoto->getSize(),
+            ]);
+        }
+
         return redirect()->route('recipes.show', $recipe)
             ->with('flash.type', 'ok')
             ->with('flash.message', 'Recipe saved!');
@@ -139,7 +156,8 @@ class RecipeController extends Controller
         $this->authorize('update', $recipe);
 
         return Inertia::render('portal/recipes/edit', [
-            'recipe' => $recipe->load(['ingredients', 'steps', 'nutrition']),
+            'recipe' => $recipe->load(['ingredients', 'steps', 'nutrition', 'images']),
+            'all_tags' => auth()->user()->recipes()->pluck('tags')->flatten()->unique()->sort()->values()->toArray(),
         ]);
     }
 
@@ -189,7 +207,11 @@ class RecipeController extends Controller
             'calcium_mg' => 'nullable|numeric',
             'iron_mg' => 'nullable|numeric',
             'potassium_mg' => 'nullable|numeric',
+            'recipe_photo' => 'nullable|image|max:20480',
         ]);
+
+        $recipePhoto = $request->file('recipe_photo');
+        unset($validated['recipe_photo']);
 
         $recipe->captureRevision(
             $request->user(),
@@ -244,6 +266,17 @@ class RecipeController extends Controller
             }
         } else {
             $recipe->nutrition()->delete();
+        }
+
+        if ($recipePhoto) {
+            $path = $recipePhoto->store('media', 'public');
+            $recipe->images()->create([
+                'user_id' => $request->user()->id,
+                'filename' => $path,
+                'original_name' => $recipePhoto->getClientOriginalName(),
+                'mime_type' => $recipePhoto->getMimeType(),
+                'size' => $recipePhoto->getSize(),
+            ]);
         }
 
         return redirect()->route('recipes.show', $recipe)

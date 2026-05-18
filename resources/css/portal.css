@@ -1019,6 +1019,9 @@ select.fl-fi {
 
     .fl-card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .fl-card-grid .fl-card + .fl-card { margin-top: 0; }
+
+    /* center search palette within the content area (right of sidebar) */
+    .fl-sp { left: calc(var(--fl-sidebar-w) + (100vw - var(--fl-sidebar-w)) / 2); }
 }
 
 @media (min-width: 1280px) {
@@ -1040,6 +1043,21 @@ select.fl-fi {
 }
 .fl-visit-chip-rm:hover { color: var(--fl-red); }
 .fl-visit-add { display: flex; gap: 8px; align-items: center; }
+
+/* ── Tag Input ───────────────────────────────────────────── */
+.fl-tag-input { display: flex; flex-direction: column; gap: 8px; }
+.fl-tag-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.fl-tag-row { position: relative; }
+.fl-tag-suggestions {
+    position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+    background: var(--fl-bg); border: 1px solid var(--fl-bdr);
+    border-radius: var(--fl-rp); list-style: none; padding: 4px 0;
+    margin: 0; z-index: 50; box-shadow: 0 4px 12px rgba(0,0,0,.12);
+}
+.fl-tag-suggestion-item {
+    padding: 7px 12px; font-size: 13px; color: var(--fl-tx1); cursor: pointer;
+}
+.fl-tag-suggestion-item:hover { background: var(--fl-s3); }
 .fl-visit-add .fl-fi { font-size: 14px; padding: 8px 12px; }
 
 /* ── Image Gallery ───────────────────────────────────────── */
@@ -1062,3 +1080,71 @@ select.fl-fi {
 
 /* ── Image Upload Form ───────────────────────────────────── */
 /* Upload triggered via hidden input — no extra height needed */
+
+/* ── Search Palette (Cmd+K) ──────────────────────────────── */
+.fl-sp-overlay {
+    position: fixed; inset: 0; z-index: 150;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    animation: fl-fadein 0.15s ease both;
+}
+.fl-sp {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    z-index: 151; width: 90vw; max-width: 540px;
+    background: var(--fl-s2); border: 1px solid var(--fl-bdr);
+    border-radius: var(--fl-r4); box-shadow: var(--fl-sh3);
+    display: none; flex-direction: column; overflow: hidden;
+    animation: fl-viewin 0.15s ease both;
+}
+.fl-sp.open { display: flex; }
+.fl-sp-input-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 16px; border-bottom: 1px solid var(--fl-bdr-s);
+}
+.fl-sp-input-row svg { color: var(--fl-tx3); flex-shrink: 0; }
+.fl-sp-input-row input {
+    flex: 1; background: none; border: none; color: var(--fl-tx);
+    font-size: 15px; outline: none;
+}
+.fl-sp-input-row input::placeholder { color: var(--fl-tx3); }
+.fl-sp-input-row kbd {
+    font-size: 10px; font-weight: 700; color: var(--fl-tx3);
+    background: var(--fl-s3); padding: 2px 6px; border-radius: var(--fl-r1);
+    font-family: inherit; flex-shrink: 0;
+}
+.fl-sp-status { padding: 24px; text-align: center; color: var(--fl-tx2); font-size: 13px; }
+.fl-sp-empty { padding: 32px 24px; text-align: center; color: var(--fl-tx3); font-size: 14px; }
+.fl-sp-results { overflow-y: auto; max-height: 380px; padding: 8px 0; }
+.fl-sp-group { padding: 4px 0; }
+.fl-sp-group-label {
+    font-size: 10px; font-weight: 700; color: var(--fl-tx3);
+    text-transform: uppercase; letter-spacing: 1px;
+    padding: 6px 16px 4px;
+}
+.fl-sp-item {
+    display: flex; align-items: center; gap: 10px;
+    width: 100%; padding: 8px 16px; text-align: left;
+    transition: background 0.1s; cursor: pointer;
+}
+.fl-sp-item.sel { background: var(--fl-p-dim); }
+.fl-sp-item:active { background: var(--fl-p-dmh); }
+.fl-sp-item-emoji { font-size: 20px; flex-shrink: 0; }
+.fl-sp-item-body { flex: 1; min-width: 0; }
+.fl-sp-item-title { font-size: 14px; font-weight: 600; color: var(--fl-tx); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fl-sp-item-sub { font-size: 11px; color: var(--fl-tx2); margin-top: 1px; }
+.fl-sp-footer {
+    display: flex; gap: 14px; padding: 8px 16px;
+    border-top: 1px solid var(--fl-bdr-s);
+    font-size: 11px; color: var(--fl-tx3);
+}
+.fl-sp-footer kbd {
+    font-size: 10px; font-weight: 700; color: var(--fl-tx3);
+    background: var(--fl-s3); padding: 1px 5px; border-radius: var(--fl-r1);
+    font-family: inherit;
+}
+
+@media (max-width: 599px) {
+    .fl-sp { top: 0; left: 0; right: 0; transform: none; width: 100%; max-width: 100%; border-radius: 0; height: 100dvh; }
+    .fl-sp-results { max-height: none; flex: 1; }
+    .fl-sp-overlay { display: none; }
+}

@@ -2,6 +2,7 @@ import { Link, usePage } from '@inertiajs/react';
 import { useEffect, useRef, useState } from 'react';
 import * as RecipeController from '@/actions/App/Http/Controllers/RecipeController';
 import * as RestaurantController from '@/actions/App/Http/Controllers/RestaurantController';
+import SearchPalette from '@/components/search-palette';
 import { dashboard } from '@/routes';
 
 interface Props {
@@ -56,6 +57,22 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
         }
     }, [searchOpen]);
 
+    useEffect(() => {
+        function handleKeyDown(e: KeyboardEvent) {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                setSearchOpen((v) => !v);
+            }
+
+            if (e.key === 'Escape') {
+                setSearchOpen(false);
+            }
+        }
+        window.addEventListener('keydown', handleKeyDown);
+
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
+
     return (
         <div className="portal-shell">
             {/* HEADER */}
@@ -78,7 +95,7 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
                     </div>
                     <div className="fl-hdr-r">
                         {!showBack && (
-                            <button className="fl-hdr-btn" onClick={() => setSearchOpen((v) => !v)}>
+                            <button className="fl-hdr-btn" onClick={() => setSearchOpen((v) => !v)} title="Search (Cmd+K)">
                                 <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
                                     <circle cx="11" cy="11" r="8" />
                                     <line x1="21" y1="21" x2="16.65" y2="16.65" />
@@ -90,24 +107,9 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
                         </Link>
                     </div>
                 </div>
-                {searchOpen && (
-                    <div className="fl-srch-bar">
-                        <div className="fl-srch-inner">
-                            <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
-                                <circle cx="11" cy="11" r="8" />
-                                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                            </svg>
-                            <input ref={searchRef} type="text" placeholder="Search restaurants or recipes…" />
-                            <button onClick={() => setSearchOpen(false)}>
-                                <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
-                                    <line x1="18" y1="6" x2="6" y2="18" />
-                                    <line x1="6" y1="6" x2="18" y2="18" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                )}
             </header>
+
+            <SearchPalette open={searchOpen} onClose={() => setSearchOpen(false)} />
 
             {/* MAIN */}
             <main className="fl-main">{children}</main>

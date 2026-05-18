@@ -8,8 +8,10 @@ use App\Http\Controllers\MediaController;
 use App\Http\Controllers\NutritionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecipeController;
+use App\Http\Controllers\RecipeImportController;
 use App\Http\Controllers\RestaurantController;
 use App\Http\Controllers\RevisionController;
+use App\Http\Controllers\SearchController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
@@ -35,6 +37,10 @@ Route::middleware(['auth', 'verified'])->prefix('app')->group(function () {
         ->only(['index', 'show', 'create', 'store', 'edit', 'update', 'destroy']);
 
     Route::post('recipes/nutrition/calculate', [NutritionController::class, 'calculate'])->name('recipes.nutrition.calculate');
+
+    Route::post('recipes/import', RecipeImportController::class)->name('recipes.import');
+
+    Route::get('search', SearchController::class)->name('search');
 
     Route::resource('groups', GroupController::class)
         ->only(['index', 'show', 'create', 'store']);

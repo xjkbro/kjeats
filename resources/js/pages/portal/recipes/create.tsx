@@ -1,9 +1,15 @@
 import { useForm } from '@inertiajs/react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import * as NutritionController from '@/actions/App/Http/Controllers/NutritionController';
 import * as RecipeController from '@/actions/App/Http/Controllers/RecipeController';
+import RecipeImportController from '@/actions/App/Http/Controllers/RecipeImportController';
+import TagInput from '@/components/tag-input';
 import PortalLayout from '@/layouts/portal/portal-layout';
+
+interface Props {
+    all_tags: string[];
+}
 
 interface IngredientInput {
     amount: string;
@@ -25,7 +31,8 @@ interface FormValues {
     cook_time: string;
     rest_time: string;
     servings: string;
-    tags: string;
+    tags: string[];
+    recipe_photo: File | null;
     ingredients: IngredientInput[];
     steps: StepInput[];
     // nutrition (optional, flat)
@@ -53,7 +60,7 @@ const EMOJIS = ['📋', '🍕', '🍣', '🌮', '🍜', '🥩', '🥗', '🍔', 
 const CATEGORIES = ['Breakfast', 'Lunch', 'Dinner', 'Dessert', 'Snack', 'Drink', 'Side', 'Other'];
 const DIFFICULTIES = ['Easy', 'Medium', 'Hard'];
 
-export default function RecipeCreate() {
+export default function RecipeCreate({ all_tags }: Props) {
     const { data, setData, post, processing, errors } = useForm<FormValues>({
         emoji: '📋',
         name: '',
@@ -64,7 +71,8 @@ export default function RecipeCreate() {
         cook_time: '30',
         rest_time: '0',
         servings: '4',
-        tags: '',
+        tags: [],
+        recipe_photo: null,
         ingredients: [],
         steps: [],
         has_nutrition: false,
@@ -87,14 +95,23 @@ export default function RecipeCreate() {
         potassium_mg: '',
     });
 
+    const photoRef = useRef<HTMLInputElement>(null);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [aiLoading, setAiLoading] = useState(false);
     const [aiError, setAiError] = useState('');
+    const [importOpen, setImportOpen] = useState(false);
+    const [importUrl, setImportUrl] = useState('');
+    const [importLoading, setImportLoading] = useState(false);
+    const [importError, setImportError] = useState('');
 
     async function calculateNutrition() {
-        if (data.ingredients.length === 0) return;
+        if (data.ingredients.length === 0) {
+            return;
+        }
+
         setAiLoading(true);
         setAiError('');
+
         try {
             const xsrfToken = document.cookie
                 .split('; ')
@@ -114,10 +131,13 @@ export default function RecipeCreate() {
                 }),
             });
             const json = await response.json();
+
             if (!response.ok) {
                 setAiError(json.error ?? 'Failed to calculate nutrition.');
+
                 return;
             }
+
             setData((prev) => ({
                 ...prev,
                 has_nutrition: true,
@@ -174,6 +194,60 @@ export default function RecipeCreate() {
         setData('steps', data.steps.filter((_, i) => i !== idx));
     }
 
+    async function importFromUrl() {
+        if (!importUrl.trim()) {
+return;
+}
+
+        setImportLoading(true);
+        setImportError('');
+
+        try {
+            const xsrfToken = document.cookie
+                .split('; ')
+                .find((row) => row.startsWith('XSRF-TOKEN='))
+                ?.split('=')[1];
+            const response = await fetch(RecipeImportController.url(), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                    'X-XSRF-TOKEN': xsrfToken ? decodeURIComponent(xsrfToken) : '',
+                },
+                body: JSON.stringify({ url: importUrl }),
+            });
+            const json = await response.json();
+
+            if (!response.ok) {
+                setImportError(json.error ?? 'Failed to import recipe.');
+
+                return;
+            }
+
+            setImportOpen(false);
+            setImportUrl('');
+            setImportLoading(false);
+            setData((prev) => ({
+                ...prev,
+                emoji: json.emoji || '📋',
+                name: json.name || prev.name,
+                category: json.category || prev.category,
+                difficulty: json.difficulty || prev.difficulty,
+                description: json.description || prev.description,
+                prep_time: json.prep_time != null ? String(json.prep_time) : prev.prep_time,
+                cook_time: json.cook_time != null ? String(json.cook_time) : prev.cook_time,
+                rest_time: json.rest_time != null ? String(json.rest_time) : prev.rest_time,
+                servings: json.servings != null ? String(json.servings) : prev.servings,
+                tags: Array.isArray(json.tags) ? json.tags : prev.tags,
+                ingredients: json.ingredients ?? prev.ingredients,
+                steps: json.steps ?? prev.steps,
+            }));
+        } catch {
+            setImportError('Network error. Please try again.');
+            setImportLoading(false);
+        }
+    }
+
     function submit(e: React.FormEvent) {
         e.preventDefault();
         post(RecipeController.store().url);
@@ -182,7 +256,12 @@ export default function RecipeCreate() {
     return (
         <form className="fl-view fl-form" onSubmit={submit}>
             <div className="fl-fsec">
-                <h3 className="fl-fsec-ttl">Basic Information</h3>
+                <div className="fl-fsec-hdr">
+                    <h3 className="fl-fsec-ttl">Basic Information</h3>
+                    <button type="button" className="fl-btn fl-btn-ghost fl-btn-sm" onClick={() => setImportOpen(true)}>
+                        📥 Import URL
+                    </button>
+                </div>
 
                 <div className="fl-fgrp fl-emoji-grp">
                     <label className="fl-flbl">Icon</label>
@@ -253,15 +332,48 @@ export default function RecipeCreate() {
                 </div>
 
                 <div className="fl-fgrp">
-                    <label className="fl-flbl" htmlFor="tags">Tags (comma-separated)</label>
-                    <input
-                        id="tags"
-                        className="fl-fi"
-                        type="text"
+                    <label className="fl-flbl">Tags</label>
+                    <TagInput
                         value={data.tags}
-                        onChange={(e) => setData('tags', e.target.value)}
+                        onChange={(tags) => setData('tags', tags)}
+                        suggestions={all_tags}
                         placeholder="e.g. Vegetarian, Quick, Comfort Food"
                     />
+                </div>
+
+                <div className="fl-fgrp">
+                    <label className="fl-flbl">Photo</label>
+                    <input
+                        ref={photoRef}
+                        type="file"
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                        onChange={(e) => setData('recipe_photo', e.target.files?.[0] ?? null)}
+                    />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                        <button
+                            type="button"
+                            className="fl-btn fl-btn-ghost fl-btn-sm"
+                            onClick={() => photoRef.current?.click()}
+                        >
+                            {data.recipe_photo ? '📷 Change Photo' : '📷 Add Photo'}
+                        </button>
+                        {data.recipe_photo && (
+                            <>
+                                <span style={{ fontSize: '13px', color: 'var(--fl-tx2)' }}>{data.recipe_photo.name}</span>
+                                <button
+                                    type="button"
+                                    className="fl-visit-chip-rm"
+                                    onClick={() => {
+                                        setData('recipe_photo', null);
+                                        if (photoRef.current) photoRef.current.value = '';
+                                    }}
+                                >
+                                    ✕
+                                </button>
+                            </>
+                        )}
+                    </div>
                 </div>
             </div>
 
@@ -413,6 +525,47 @@ export default function RecipeCreate() {
                     {processing ? 'Saving…' : 'Save Recipe'}
                 </button>
             </div>
+
+            {/* IMPORT FROM URL DIALOG */}
+            {importOpen && (
+                <div className="fl-overlay" onClick={() => {
+ setImportOpen(false); setImportError('');
+}}>
+                    <div className="fl-sheet" onClick={(e) => e.stopPropagation()}>
+                        <div className="fl-sheet-grip" />
+                        <h2 className="fl-sheet-ttl">Import Recipe from URL</h2>
+                        <p style={{ fontSize: '13px', color: 'var(--fl-tx2)', marginBottom: '14px', lineHeight: '1.5' }}>
+                            Paste a link to a recipe from any cooking website. Our AI will extract the ingredients, steps, and details.
+                        </p>
+                        <div className="fl-fgrp">
+                            <label className="fl-flbl" htmlFor="import-url">Recipe URL</label>
+                            <input
+                                id="import-url"
+                                className="fl-fi"
+                                type="url"
+                                value={importUrl}
+                                onChange={(e) => setImportUrl(e.target.value)}
+                                placeholder="https://example.com/recipe"
+                                autoFocus
+                            />
+                        </div>
+                        {importError && <p style={{ color: 'var(--fl-red)', fontSize: '13px', marginBottom: '10px' }}>{importError}</p>}
+                        <button
+                            type="button"
+                            className="fl-btn fl-btn-p fl-btn-full"
+                            disabled={importLoading || !importUrl.trim()}
+                            onClick={importFromUrl}
+                        >
+                            {importLoading ? 'Importing…' : '✨ Import Recipe'}
+                        </button>
+                        <button type="button" className="fl-sheet-cancel" onClick={() => {
+ setImportOpen(false); setImportError('');
+}}>
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            )}
         </form>
     );
 }
