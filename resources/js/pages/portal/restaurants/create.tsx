@@ -7,6 +7,14 @@ import PortalLayout from '@/layouts/portal/portal-layout';
 
 interface Props {
     all_tags: string[];
+    want_to_tries: Array<{
+        id: number;
+        emoji: string;
+        name: string;
+        cuisine: string | null;
+        location: string | null;
+        notes: string | null;
+    }>;
 }
 
 interface DishInput {
@@ -63,7 +71,7 @@ function StarInput({ label, value, onChange }: { label: string; value: string; o
     );
 }
 
-export default function RestaurantCreate({ all_tags }: Props) {
+export default function RestaurantCreate({ all_tags, want_to_tries = [] }: Props) {
     const { data, setData, post, processing, errors } = useForm<FormValues>({
         emoji: '🍽️',
         name: '',
@@ -87,6 +95,24 @@ export default function RestaurantCreate({ all_tags }: Props) {
 
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [newVisitDate, setNewVisitDate] = useState('');
+    const [showWantToTry, setShowWantToTry] = useState(false);
+    const [selectedWantToTryId, setSelectedWantToTryId] = useState<number | null>(null);
+
+    function selectWantToTry(id: number) {
+        const item = want_to_tries.find((w) => w.id === id);
+
+        if (item) {
+            setData({
+                ...data,
+                emoji: item.emoji,
+                name: item.name,
+                cuisine: item.cuisine ?? '',
+                location: item.location ?? '',
+            });
+            setSelectedWantToTryId(id);
+            setShowWantToTry(false);
+        }
+    }
 
     function addDish() {
         setData('dishes', [...data.dishes, { name: '', rating: '3', notes: '', photo: null }]);
@@ -115,6 +141,33 @@ export default function RestaurantCreate({ all_tags }: Props) {
 
     return (
         <form className="fl-view fl-form" onSubmit={submit}>
+            {want_to_tries.length > 0 && (
+                <div className="fl-fsec">
+                    <div className="fl-fsec-hdr">
+                        <h3 className="fl-fsec-ttl">From Want to Try</h3>
+                        <button type="button" className="fl-btn fl-btn-ghost fl-btn-sm" onClick={() => setShowWantToTry((v) => !v)}>
+                            {showWantToTry ? 'Hide' : 'Select'}
+                        </button>
+                    </div>
+                    {showWantToTry && (
+                        <div className="fl-wtt-picker-list">
+                            {want_to_tries.map((w) => (
+                                <button
+                                    key={w.id}
+                                    type="button"
+                                    className={`fl-wtt-picker-item${selectedWantToTryId === w.id ? ' selected' : ''}`}
+                                    onClick={() => selectWantToTry(w.id)}
+                                >
+                                    <span className="fl-wtt-picker-emoji">{w.emoji}</span>
+                                    <span className="fl-wtt-picker-name">{w.name}</span>
+                                    {w.cuisine && <span className="fl-wtt-picker-cuisine">{w.cuisine}</span>}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
+
             <div className="fl-fsec">
                 <h3 className="fl-fsec-ttl">Basic Information</h3>
 
@@ -284,7 +337,10 @@ export default function RestaurantCreate({ all_tags }: Props) {
                                     className="fl-visit-chip-rm"
                                     onClick={() => {
                                         setData('restaurant_photo', null);
-                                        if (restaurantPhotoRef.current) restaurantPhotoRef.current.value = '';
+
+                                        if (restaurantPhotoRef.current) {
+restaurantPhotoRef.current.value = '';
+}
                                     }}
                                 >✕</button>
                             </span>
@@ -358,7 +414,9 @@ export default function RestaurantCreate({ all_tags }: Props) {
                         <div className="fl-fgrp">
                             <label className="fl-flbl">Photo</label>
                             <input
-                                ref={(el) => { dishPhotoRefs.current[idx] = el; }}
+                                ref={(el) => {
+ dishPhotoRefs.current[idx] = el; 
+}}
                                 type="file"
                                 accept="image/*"
                                 style={{ display: 'none' }}
@@ -381,7 +439,10 @@ export default function RestaurantCreate({ all_tags }: Props) {
                                             onClick={() => {
                                                 updateDishPhoto(idx, null);
                                                 const ref = dishPhotoRefs.current[idx];
-                                                if (ref) ref.value = '';
+
+                                                if (ref) {
+ref.value = '';
+}
                                             }}
                                         >✕</button>
                                     </span>

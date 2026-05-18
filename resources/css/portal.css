@@ -1077,6 +1077,65 @@ select.fl-fi {
 .fl-qa-revisit:active { background: var(--fl-blu-d); }
 .fl-qa-group:active { background: var(--fl-prp-d); }
 
+/* ── Want to Try ─────────────────────────────────────────── */
+.fl-wtt-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; -webkit-overflow-scrolling: touch; margin-left: calc(-1 * var(--fl-pad)); margin-right: calc(-1 * var(--fl-pad)); padding-left: var(--fl-pad); padding-right: var(--fl-pad); }
+.fl-wtt-scroll::-webkit-scrollbar { display: none; }
+.fl-wtt-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: var(--fl-rp);
+    background: var(--fl-s2); border: 1.5px solid var(--fl-bdr);
+    text-decoration: none; color: inherit; white-space: nowrap; flex-shrink: 0;
+    font-size: 13px; font-weight: 600;
+    transition: all var(--fl-t1);
+}
+.fl-wtt-chip:active { transform: scale(.95); border-color: var(--fl-p); background: var(--fl-p-dim); }
+.fl-wtt-chip-emoji { font-size: 16px; }
+.fl-wtt-chip-name { color: var(--fl-tx); }
+.fl-wtt-chip-add { color: var(--fl-p); border-color: var(--fl-p); background: var(--fl-p-dim); }
+.fl-wtt-chip-add:active { background: var(--fl-p-dmh); }
+
+.fl-wtt-list { display: flex; flex-direction: column; gap: 10px; }
+.fl-wtt-card {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px; background: var(--fl-s1); border: 1px solid var(--fl-bdr-s);
+    border-radius: var(--fl-r4); text-decoration: none; color: inherit;
+    cursor: pointer; transition: transform var(--fl-t1), border-color var(--fl-t1);
+}
+.fl-wtt-card:active { transform: scale(.98); border-color: var(--fl-bdr); }
+.fl-wtt-ico { font-size: 24px; flex-shrink: 0; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: var(--fl-s2); border: 1px solid var(--fl-bdr-s); border-radius: var(--fl-r3); }
+.fl-wtt-body { flex: 1; min-width: 0; }
+.fl-wtt-name { font-size: 15px; font-weight: 700; color: var(--fl-tx); letter-spacing: -.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
+.fl-wtt-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.fl-wtt-by { font-size: 11px; color: var(--fl-tx3); }
+.fl-wtt-chev { color: var(--fl-tx3); flex-shrink: 0; }
+
+.fl-wtt-hero { background: var(--fl-s1); border: 1px solid var(--fl-bdr-s); border-radius: var(--fl-r6); padding: 28px 24px; text-align: center; margin: -16px -16px 20px; }
+.fl-wtt-hero-emoji { font-size: 54px; margin-bottom: 12px; }
+.fl-wtt-hero-name { font-size: 22px; font-weight: 900; color: var(--fl-tx); letter-spacing: -.5px; margin-bottom: 8px; }
+.fl-wtt-hero-meta { display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+.fl-wtt-by { font-size: 12px; color: var(--fl-tx3); }
+
+.fl-wtt-notes { background: var(--fl-s1); border: 1px solid var(--fl-bdr-s); border-radius: var(--fl-r3); padding: 14px 16px; font-size: 14px; color: var(--fl-tx2); line-height: 1.65; white-space: pre-wrap; }
+
+.fl-wtt-actions { display: flex; gap: 10px; }
+.fl-wtt-actions .fl-btn { flex: 1; }
+
+.fl-wtt-picker-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.fl-wtt-picker-item {
+    display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+    background: var(--fl-s2); border: 1.5px solid var(--fl-bdr);
+    border-radius: var(--fl-r3); text-align: left; cursor: pointer;
+    transition: all var(--fl-t1);
+}
+.fl-wtt-picker-item:active { border-color: var(--fl-p); background: var(--fl-p-dim); }
+.fl-wtt-picker-item.selected { border-color: var(--fl-p); background: var(--fl-p-dim); }
+.fl-wtt-picker-emoji { font-size: 24px; flex-shrink: 0; }
+.fl-wtt-picker-name { flex: 1; font-size: 14px; font-weight: 700; color: var(--fl-tx); }
+.fl-wtt-picker-cuisine { font-size: 12px; color: var(--fl-tx2); }
+
+/* ── Sheet option: Want to Try ──────────────────────────── */
+.fl-opt-want { background: var(--fl-blu-d); border-color: var(--fl-blue); }
+
 /* ── Tag Input ───────────────────────────────────────────── */
 .fl-tag-input { display: flex; flex-direction: column; gap: 8px; }
 .fl-tag-chips { display: flex; flex-wrap: wrap; gap: 6px; }

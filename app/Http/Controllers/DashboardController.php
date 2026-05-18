@@ -6,6 +6,7 @@ use App\Models\Dish;
 use App\Models\Group;
 use App\Models\Recipe;
 use App\Models\Restaurant;
+use App\Models\WantToTry;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -52,6 +53,13 @@ class DashboardController extends Controller
             'total_time' => $r->prep_time + $r->cook_time + $r->rest_time,
         ]);
 
+        $wantToTries = $user->wantToTries()
+            ->whereNull('restaurant_id')
+            ->with('user')
+            ->latest()
+            ->limit(20)
+            ->get();
+
         if ($groupId > 0) {
             $foundGroup = Group::find($groupId);
 
@@ -78,6 +86,13 @@ class DashboardController extends Controller
                     ->with(['user', 'restaurant.user'])
                     ->select('dishes.*')
                     ->latest('dishes.created_at')
+                    ->limit(200)
+                    ->get();
+
+                $groupWantToTries = WantToTry::whereIn('user_id', $memberIds)
+                    ->with('user')
+                    ->whereNull('restaurant_id')
+                    ->latest()
                     ->limit(200)
                     ->get();
 
@@ -118,6 +133,16 @@ class DashboardController extends Controller
                         'user' => ['name' => $d->user->name],
                         'created_at' => $d->created_at->toISOString(),
                     ]))
+                    ->merge($groupWantToTries->map(fn ($w) => [
+                        'type' => 'want_to_try',
+                        'id' => $w->id,
+                        'emoji' => $w->emoji,
+                        'name' => $w->name,
+                        'cuisine' => $w->cuisine,
+                        'location' => $w->location,
+                        'user' => ['name' => $w->user->name],
+                        'created_at' => $w->created_at->toISOString(),
+                    ]))
                     ->sortByDesc('created_at')
                     ->values();
 
@@ -153,6 +178,13 @@ class DashboardController extends Controller
             ],
             'recent_restaurants' => $recentVisits,
             'recent_recipes' => $recentRecipeList,
+            'want_to_tries' => $wantToTries->map(fn ($w) => [
+                'id' => $w->id,
+                'emoji' => $w->emoji,
+                'name' => $w->name,
+                'cuisine' => $w->cuisine,
+                'location' => $w->location,
+            ])->values(),
         ]);
     }
 }

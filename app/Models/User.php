@@ -56,6 +56,11 @@ class User extends Authenticatable
         return $this->hasMany(Dish::class);
     }
 
+    public function wantToTries(): HasMany
+    {
+        return $this->hasMany(WantToTry::class);
+    }
+
     public function ownedGroups(): HasMany
     {
         return $this->hasMany(GroupMember::class)->where('role', 'owner');

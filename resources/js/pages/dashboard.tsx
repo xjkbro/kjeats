@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import * as GroupController from '@/actions/App/Http/Controllers/GroupController';
 import * as RecipeController from '@/actions/App/Http/Controllers/RecipeController';
 import * as RestaurantController from '@/actions/App/Http/Controllers/RestaurantController';
+import * as WantToTryController from '@/actions/App/Http/Controllers/WantToTryController';
 import PortalLayout, { getGreeting } from '@/layouts/portal/portal-layout';
 
 interface Props {
@@ -49,6 +50,13 @@ interface Props {
         category: string;
         difficulty: string;
         total_time: number;
+    }>;
+    want_to_tries: Array<{
+        id: number;
+        emoji: string;
+        name: string;
+        cuisine: string | null;
+        location: string | null;
     }>;
 }
 
@@ -171,6 +179,30 @@ function DishRatingFeedItem({ item }: { item: Props['feed'][number] }) {
     );
 }
 
+function WantToTryFeedItem({ item }: { item: Props['feed'][number] }) {
+    return (
+        <Link href={WantToTryController.show(item.id).url} className="fl-feed-item">
+            <div className="fl-feed-ico">{item.emoji}</div>
+            <div className="fl-feed-body">
+                <div className="fl-feed-actor">
+                    <span className="fl-feed-user">{item.user.name}</span>
+                    <span>·</span>
+                    <span>wants to try</span>
+                </div>
+                <div className="fl-feed-name">{item.name}</div>
+                <div className="fl-feed-meta">
+                    {item.cuisine && <span className="fl-badge fl-badge-org">{item.cuisine}</span>}
+                    {item.location && <span className="fl-badge fl-badge-def">{item.location}</span>}
+                </div>
+                <div className="fl-feed-time">{timeAgo(item.created_at)}</div>
+            </div>
+            <svg className="fl-feed-chev" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
+                <polyline points="9 18 15 12 9 6" />
+            </svg>
+        </Link>
+    );
+}
+
 function RestaurantCard({ restaurant }: { restaurant: Props['recent_restaurants'][number] }) {
     return (
         <Link href={RestaurantController.show(restaurant.id).url} className="fl-card">
@@ -211,7 +243,7 @@ function RecipeCard({ recipe }: { recipe: Props['recent_recipes'][number] }) {
     );
 }
 
-export default function Dashboard({ group, feed, stats, recent_restaurants = [], recent_recipes = [] }: Props) {
+export default function Dashboard({ group, feed, stats, recent_restaurants = [], recent_recipes = [], want_to_tries = [] }: Props) {
     return (
         <div className="fl-view">
             <div className="fl-greeting">
@@ -237,6 +269,28 @@ export default function Dashboard({ group, feed, stats, recent_restaurants = [],
                     <div className="fl-stat-lbl">Dishes</div>
                 </div>
             </div>
+
+            {want_to_tries.length > 0 && (
+                <section className="fl-section fl-mb-6">
+                    <div className="fl-section-hdr">
+                        <h3 className="fl-section-ttl">Want to Try</h3>
+                        <Link href={WantToTryController.index().url} className="fl-see-all">
+                            See all →
+                        </Link>
+                    </div>
+                    <div className="fl-wtt-scroll">
+                        {want_to_tries.map((w) => (
+                            <Link key={w.id} href={WantToTryController.show(w.id).url} className="fl-wtt-chip">
+                                <span className="fl-wtt-chip-emoji">{w.emoji}</span>
+                                <span className="fl-wtt-chip-name">{w.name}</span>
+                            </Link>
+                        ))}
+                        <Link href={WantToTryController.create().url} className="fl-wtt-chip fl-wtt-chip-add">
+                            + Add
+                        </Link>
+                    </div>
+                </section>
+            )}
 
             <section className="fl-section fl-mb-6">
                 <div className="fl-section-hdr">
@@ -274,6 +328,8 @@ export default function Dashboard({ group, feed, stats, recent_restaurants = [],
                                     <RestaurantFeedItem key={`r-${item.id}`} item={item} />
                                 ) : item.type === 'recipe' ? (
                                     <RecipeFeedItem key={`rec-${item.id}`} item={item} />
+                                ) : item.type === 'want_to_try' ? (
+                                    <WantToTryFeedItem key={`w-${item.id}`} item={item} />
                                 ) : (
                                     <DishRatingFeedItem key={`d-${item.id}`} item={item} />
                                 ),

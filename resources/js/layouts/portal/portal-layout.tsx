@@ -2,6 +2,7 @@ import { Link, usePage } from '@inertiajs/react';
 import { useEffect, useRef, useState } from 'react';
 import * as RecipeController from '@/actions/App/Http/Controllers/RecipeController';
 import * as RestaurantController from '@/actions/App/Http/Controllers/RestaurantController';
+import * as WantToTryController from '@/actions/App/Http/Controllers/WantToTryController';
 import SearchPalette from '@/components/search-palette';
 import { dashboard } from '@/routes';
 
@@ -187,6 +188,20 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
                             <div>
                                 <div className="fl-opt-label">Restaurant Review</div>
                                 <div className="fl-opt-desc">Rate dishes &amp; document your experience</div>
+                            </div>
+                            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
+                                <polyline points="9 18 15 12 9 6" />
+                            </svg>
+                        </Link>
+                        <Link
+                            href={WantToTryController.create().url}
+                            className="fl-sheet-opt fl-opt-want"
+                            onClick={() => setAddOpen(false)}
+                        >
+                            <span className="fl-opt-ico">🔖</span>
+                            <div>
+                                <div className="fl-opt-label">Want to Try</div>
+                                <div className="fl-opt-desc">Quick save a restaurant to try later</div>
                             </div>
                             <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
                                 <polyline points="9 18 15 12 9 6" />

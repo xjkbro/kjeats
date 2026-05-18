@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Group;
 use App\Models\Restaurant;
+use App\Models\WantToTry;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -45,8 +46,37 @@ class RestaurantController extends Controller
 
     public function create(): Response
     {
+        $user = auth()->user();
+        $groupId = (int) config('app.frontend_group_id', 0);
+
+        $wantToTries = $user->wantToTries()
+            ->whereNull('restaurant_id')
+            ->latest()
+            ->get();
+
+        if ($groupId > 0) {
+            $group = Group::find($groupId);
+
+            if ($group && $group->isMember($user)) {
+                $memberIds = $group->members()->pluck('users.id');
+                $wantToTries = WantToTry::whereIn('user_id', $memberIds)
+                    ->whereNull('restaurant_id')
+                    ->with('user')
+                    ->latest()
+                    ->get();
+            }
+        }
+
         return Inertia::render('portal/restaurants/create', [
             'all_tags' => auth()->user()->restaurants()->pluck('tags')->flatten()->unique()->sort()->values()->toArray(),
+            'want_to_tries' => $wantToTries->map(fn ($w) => [
+                'id' => $w->id,
+                'emoji' => $w->emoji,
+                'name' => $w->name,
+                'cuisine' => $w->cuisine,
+                'location' => $w->location,
+                'notes' => $w->notes,
+            ])->values(),
         ]);
     }
 

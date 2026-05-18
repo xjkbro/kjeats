@@ -12,6 +12,7 @@ use App\Http\Controllers\RecipeImportController;
 use App\Http\Controllers\RestaurantController;
 use App\Http\Controllers\RevisionController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\WantToTryController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
@@ -51,6 +52,10 @@ Route::middleware(['auth', 'verified'])->prefix('app')->group(function () {
     Route::post('revisions/{revision}/revert', [RevisionController::class, 'revert'])->name('revisions.revert');
 
     Route::get('profile', ProfileController::class)->name('profile');
+
+    Route::resource('want-to-try', WantToTryController::class)
+        ->only(['index', 'show', 'create', 'store', 'destroy']);
+    Route::post('want-to-try/{wantToTry}/convert', [WantToTryController::class, 'convertToReview'])->name('want-to-try.convert');
 });
 
 require __DIR__.'/settings.php';
