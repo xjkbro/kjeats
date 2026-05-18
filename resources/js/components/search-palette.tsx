@@ -135,7 +135,7 @@ export default function SearchPalette({ open, onClose }: { open: boolean; onClos
                         onChange={(e) => handleInputChange(e.target.value)}
                         onKeyDown={handleKeyDown}
                     />
-                    <kbd>ESC</kbd>
+                    <button className="fl-sp-close" onClick={onClose} aria-label="Close search">✕</button>
                 </div>
 
                 {loading && (

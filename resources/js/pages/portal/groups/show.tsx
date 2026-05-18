@@ -82,7 +82,9 @@ export default function GroupsShow({ group, isOwner, maxMembers }: Props) {
             </div>
 
             <section className="fl-section">
-                <h3 className="fl-section-ttl">Members</h3>
+                <div className="fl-section-hdr">
+                    <h3 className="fl-section-ttl">Members</h3>
+                </div>
                 <div className="fl-member-list">
                     {group.group_members.map((member) => (
                         <div key={member.id} className="fl-member-row">
@@ -110,7 +112,9 @@ export default function GroupsShow({ group, isOwner, maxMembers }: Props) {
 
             {group.restaurants.length > 0 && (
                 <section className="fl-section">
-                    <h3 className="fl-section-ttl">Restaurant Reviews ({group.restaurants.length})</h3>
+                    <div className="fl-section-hdr">
+                        <h3 className="fl-section-ttl">Restaurant Reviews ({group.restaurants.length})</h3>
+                    </div>
                     <div className="fl-card-list">
                         {group.restaurants.map((r) => (
                             <a key={r.id} href={`/app/restaurants/${r.id}`} className="fl-card" style={{ textDecoration: 'none', color: 'inherit' }}>
@@ -127,7 +131,9 @@ export default function GroupsShow({ group, isOwner, maxMembers }: Props) {
 
             {group.recipes.length > 0 && (
                 <section className="fl-section">
-                    <h3 className="fl-section-ttl">Recipes ({group.recipes.length})</h3>
+                    <div className="fl-section-hdr">
+                        <h3 className="fl-section-ttl">Recipes ({group.recipes.length})</h3>
+                    </div>
                     <div className="fl-card-list">
                         {group.recipes.map((recipe) => (
                             <a key={recipe.id} href={`/app/recipes/${recipe.id}`} className="fl-card" style={{ textDecoration: 'none', color: 'inherit' }}>

@@ -65,7 +65,9 @@ export default function Profile({
 
             {(stats.top_cuisine || Object.keys(stats.difficulty_breakdown).length > 0) && (
                 <section className="fl-section">
-                    <h3 className="fl-section-ttl">Food Insights</h3>
+                    <div className="fl-section-hdr">
+                        <h3 className="fl-section-ttl">Food Insights</h3>
+                    </div>
                     <div className="fl-insights">
                         {stats.top_cuisine && (
                             <div className="fl-insight-item">
@@ -96,7 +98,9 @@ export default function Profile({
             )}
 
             <section className="fl-section">
-                <h3 className="fl-section-ttl">Settings</h3>
+                <div className="fl-section-hdr">
+                    <h3 className="fl-section-ttl">Settings</h3>
+                </div>
                 <div className="fl-settings-list">
                     <Link href={GroupController.index().url} className="fl-settings-item">
                         <span className="fl-settings-ico">👥</span>

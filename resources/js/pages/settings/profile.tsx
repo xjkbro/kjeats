@@ -1,12 +1,11 @@
 import { Form, Head, Link, usePage } from '@inertiajs/react';
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import DeleteUser from '@/components/delete-user';
-import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { edit } from '@/routes/profile';
+import SettingsLayout from '@/layouts/settings/portal-settings-layout';
 import { send } from '@/routes/verification';
 
 export default function Profile({
@@ -22,21 +21,13 @@ export default function Profile({
         <>
             <Head title="Profile settings" />
 
-            <h1 className="sr-only">Profile settings</h1>
-
             <div className="space-y-6">
-                <Heading
-                    variant="small"
-                    title="Profile information"
-                    description="Update your name and email address"
-                />
-
                 <Form
                     {...ProfileController.update.form()}
                     options={{
                         preserveScroll: true,
                     }}
-                    className="space-y-6"
+                    className="space-y-4"
                 >
                     {({ processing, errors }) => (
                         <>
@@ -82,7 +73,7 @@ export default function Profile({
                             {mustVerifyEmail &&
                                 auth.user.email_verified_at === null && (
                                     <div>
-                                        <p className="-mt-4 text-sm text-muted-foreground">
+                                        <p className="text-sm text-muted-foreground">
                                             Your email address is unverified.{' '}
                                             <Link
                                                 href={send()}
@@ -115,18 +106,15 @@ export default function Profile({
                         </>
                     )}
                 </Form>
-            </div>
 
-            <DeleteUser />
+                <DeleteUser />
+            </div>
         </>
     );
 }
 
-Profile.layout = {
-    breadcrumbs: [
-        {
-            title: 'Profile settings',
-            href: edit(),
-        },
-    ],
-};
+Profile.layout = (page: React.ReactNode) => (
+    <SettingsLayout active="profile" title="Profile">
+        {page}
+    </SettingsLayout>
+);

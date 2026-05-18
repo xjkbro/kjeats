@@ -259,7 +259,9 @@ export default function RestaurantShow({ restaurant, can_add_dish, current_user_
             </div>
 
             <section className="fl-section">
-                <h3 className="fl-section-ttl">Experience</h3>
+                <div className="fl-section-hdr">
+                    <h3 className="fl-section-ttl">Experience</h3>
+                </div>
                 <div className="fl-rbars">
                     <RatingBar label="Atmosphere" value={restaurant.atmosphere_rating} />
                     <RatingBar label="Service" value={restaurant.service_rating} />
@@ -286,9 +288,11 @@ export default function RestaurantShow({ restaurant, can_add_dish, current_user_
 
             {(restaurant.dishes.length > 0 || can_add_dish) && (
                 <section className="fl-section">
-                    <h3 className="fl-section-ttl">
-                        Dishes ({restaurant.dishes.length})
-                    </h3>
+                    <div className="fl-section-hdr">
+                        <h3 className="fl-section-ttl">
+                            Dishes ({restaurant.dishes.length})
+                        </h3>
+                    </div>
                     {restaurant.dishes.length > 0 && (
                         <div className="fl-dish-list">
                             {restaurant.dishes.map((dish) => (
@@ -376,7 +380,9 @@ export default function RestaurantShow({ restaurant, can_add_dish, current_user_
 
             {restaurant.revisions && restaurant.revisions.length > 0 && (
                 <section className="fl-section">
-                    <h3 className="fl-section-ttl">History ({restaurant.revisions.length})</h3>
+                    <div className="fl-section-hdr">
+                        <h3 className="fl-section-ttl">History ({restaurant.revisions.length})</h3>
+                    </div>
                     <div className="fl-revision-list">
                         {restaurant.revisions.map((revision: Revision, i: number) => {
                             const afterSnap: Record<string, unknown> = i === 0

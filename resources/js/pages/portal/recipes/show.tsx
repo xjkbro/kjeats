@@ -344,7 +344,9 @@ export default function RecipeShow({ recipe, current_user_id }: Props) {
 
             {recipe.ingredients.length > 0 && (
                 <section className="fl-section">
-                    <h3 className="fl-section-ttl">Ingredients ({recipe.ingredients.length})</h3>
+                    <div className="fl-section-hdr">
+                        <h3 className="fl-section-ttl">Ingredients ({recipe.ingredients.length})</h3>
+                    </div>
                     <div className="fl-ing-disp">
                         {recipe.ingredients.map((ing) => (
                             <div key={ing.id} className="fl-ing-item">
@@ -359,7 +361,9 @@ export default function RecipeShow({ recipe, current_user_id }: Props) {
 
             {recipe.steps.length > 0 && (
                 <section className="fl-section">
-                    <h3 className="fl-section-ttl">Instructions</h3>
+                    <div className="fl-section-hdr">
+                        <h3 className="fl-section-ttl">Instructions</h3>
+                    </div>
                     <div className="fl-steps">
                         {recipe.steps.map((step) => (
                             <div key={step.id} className="fl-step">
@@ -373,7 +377,9 @@ export default function RecipeShow({ recipe, current_user_id }: Props) {
 
             {recipe.nutrition && (
                 <section className="fl-section">
-                    <h3 className="fl-section-ttl">Nutrition Facts</h3>
+                    <div className="fl-section-hdr">
+                        <h3 className="fl-section-ttl">Nutrition Facts</h3>
+                    </div>
                     <NutritionLabel nutrition={recipe.nutrition} />
                 </section>
             )}
@@ -389,7 +395,9 @@ export default function RecipeShow({ recipe, current_user_id }: Props) {
 
             {recipe.revisions && recipe.revisions.length > 0 && (
                 <section className="fl-section">
-                    <h3 className="fl-section-ttl">History ({recipe.revisions.length})</h3>
+                    <div className="fl-section-hdr">
+                        <h3 className="fl-section-ttl">History ({recipe.revisions.length})</h3>
+                    </div>
                     <div className="fl-revision-list">
                         {recipe.revisions.map((revision: Revision, i: number) => {
                             const afterSnap: Record<string, unknown> = i === 0

@@ -28,7 +28,7 @@ test('dashboard renders personal feed without group config', function () {
     $this->get(route('dashboard'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
-            ->component('portal/home')
+            ->component('dashboard')
             ->where('group', null)
             ->where('feed', null)
         );
@@ -48,7 +48,7 @@ test('dashboard shows group feed when user is a group member', function () {
         ->get(route('dashboard'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
-            ->component('portal/home')
+            ->component('dashboard')
             ->where('group.name', 'Test Group')
             ->has('feed', 2)
         );
@@ -64,7 +64,7 @@ test('dashboard shows personal feed when user is not in the configured group', f
         ->get(route('dashboard'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
-            ->component('portal/home')
+            ->component('dashboard')
             ->where('group', null)
             ->where('feed', null)
         );

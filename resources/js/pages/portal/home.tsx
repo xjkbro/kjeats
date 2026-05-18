@@ -209,7 +209,9 @@ export default function Home({ group, feed, restaurants = [], recipes = [], stat
 
             {feed !== null ? (
                 <section className="fl-section">
-                    <h3 className="fl-section-ttl">Activity</h3>
+                    <div className="fl-section-hdr">
+                        <h3 className="fl-section-ttl">Activity</h3>
+                    </div>
                     {feed.length > 0 ? (
                         <div className="fl-feed">
                             {feed.map((item) =>

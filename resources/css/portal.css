@@ -700,8 +700,12 @@ select.fl-fi {
 
 /* ── Section wrappers ────────────────────────────────────── */
 .fl-section     { margin-bottom: 24px; }
-.fl-section-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-.fl-section-ttl { font-size: 15px; font-weight: 700; color: var(--fl-tx); letter-spacing: -.2px; }
+.fl-section-hdr { display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px;
+}
+.fl-section-ttl { font-size: 15px; font-weight: 700; color: var(--fl-tx); letter-spacing: -.2px;
+    /* @apply mb-4; */
+}
 .fl-see-all     { font-size: 13px; font-weight: 600; color: var(--fl-p); padding: 3px 8px; border-radius: var(--fl-r1); transition: background var(--fl-t1); }
 .fl-see-all:active { background: var(--fl-p-dim); }
 
@@ -1044,6 +1048,35 @@ select.fl-fi {
 .fl-visit-chip-rm:hover { color: var(--fl-red); }
 .fl-visit-add { display: flex; gap: 8px; align-items: center; }
 
+/* ── Settings Tabs (segmented control) ──────────────────── */
+.fl-settings-tabs { display: flex; gap: 4px; background: var(--fl-s2); border: 1.5px solid var(--fl-bdr); border-radius: var(--fl-r3); padding: 4px; margin-bottom: 20px; }
+.fl-settings-tab {
+    flex: 1; padding: 9px 10px; border-radius: calc(var(--fl-r3) - 2px);
+    font-size: 13px; font-weight: 600; color: var(--fl-tx2);
+    text-align: center; text-decoration: none;
+    transition: all var(--fl-t1);
+}
+.fl-settings-tab.active { background: var(--fl-s4); color: var(--fl-tx); }
+.fl-settings-tab:active { transform: scale(.97); }
+.fl-settings-content { margin-top: 16px; }
+
+/* ── Quick Actions ───────────────────────────────────────── */
+.fl-quick-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.fl-quick-action {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 6px; padding: 16px 12px; border-radius: var(--fl-r4);
+    background: var(--fl-s1); border: 1px solid var(--fl-bdr-s);
+    text-decoration: none; color: inherit; cursor: pointer;
+    transition: transform var(--fl-t1), border-color var(--fl-t1);
+}
+.fl-quick-action:active { transform: scale(.96); border-color: var(--fl-bdr); }
+.fl-qa-ico { font-size: 28px; }
+.fl-qa-label { font-size: 13px; font-weight: 700; color: var(--fl-tx); }
+.fl-qa-rest:active { background: var(--fl-p-dim); }
+.fl-qa-recipe:active { background: var(--fl-tel-d); }
+.fl-qa-revisit:active { background: var(--fl-blu-d); }
+.fl-qa-group:active { background: var(--fl-prp-d); }
+
 /* ── Tag Input ───────────────────────────────────────────── */
 .fl-tag-input { display: flex; flex-direction: column; gap: 8px; }
 .fl-tag-chips { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -1107,11 +1140,12 @@ select.fl-fi {
     font-size: 15px; outline: none;
 }
 .fl-sp-input-row input::placeholder { color: var(--fl-tx3); }
-.fl-sp-input-row kbd {
-    font-size: 10px; font-weight: 700; color: var(--fl-tx3);
-    background: var(--fl-s3); padding: 2px 6px; border-radius: var(--fl-r1);
-    font-family: inherit; flex-shrink: 0;
+.fl-sp-close {
+    background: none; border: none; cursor: pointer; padding: 4px 6px;
+    color: var(--fl-tx3); font-size: 16px; line-height: 1; flex-shrink: 0;
+    border-radius: var(--fl-r1);
 }
+.fl-sp-close:hover { color: var(--fl-tx); background: var(--fl-s3); }
 .fl-sp-status { padding: 24px; text-align: center; color: var(--fl-tx2); font-size: 13px; }
 .fl-sp-empty { padding: 32px 24px; text-align: center; color: var(--fl-tx3); font-size: 14px; }
 .fl-sp-results { overflow-y: auto; max-height: 380px; padding: 8px 0; }

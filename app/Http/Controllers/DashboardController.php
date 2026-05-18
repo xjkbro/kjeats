@@ -16,20 +16,56 @@ class DashboardController extends Controller
     {
         $user = $request->user();
         $groupId = (int) config('app.frontend_group_id', 0);
+        $group = null;
+        $feed = null;
+
+        $restaurants = $user->restaurants()
+            ->with('dishes')
+            ->orderByDesc('date_visited')
+            ->get();
+
+        $recipes = $user->recipes()
+            ->with(['ingredients', 'steps', 'nutrition'])
+            ->orderByDesc('created_at')
+            ->get();
+
+        $topCuisine = $restaurants->groupBy('cuisine')
+            ->sortByDesc(fn ($items) => $items->count())
+            ->keys()
+            ->first();
+
+        $recentVisits = $restaurants->take(4)->map(fn ($r) => [
+            'id' => $r->id,
+            'emoji' => $r->emoji,
+            'name' => $r->name,
+            'cuisine' => $r->cuisine,
+            'date_visited' => $r->date_visited->format('Y-m-d'),
+            'overall_rating' => (string) $r->overall_rating,
+        ]);
+
+        $recentRecipeList = $recipes->take(5)->map(fn ($r) => [
+            'id' => $r->id,
+            'emoji' => $r->emoji,
+            'name' => $r->name,
+            'category' => $r->category,
+            'difficulty' => $r->difficulty,
+            'total_time' => $r->prep_time + $r->cook_time + $r->rest_time,
+        ]);
 
         if ($groupId > 0) {
             $foundGroup = Group::find($groupId);
 
             if ($foundGroup && $foundGroup->isMember($user)) {
+                $group = ['id' => $foundGroup->id, 'name' => $foundGroup->name];
                 $memberIds = $foundGroup->members()->pluck('users.id');
 
-                $restaurants = Restaurant::whereIn('user_id', $memberIds)
+                $groupRestaurants = Restaurant::whereIn('user_id', $memberIds)
                     ->with('user')
                     ->latest()
                     ->limit(200)
                     ->get();
 
-                $recipes = Recipe::whereIn('user_id', $memberIds)
+                $groupRecipes = Recipe::whereIn('user_id', $memberIds)
                     ->with('user')
                     ->latest()
                     ->limit(200)
@@ -46,7 +82,7 @@ class DashboardController extends Controller
                     ->get();
 
                 $feed = collect()
-                    ->merge($restaurants->map(fn ($r) => [
+                    ->merge($groupRestaurants->map(fn ($r) => [
                         'type' => 'restaurant',
                         'id' => $r->id,
                         'emoji' => $r->emoji,
@@ -59,7 +95,7 @@ class DashboardController extends Controller
                         'user' => ['name' => $r->user->name],
                         'created_at' => $r->created_at->toISOString(),
                     ]))
-                    ->merge($recipes->map(fn ($r) => [
+                    ->merge($groupRecipes->map(fn ($r) => [
                         'type' => 'recipe',
                         'id' => $r->id,
                         'emoji' => $r->emoji,
@@ -85,40 +121,38 @@ class DashboardController extends Controller
                     ->sortByDesc('created_at')
                     ->values();
 
-                return Inertia::render('portal/home', [
-                    'group' => ['id' => $foundGroup->id, 'name' => $foundGroup->name],
-                    'feed' => $feed,
-                    'stats' => [
-                        'restaurant_count' => $restaurants->count(),
-                        'avg_rating' => $restaurants->avg('overall_rating'),
-                        'recipe_count' => $recipes->count(),
-                        'total_dishes' => 0,
-                    ],
+                $recentVisits = $groupRestaurants->take(4)->map(fn ($r) => [
+                    'id' => $r->id,
+                    'emoji' => $r->emoji,
+                    'name' => $r->name,
+                    'cuisine' => $r->cuisine,
+                    'date_visited' => $r->date_visited->format('Y-m-d'),
+                    'overall_rating' => (string) $r->overall_rating,
+                ]);
+
+                $recentRecipeList = $groupRecipes->take(5)->map(fn ($r) => [
+                    'id' => $r->id,
+                    'emoji' => $r->emoji,
+                    'name' => $r->name,
+                    'category' => $r->category,
+                    'difficulty' => $r->difficulty,
+                    'total_time' => $r->prep_time + $r->cook_time + $r->rest_time,
                 ]);
             }
         }
 
-        $restaurants = $user->restaurants()
-            ->with('dishes')
-            ->orderByDesc('date_visited')
-            ->get();
-
-        $recipes = $user->recipes()
-            ->with(['ingredients', 'steps', 'nutrition'])
-            ->orderByDesc('created_at')
-            ->get();
-
-        return Inertia::render('portal/home', [
-            'group' => null,
-            'feed' => null,
-            'restaurants' => $restaurants,
-            'recipes' => $recipes,
+        return Inertia::render('dashboard', [
+            'group' => $group,
+            'feed' => $feed,
             'stats' => [
                 'restaurant_count' => $restaurants->count(),
                 'avg_rating' => $restaurants->avg('overall_rating'),
                 'recipe_count' => $recipes->count(),
                 'total_dishes' => $restaurants->sum(fn ($r) => $r->dishes->count()),
+                'top_cuisine' => $topCuisine,
             ],
+            'recent_restaurants' => $recentVisits,
+            'recent_recipes' => $recentRecipeList,
         ]);
     }
 }
