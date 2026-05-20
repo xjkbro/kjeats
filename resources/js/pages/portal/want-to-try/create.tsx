@@ -34,9 +34,9 @@ export default function WantToTryCreate({ all_locations = [] }: Props) {
         setShowLocationSuggestions(false);
     }
 
-    const filteredLocations = all_locations.filter(
-        (loc) => loc.toLowerCase().includes(data.location.toLowerCase()) && loc !== data.location,
-    );
+    const filteredLocations = all_locations
+        .filter((loc): loc is string => loc != null)
+        .filter((loc) => loc.toLowerCase().includes(data.location.toLowerCase()) && loc !== data.location);
 
     return (
         <form className="fl-view fl-form" onSubmit={submit}>

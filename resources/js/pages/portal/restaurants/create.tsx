@@ -127,9 +127,9 @@ export default function RestaurantCreate({ all_tags, all_locations = [], want_to
         setShowLocationSuggestions(false);
     }
 
-    const filteredLocations = all_locations.filter(
-        (loc) => loc.toLowerCase().includes(data.location.toLowerCase()) && loc !== data.location,
-    );
+    const filteredLocations = all_locations
+        .filter((loc): loc is string => loc != null)
+        .filter((loc) => loc.toLowerCase().includes(data.location.toLowerCase()) && loc !== data.location);
 
     function addDish() {
         setData('dishes', [...data.dishes, { name: '', rating: '3', notes: '', photo: null }]);

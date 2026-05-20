@@ -363,15 +363,18 @@ class RestaurantController extends Controller
 
         $restaurantLocations = Restaurant::where('user_id', $userId)
             ->whereNotNull('location')
+            ->where('location', '!=', '')
             ->pluck('location');
 
         $wantToTryLocations = WantToTry::where('user_id', $userId)
             ->whereNotNull('location')
+            ->where('location', '!=', '')
             ->whereNull('restaurant_id')
             ->pluck('location');
 
         return $restaurantLocations
             ->merge($wantToTryLocations)
+            ->filter()
             ->unique()
             ->sort()
             ->values()
