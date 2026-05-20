@@ -13,6 +13,7 @@ export default function TagInput({ value, onChange, suggestions = [], placeholde
     const inputRef = useRef<HTMLInputElement>(null);
 
     const filtered = suggestions
+        .filter((s): s is string => s != null)
         .filter((s) => s.toLowerCase().includes(input.toLowerCase()) && !value.includes(s))
         .slice(0, 8);
 
