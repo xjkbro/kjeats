@@ -7,7 +7,7 @@ import PortalLayout from '@/layouts/portal/portal-layout';
 
 interface Props {
     all_tags: string[];
-    all_wtt_locations: string[];
+    all_locations: string[];
     want_to_tries: Array<{
         id: number;
         emoji: string;
@@ -72,7 +72,7 @@ function StarInput({ label, value, onChange }: { label: string; value: string; o
     );
 }
 
-export default function RestaurantCreate({ all_tags, all_wtt_locations = [], want_to_tries = [] }: Props) {
+export default function RestaurantCreate({ all_tags, all_locations = [], want_to_tries = [] }: Props) {
     const { data, setData, post, processing, errors } = useForm<FormValues>({
         emoji: '🍽️',
         name: '',
@@ -127,7 +127,7 @@ export default function RestaurantCreate({ all_tags, all_wtt_locations = [], wan
         setShowLocationSuggestions(false);
     }
 
-    const filteredLocations = all_wtt_locations.filter(
+    const filteredLocations = all_locations.filter(
         (loc) => loc.toLowerCase().includes(data.location.toLowerCase()) && loc !== data.location,
     );
 

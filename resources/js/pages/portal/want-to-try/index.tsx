@@ -2,6 +2,7 @@ import { Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import type { ReactNode } from 'react';
 import * as WantToTryController from '@/actions/App/Http/Controllers/WantToTryController';
+import { index as wantToTryIndexRoute } from '@/routes/want-to-try';
 import PortalLayout from '@/layouts/portal/portal-layout';
 
 interface Props {
@@ -35,21 +36,35 @@ function timeAgo(isoDate: string): string {
     return 'just now';
 }
 
-const ALL_LOCATIONS = 'All';
+const ALL = 'All';
+const SORT_NEWEST = 'Newest';
+const SORT_OLDEST = 'Oldest';
+const SORT_AZ = 'A → Z';
 
 export default function WantToTryIndex({ items, group, scope, all_locations = [] }: Props) {
-    const [locationFilter, setLocationFilter] = useState(ALL_LOCATIONS);
-    const locations = [ALL_LOCATIONS, ...all_locations];
+    const [locationFilter, setLocationFilter] = useState(ALL);
+    const [cuisineFilter, setCuisineFilter] = useState(ALL);
+    const [sort, setSort] = useState<string>(SORT_NEWEST);
 
-    const filtered = items.filter(
-        (item) => locationFilter === ALL_LOCATIONS || item.location === locationFilter,
-    );
+    const cuisines = [ALL, ...Array.from(new Set(items.map((i) => i.cuisine).filter(Boolean) as string[]))];
+    const locations = [ALL, ...all_locations];
+
+    const filtered = items
+        .filter((item) => locationFilter === ALL || item.location === locationFilter)
+        .filter((item) => cuisineFilter === ALL || item.cuisine === cuisineFilter)
+        .sort((a, b) => {
+            if (sort === SORT_NEWEST) return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+            if (sort === SORT_OLDEST) return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+            if (sort === SORT_AZ) return a.name.localeCompare(b.name);
+
+            return 0;
+        });
 
     function setScope(newScope: string) {
         router.get(
-            route('want-to-try.index'),
-            { scope: newScope },
-            { preserveState: true, replace: true },
+            wantToTryIndexRoute.url({ query: { scope: newScope } }),
+            {},
+            { preserveState: true, replace: true, preserveScroll: true },
         );
     }
 
@@ -79,19 +94,43 @@ export default function WantToTryIndex({ items, group, scope, all_locations = []
                 </div>
             )}
 
-            {locations.length > 1 && (
+            <div className="fl-chips">
+                {locations.map((loc) => (
+                    <button
+                        key={loc}
+                        className={`fl-chip${locationFilter === loc ? ' active' : ''}`}
+                        onClick={() => setLocationFilter(loc)}
+                    >
+                        {loc}
+                    </button>
+                ))}
+            </div>
+
+            {cuisines.length > 1 && (
                 <div className="fl-chips">
-                    {locations.map((loc) => (
+                    {cuisines.map((c) => (
                         <button
-                            key={loc}
-                            className={`fl-chip${locationFilter === loc ? ' active' : ''}`}
-                            onClick={() => setLocationFilter(loc)}
+                            key={c}
+                            className={`fl-chip${cuisineFilter === c ? ' active' : ''}`}
+                            onClick={() => setCuisineFilter(c)}
                         >
-                            {loc}
+                            {c}
                         </button>
                     ))}
                 </div>
             )}
+
+            <div className="fl-chips">
+                {[SORT_NEWEST, SORT_OLDEST, SORT_AZ].map((s) => (
+                    <button
+                        key={s}
+                        className={`fl-chip${sort === s ? ' active' : ''}`}
+                        onClick={() => setSort(s)}
+                    >
+                        {s === SORT_NEWEST ? 'Newest' : s === SORT_OLDEST ? 'Oldest' : 'A → Z'}
+                    </button>
+                ))}
+            </div>
 
             {filtered.length > 0 ? (
                 <div className="fl-wtt-list">

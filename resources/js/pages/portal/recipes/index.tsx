@@ -2,6 +2,7 @@ import { Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import type { ReactNode } from 'react';
 import * as RecipeController from '@/actions/App/Http/Controllers/RecipeController';
+import { index as recipesIndexRoute } from '@/routes/recipes';
 import PortalLayout from '@/layouts/portal/portal-layout';
 import type { Recipe } from '@/types/portal';
 
@@ -34,9 +35,9 @@ export default function RecipesIndex({ recipes, group, scope }: Props) {
 
     function setScope(newScope: string) {
         router.get(
-            route('recipes.index'),
-            { scope: newScope },
-            { preserveState: true, replace: true },
+            recipesIndexRoute.url({ query: { scope: newScope } }),
+            {},
+            { preserveState: true, replace: true, preserveScroll: true },
         );
     }
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Group;
+use App\Models\Restaurant;
 use App\Models\WantToTry;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -34,24 +35,19 @@ class WantToTryController extends Controller
 
         $items = $query->latest()->get();
 
-        $allLocations = WantToTry::whereNotNull('location')
-            ->whereNull('restaurant_id')
-            ->pluck('location')
-            ->unique()
-            ->sort()
-            ->values();
-
         return Inertia::render('portal/want-to-try/index', [
             'items' => $items,
             'group' => $group,
             'scope' => $request->query('scope', 'mine'),
-            'all_locations' => $allLocations,
+            'all_locations' => $this->getAllLocations(),
         ]);
     }
 
     public function create(): Response
     {
-        return Inertia::render('portal/want-to-try/create');
+        return Inertia::render('portal/want-to-try/create', [
+            'all_locations' => $this->getAllLocations(),
+        ]);
     }
 
     public function store(Request $request): RedirectResponse
@@ -127,5 +123,26 @@ class WantToTryController extends Controller
         return redirect()->route('want-to-try.index')
             ->with('flash.type', 'ok')
             ->with('flash.message', 'Want to Try converted!');
+    }
+
+    private function getAllLocations(): array
+    {
+        $userId = auth()->id();
+
+        $restaurantLocations = Restaurant::where('user_id', $userId)
+            ->whereNotNull('location')
+            ->pluck('location');
+
+        $wantToTryLocations = WantToTry::where('user_id', $userId)
+            ->whereNotNull('location')
+            ->whereNull('restaurant_id')
+            ->pluck('location');
+
+        return $restaurantLocations
+            ->merge($wantToTryLocations)
+            ->unique()
+            ->sort()
+            ->values()
+            ->toArray();
     }
 }

@@ -2,6 +2,7 @@ import { Link, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import type { ReactNode } from 'react';
 import * as RestaurantController from '@/actions/App/Http/Controllers/RestaurantController';
+import { index as restaurantsIndexRoute } from '@/routes/restaurants';
 import PortalLayout from '@/layouts/portal/portal-layout';
 import type { Restaurant } from '@/types/portal';
 
@@ -47,9 +48,9 @@ export default function RestaurantsIndex({ restaurants, group, scope }: Props) {
 
     function setScope(newScope: string) {
         router.get(
-            route('restaurants.index'),
-            { scope: newScope },
-            { preserveState: true, replace: true },
+            restaurantsIndexRoute.url({ query: { scope: newScope } }),
+            {},
+            { preserveState: true, replace: true, preserveScroll: true },
         );
     }
 

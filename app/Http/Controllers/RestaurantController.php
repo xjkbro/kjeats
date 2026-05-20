@@ -94,12 +94,7 @@ class RestaurantController extends Controller
                 'location' => $w->location,
                 'notes' => $w->notes,
             ])->values(),
-            'all_wtt_locations' => WantToTry::whereNotNull('location')
-                ->whereNull('restaurant_id')
-                ->pluck('location')
-                ->unique()
-                ->sort()
-                ->values(),
+            'all_locations' => $this->getAllLocations(),
         ]);
     }
 
@@ -360,5 +355,26 @@ class RestaurantController extends Controller
         return redirect()->route('restaurants.show', $restaurant)
             ->with('flash.type', 'ok')
             ->with('flash.message', 'Review updated!');
+    }
+
+    private function getAllLocations(): array
+    {
+        $userId = auth()->id();
+
+        $restaurantLocations = Restaurant::where('user_id', $userId)
+            ->whereNotNull('location')
+            ->pluck('location');
+
+        $wantToTryLocations = WantToTry::where('user_id', $userId)
+            ->whereNotNull('location')
+            ->whereNull('restaurant_id')
+            ->pluck('location');
+
+        return $restaurantLocations
+            ->merge($wantToTryLocations)
+            ->unique()
+            ->sort()
+            ->values()
+            ->toArray();
     }
 }
