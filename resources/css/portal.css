@@ -893,6 +893,84 @@ select.fl-fi {
 /* ── Nutrition form wrapper ──────────────────────────────── */
 .fl-nutrition-form { background: var(--fl-s2); border: 1.5px solid var(--fl-bdr); border-radius: var(--fl-r3); padding: 14px; }
 
+/* ── Scope Toggle ────────────────────────────────────────── */
+.fl-scope-toggle {
+    display: flex; gap: 4px; background: var(--fl-s2);
+    border: 1.5px solid var(--fl-bdr); border-radius: var(--fl-r3);
+    padding: 4px; margin-bottom: 14px;
+}
+.fl-scope-btn {
+    flex: 1; padding: 7px 10px; border-radius: calc(var(--fl-r3) - 2px);
+    font-size: 13px; font-weight: 600; color: var(--fl-tx2);
+    background: transparent; transition: all var(--fl-t1); cursor: pointer;
+}
+.fl-scope-btn.active { background: var(--fl-s4); color: var(--fl-tx); }
+
+/* ── Autocomplete Dropdown ──────────────────────────────── */
+.fl-autocomplete-dropdown {
+    position: absolute; top: 100%; left: 0; right: 0;
+    background: var(--fl-s2); border: 1.5px solid var(--fl-bdr);
+    border-radius: var(--fl-r3); margin-top: 4px;
+    box-shadow: var(--fl-sh2); z-index: 40; overflow: hidden;
+}
+.fl-autocomplete-item {
+    width: 100%; padding: 10px 13px; text-align: left;
+    font-size: 14px; color: var(--fl-tx);
+    transition: background var(--fl-t1);
+}
+.fl-autocomplete-item:hover,
+.fl-autocomplete-item:active { background: var(--fl-s3); }
+
+/* ── Want to Try List ───────────────────────────────────── */
+.fl-wtt-list { display: flex; flex-direction: column; margin-bottom: 20px; }
+.fl-wtt-card {
+    background: var(--fl-s1); border: 1px solid var(--fl-bdr-s);
+    border-radius: var(--fl-r4); padding: 14px;
+    display: flex; align-items: center; gap: 12px;
+    cursor: pointer; transition: border-color var(--fl-t1), transform var(--fl-t1);
+    text-decoration: none; color: inherit; width: 100%;
+}
+.fl-wtt-card:active { transform: scale(.98); border-color: var(--fl-bdr); }
+.fl-wtt-card + .fl-wtt-card { margin-top: 10px; }
+.fl-wtt-ico {
+    width: 48px; height: 48px; background: var(--fl-s3);
+    border-radius: var(--fl-r3); display: flex; align-items: center;
+    justify-content: center; font-size: 24px; flex-shrink: 0;
+}
+.fl-wtt-body { flex: 1; min-width: 0; }
+.fl-wtt-name {
+    font-size: 15px; font-weight: 700; color: var(--fl-tx);
+    letter-spacing: -.2px; white-space: nowrap; overflow: hidden;
+    text-overflow: ellipsis; margin-bottom: 4px;
+}
+.fl-wtt-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.fl-wtt-by { font-size: 11px; color: var(--fl-tx3); }
+.fl-wtt-chev { color: var(--fl-tx3); flex-shrink: 0; align-self: center; }
+
+/* ── Want to Try Picker (create form) ───────────────────── */
+.fl-wtt-picker-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.fl-wtt-picker-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+    background: var(--fl-s1); border: 1.5px solid var(--fl-bdr);
+    border-radius: var(--fl-r3); text-align: left; cursor: pointer;
+    transition: border-color var(--fl-t1), background var(--fl-t1);
+}
+.fl-wtt-picker-item:active { background: var(--fl-s2); }
+.fl-wtt-picker-item.selected { border-color: var(--fl-p); background: var(--fl-p-dim); }
+.fl-wtt-picker-emoji { font-size: 22px; flex-shrink: 0; }
+.fl-wtt-picker-name { flex: 1; font-size: 14px; font-weight: 600; color: var(--fl-tx); }
+.fl-wtt-picker-cuisine { font-size: 12px; color: var(--fl-tx2); }
+
+/* ── Want to Try Detail ─────────────────────────────────── */
+.fl-wtt-actions { display: flex; gap: 10px; margin-top: 24px; padding-bottom: 16px; }
+.fl-wtt-actions .fl-btn { flex: 1; }
+.fl-wtt-converted {
+    padding: 10px 14px; background: var(--fl-grn-d);
+    border: 1px solid color-mix(in srgb, var(--fl-grn) 30%, transparent);
+    border-radius: var(--fl-r3); font-size: 13px; font-weight: 600;
+    color: var(--fl-grn); margin-bottom: 16px;
+}
+
 /* ── Toggle checkbox ─────────────────────────────────────── */
 .fl-toggle { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: var(--fl-tx2); font-weight: 600; }
 .fl-toggle input[type=checkbox] { width: 36px; height: 20px; -webkit-appearance: none; appearance: none; background: var(--fl-s3); border: 1.5px solid var(--fl-bdr); border-radius: var(--fl-rp); cursor: pointer; transition: background var(--fl-t2); position: relative; flex-shrink: 0; }

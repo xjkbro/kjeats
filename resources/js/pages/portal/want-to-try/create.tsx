@@ -1,9 +1,14 @@
 import { useForm } from '@inertiajs/react';
+import { useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import * as WantToTryController from '@/actions/App/Http/Controllers/WantToTryController';
 import PortalLayout from '@/layouts/portal/portal-layout';
 
-export default function WantToTryCreate() {
+interface Props {
+    all_locations: string[];
+}
+
+export default function WantToTryCreate({ all_locations = [] }: Props) {
     const { data, setData, post, processing, errors } = useForm({
         name: '',
         cuisine: '',
@@ -11,10 +16,27 @@ export default function WantToTryCreate() {
         notes: '',
     });
 
+    const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
+    const locationInputRef = useRef<HTMLInputElement>(null);
+
     function submit(e: React.FormEvent) {
         e.preventDefault();
         post(WantToTryController.store().url);
     }
+
+    function handleLocationChange(value: string) {
+        setData('location', value);
+        setShowLocationSuggestions(value.length > 0);
+    }
+
+    function selectLocation(location: string) {
+        setData('location', location);
+        setShowLocationSuggestions(false);
+    }
+
+    const filteredLocations = all_locations.filter(
+        (loc) => loc.toLowerCase().includes(data.location.toLowerCase()) && loc !== data.location,
+    );
 
     return (
         <form className="fl-view fl-form" onSubmit={submit}>
@@ -50,16 +72,37 @@ export default function WantToTryCreate() {
                             placeholder="e.g. Italian"
                         />
                     </div>
-                    <div className="fl-fgrp">
+                    <div className="fl-fgrp" style={{ position: 'relative' }}>
                         <label className="fl-flbl" htmlFor="location">Location</label>
                         <input
                             id="location"
+                            ref={locationInputRef}
                             className="fl-fi"
                             type="text"
                             value={data.location}
-                            onChange={(e) => setData('location', e.target.value)}
+                            onChange={(e) => handleLocationChange(e.target.value)}
+                            onBlur={() => setTimeout(() => setShowLocationSuggestions(false), 200)}
+                            onFocus={() => data.location.length > 0 && setShowLocationSuggestions(true)}
                             placeholder="City or area"
+                            autoComplete="off"
                         />
+                        {showLocationSuggestions && filteredLocations.length > 0 && (
+                            <div className="fl-autocomplete-dropdown">
+                                {filteredLocations.slice(0, 8).map((loc) => (
+                                    <button
+                                        key={loc}
+                                        type="button"
+                                        className="fl-autocomplete-item"
+                                        onMouseDown={(e) => {
+                                            e.preventDefault();
+                                            selectLocation(loc);
+                                        }}
+                                    >
+                                        {loc}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
 

@@ -15,34 +15,37 @@ class WantToTryController extends Controller
     {
         $user = $request->user();
         $groupId = (int) config('app.frontend_group_id', 0);
+        $group = null;
 
         if ($groupId > 0) {
-            $group = Group::find($groupId);
+            $foundGroup = Group::find($groupId);
 
-            if ($group && $group->isMember($user)) {
-                $memberIds = $group->members()->pluck('users.id');
-                $items = WantToTry::whereIn('user_id', $memberIds)
-                    ->with('user')
-                    ->whereNull('restaurant_id')
-                    ->latest()
-                    ->get();
-
-                return Inertia::render('portal/want-to-try/index', [
-                    'items' => $items,
-                    'group' => ['id' => $group->id, 'name' => $group->name],
-                ]);
+            if ($foundGroup && $foundGroup->isMember($user)) {
+                $group = ['id' => $foundGroup->id, 'name' => $foundGroup->name];
             }
         }
 
-        $items = $user->wantToTries()
-            ->with('user')
+        $query = $user->wantToTries()->with('user')->whereNull('restaurant_id');
+
+        if ($group && $request->query('scope') === 'group') {
+            $memberIds = Group::find($groupId)->members()->pluck('users.id');
+            $query = WantToTry::whereIn('user_id', $memberIds)->with('user')->whereNull('restaurant_id');
+        }
+
+        $items = $query->latest()->get();
+
+        $allLocations = WantToTry::whereNotNull('location')
             ->whereNull('restaurant_id')
-            ->latest()
-            ->get();
+            ->pluck('location')
+            ->unique()
+            ->sort()
+            ->values();
 
         return Inertia::render('portal/want-to-try/index', [
             'items' => $items,
-            'group' => null,
+            'group' => $group,
+            'scope' => $request->query('scope', 'mine'),
+            'all_locations' => $allLocations,
         ]);
     }
 

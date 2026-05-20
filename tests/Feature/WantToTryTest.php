@@ -105,7 +105,7 @@ test('group members can see each others want to try items', function () {
     config(['app.frontend_group_id' => $group->id]);
 
     $response = $this->actingAs($user)
-        ->get(route('want-to-try.index'));
+        ->get(route('want-to-try.index', ['scope' => 'group']));
 
     $response->assertOk()
         ->assertInertia(fn (Assert $page) => $page

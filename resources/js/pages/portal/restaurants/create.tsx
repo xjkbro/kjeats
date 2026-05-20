@@ -7,6 +7,7 @@ import PortalLayout from '@/layouts/portal/portal-layout';
 
 interface Props {
     all_tags: string[];
+    all_wtt_locations: string[];
     want_to_tries: Array<{
         id: number;
         emoji: string;
@@ -71,7 +72,7 @@ function StarInput({ label, value, onChange }: { label: string; value: string; o
     );
 }
 
-export default function RestaurantCreate({ all_tags, want_to_tries = [] }: Props) {
+export default function RestaurantCreate({ all_tags, all_wtt_locations = [], want_to_tries = [] }: Props) {
     const { data, setData, post, processing, errors } = useForm<FormValues>({
         emoji: '🍽️',
         name: '',
@@ -97,6 +98,8 @@ export default function RestaurantCreate({ all_tags, want_to_tries = [] }: Props
     const [newVisitDate, setNewVisitDate] = useState('');
     const [showWantToTry, setShowWantToTry] = useState(false);
     const [selectedWantToTryId, setSelectedWantToTryId] = useState<number | null>(null);
+    const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
+    const locationInputRef = useRef<HTMLInputElement>(null);
 
     function selectWantToTry(id: number) {
         const item = want_to_tries.find((w) => w.id === id);
@@ -113,6 +116,20 @@ export default function RestaurantCreate({ all_tags, want_to_tries = [] }: Props
             setShowWantToTry(false);
         }
     }
+
+    function handleLocationChange(value: string) {
+        setData('location', value);
+        setShowLocationSuggestions(value.length > 0);
+    }
+
+    function selectLocation(location: string) {
+        setData('location', location);
+        setShowLocationSuggestions(false);
+    }
+
+    const filteredLocations = all_wtt_locations.filter(
+        (loc) => loc.toLowerCase().includes(data.location.toLowerCase()) && loc !== data.location,
+    );
 
     function addDish() {
         setData('dishes', [...data.dishes, { name: '', rating: '3', notes: '', photo: null }]);
@@ -244,12 +261,33 @@ export default function RestaurantCreate({ all_tags, want_to_tries = [] }: Props
                         <label className="fl-flbl" htmlFor="location">Location</label>
                         <input
                             id="location"
+                            ref={locationInputRef}
                             className="fl-fi"
                             type="text"
                             value={data.location}
-                            onChange={(e) => setData('location', e.target.value)}
+                            onChange={(e) => handleLocationChange(e.target.value)}
+                            onBlur={() => setTimeout(() => setShowLocationSuggestions(false), 200)}
+                            onFocus={() => data.location.length > 0 && setShowLocationSuggestions(true)}
                             placeholder="City, Neighborhood"
+                            autoComplete="off"
                         />
+                        {showLocationSuggestions && filteredLocations.length > 0 && (
+                            <div className="fl-autocomplete-dropdown">
+                                {filteredLocations.slice(0, 8).map((loc) => (
+                                    <button
+                                        key={loc}
+                                        type="button"
+                                        className="fl-autocomplete-item"
+                                        onMouseDown={(e) => {
+                                            e.preventDefault();
+                                            selectLocation(loc);
+                                        }}
+                                    >
+                                        {loc}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </div>
                     <div className="fl-fgrp">
                         <label className="fl-flbl" htmlFor="date_visited">Date Visited</label>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Group;
 use App\Models\Recipe;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -12,14 +13,31 @@ class RecipeController extends Controller
 {
     public function index(Request $request): Response
     {
-        $recipes = $request->user()
-            ->recipes()
-            ->with(['ingredients', 'steps', 'nutrition'])
-            ->orderByDesc('created_at')
-            ->get();
+        $user = $request->user();
+        $groupId = (int) config('app.frontend_group_id', 0);
+        $group = null;
+
+        if ($groupId > 0) {
+            $foundGroup = Group::find($groupId);
+
+            if ($foundGroup && $foundGroup->isMember($user)) {
+                $group = ['id' => $foundGroup->id, 'name' => $foundGroup->name];
+            }
+        }
+
+        $query = $user->recipes()->with(['ingredients', 'steps', 'nutrition']);
+
+        if ($group && $request->query('scope') === 'group') {
+            $memberIds = Group::find($groupId)->members()->pluck('users.id');
+            $query = Recipe::whereIn('user_id', $memberIds)->with(['ingredients', 'steps', 'nutrition', 'user']);
+        }
+
+        $recipes = $query->orderByDesc('created_at')->get();
 
         return Inertia::render('portal/recipes/index', [
             'recipes' => $recipes,
+            'group' => $group,
+            'scope' => $request->query('scope', 'mine'),
         ]);
     }
 

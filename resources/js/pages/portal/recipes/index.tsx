@@ -1,4 +1,4 @@
-import { Link } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import type { ReactNode } from 'react';
 import * as RecipeController from '@/actions/App/Http/Controllers/RecipeController';
@@ -7,11 +7,13 @@ import type { Recipe } from '@/types/portal';
 
 interface Props {
     recipes: Recipe[];
+    group: { id: number; name: string } | null;
+    scope: string;
 }
 
 const ALL = 'All';
 
-export default function RecipesIndex({ recipes }: Props) {
+export default function RecipesIndex({ recipes, group, scope }: Props) {
     const categories = [ALL, ...Array.from(new Set(recipes.map((r) => r.category)))];
     const difficulties = ['Easy', 'Medium', 'Hard'];
 
@@ -30,6 +32,14 @@ export default function RecipesIndex({ recipes }: Props) {
         return true;
     });
 
+    function setScope(newScope: string) {
+        router.get(
+            route('recipes.index'),
+            { scope: newScope },
+            { preserveState: true, replace: true },
+        );
+    }
+
     return (
         <div className="fl-view">
             <div className="fl-view-hdr">
@@ -38,6 +48,23 @@ export default function RecipesIndex({ recipes }: Props) {
                     + Add
                 </Link>
             </div>
+
+            {group && (
+                <div className="fl-scope-toggle">
+                    <button
+                        className={`fl-scope-btn${scope === 'group' ? ' active' : ''}`}
+                        onClick={() => setScope('group')}
+                    >
+                        {group.name}
+                    </button>
+                    <button
+                        className={`fl-scope-btn${scope === 'mine' ? ' active' : ''}`}
+                        onClick={() => setScope('mine')}
+                    >
+                        Mine
+                    </button>
+                </div>
+            )}
 
             <div className="fl-chips">
                 {categories.map((c) => (

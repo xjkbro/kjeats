@@ -1,4 +1,4 @@
-import { Link, usePage } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import type { ReactNode } from 'react';
 import * as RestaurantController from '@/actions/App/Http/Controllers/RestaurantController';
@@ -7,6 +7,8 @@ import type { Restaurant } from '@/types/portal';
 
 interface Props {
     restaurants: Restaurant[];
+    group: { id: number; name: string } | null;
+    scope: string;
 }
 
 function StarDisplay({ rating }: { rating: number | string }) {
@@ -25,7 +27,7 @@ function StarDisplay({ rating }: { rating: number | string }) {
 
 const ALL_CUISINES = 'All';
 
-export default function RestaurantsIndex({ restaurants }: Props) {
+export default function RestaurantsIndex({ restaurants, group, scope }: Props) {
     const { url } = usePage();
     const revisitMode = new URLSearchParams(url.split('?')[1] ?? '').get('revisit') === '1';
 
@@ -43,6 +45,14 @@ export default function RestaurantsIndex({ restaurants }: Props) {
             return new Date(b.date_visited).getTime() - new Date(a.date_visited).getTime();
         });
 
+    function setScope(newScope: string) {
+        router.get(
+            route('restaurants.index'),
+            { scope: newScope },
+            { preserveState: true, replace: true },
+        );
+    }
+
     return (
         <div className="fl-view">
             <div className="fl-view-hdr">
@@ -57,6 +67,23 @@ export default function RestaurantsIndex({ restaurants }: Props) {
             {revisitMode && (
                 <div style={{ padding: '10px 14px', background: 'var(--fl-p-dim)', border: '1.5px solid var(--fl-p)', borderRadius: 'var(--fl-r3)', marginBottom: '12px', fontSize: '13px', color: 'var(--fl-p)' }}>
                     🔁 Tap a restaurant to log a new visit, add dishes or update your rating.
+                </div>
+            )}
+
+            {group && !revisitMode && (
+                <div className="fl-scope-toggle">
+                    <button
+                        className={`fl-scope-btn${scope === 'group' ? ' active' : ''}`}
+                        onClick={() => setScope('group')}
+                    >
+                        {group.name}
+                    </button>
+                    <button
+                        className={`fl-scope-btn${scope === 'mine' ? ' active' : ''}`}
+                        onClick={() => setScope('mine')}
+                    >
+                        Mine
+                    </button>
                 </div>
             )}
 

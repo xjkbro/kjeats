@@ -14,14 +14,31 @@ class RestaurantController extends Controller
 {
     public function index(Request $request): Response
     {
-        $restaurants = $request->user()
-            ->restaurants()
-            ->with('dishes')
-            ->orderByDesc('date_visited')
-            ->get();
+        $user = $request->user();
+        $groupId = (int) config('app.frontend_group_id', 0);
+        $group = null;
+
+        if ($groupId > 0) {
+            $foundGroup = Group::find($groupId);
+
+            if ($foundGroup && $foundGroup->isMember($user)) {
+                $group = ['id' => $foundGroup->id, 'name' => $foundGroup->name];
+            }
+        }
+
+        $query = $user->restaurants()->with('dishes');
+
+        if ($group && $request->query('scope') === 'group') {
+            $memberIds = Group::find($groupId)->members()->pluck('users.id');
+            $query = Restaurant::whereIn('user_id', $memberIds)->with(['dishes', 'user']);
+        }
+
+        $restaurants = $query->orderByDesc('date_visited')->get();
 
         return Inertia::render('portal/restaurants/index', [
             'restaurants' => $restaurants,
+            'group' => $group,
+            'scope' => $request->query('scope', 'mine'),
         ]);
     }
 
@@ -77,6 +94,12 @@ class RestaurantController extends Controller
                 'location' => $w->location,
                 'notes' => $w->notes,
             ])->values(),
+            'all_wtt_locations' => WantToTry::whereNotNull('location')
+                ->whereNull('restaurant_id')
+                ->pluck('location')
+                ->unique()
+                ->sort()
+                ->values(),
         ]);
     }
 
