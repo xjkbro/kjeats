@@ -170,16 +170,6 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
                     </div>
                     <span>Saved</span>
                 </Link>
-
-                <Link href="/app/profile" className={`fl-nav-btn${isActive('/app/profile') ? ' active' : ''}`}>
-                    <div className="fl-nav-ico">
-                        <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                            <circle cx="12" cy="7" r="4" />
-                        </svg>
-                    </div>
-                    <span>Profile</span>
-                </Link>
             </nav>
 
             {/* ADD MENU OVERLAY */}
