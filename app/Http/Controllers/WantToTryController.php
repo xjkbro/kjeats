@@ -143,6 +143,8 @@ class WantToTryController extends Controller
         return $restaurantLocations
             ->merge($wantToTryLocations)
             ->filter()
+            ->map(fn ($loc) => trim(preg_replace('/\s+/', ' ', $loc)))
+            ->filter()
             ->unique()
             ->sort()
             ->values()

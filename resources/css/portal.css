@@ -557,7 +557,7 @@
 }
 .fl-fsec-ttl::after { content: ''; flex: 1; height: 1px; background: var(--fl-bdr-s); }
 
-.fl-fgrp { margin-bottom: 12px; }
+.fl-fgrp { margin-bottom: 12px; position: relative; }
 .fl-fgrp:last-child { margin-bottom: 0; }
 
 .fl-flbl { display: block; font-size: 12px; font-weight: 600; color: var(--fl-tx2); margin-bottom: 6px; }
