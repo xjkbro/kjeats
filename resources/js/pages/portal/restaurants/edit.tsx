@@ -152,7 +152,7 @@ export default function RestaurantEdit({ restaurant, all_tags }: Props) {
 
     function submit(e: React.FormEvent) {
         e.preventDefault();
-        put(RestaurantController.update(restaurant.id).url);
+        put(RestaurantController.update(restaurant.id).url, { replace: true });
     }
 
     return (

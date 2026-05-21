@@ -370,9 +370,9 @@ export default function RestaurantShow({ restaurant, can_add_dish, current_user_
                 <Link href={RestaurantController.showRevisit(restaurant.id).url} className="fl-btn fl-btn-p">
                     🔁 Log Revisit
                 </Link>
-                <Link href={RestaurantController.edit(restaurant.id).url} className="fl-btn fl-btn-sec">
+                <button type="button" className="fl-btn fl-btn-sec" onClick={() => router.visit(RestaurantController.edit(restaurant.id).url, { replace: true })}>
                     Edit Review
-                </Link>
+                </button>
                 <button className="fl-btn fl-btn-danger" onClick={handleDelete}>
                     Delete
                 </button>

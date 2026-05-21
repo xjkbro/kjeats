@@ -110,42 +110,24 @@ return a.name.localeCompare(b.name);
                 </div>
             )}
 
-            <div className="fl-chips">
-                {locations.map((loc) => (
-                    <button
-                        key={loc.name}
-                        className={`fl-chip${locationFilter === loc.name ? ' active' : ''}`}
-                        onClick={() => setLocationFilter(loc.name)}
-                    >
-                        {loc.display_name}
-                    </button>
-                ))}
-            </div>
-
-            {cuisines.length > 1 && (
-                <div className="fl-chips">
-                    {cuisines.map((c) => (
-                        <button
-                            key={c}
-                            className={`fl-chip${cuisineFilter === c ? ' active' : ''}`}
-                            onClick={() => setCuisineFilter(c)}
-                        >
-                            {c}
-                        </button>
+            <div className="fl-filters">
+                <select className="fl-filter-sel" value={locationFilter} onChange={(e) => setLocationFilter(e.target.value)}>
+                    {locations.map((loc) => (
+                        <option key={loc.name} value={loc.name}>{loc.display_name}</option>
                     ))}
-                </div>
-            )}
-
-            <div className="fl-chips">
-                {[SORT_NEWEST, SORT_OLDEST, SORT_AZ].map((s) => (
-                    <button
-                        key={s}
-                        className={`fl-chip${sort === s ? ' active' : ''}`}
-                        onClick={() => setSort(s)}
-                    >
-                        {s === SORT_NEWEST ? 'Newest' : s === SORT_OLDEST ? 'Oldest' : 'A → Z'}
-                    </button>
-                ))}
+                </select>
+                {cuisines.length > 1 && (
+                    <select className="fl-filter-sel" value={cuisineFilter} onChange={(e) => setCuisineFilter(e.target.value)}>
+                        {cuisines.map((c) => (
+                            <option key={c} value={c}>{c === ALL ? 'All Cuisines' : c}</option>
+                        ))}
+                    </select>
+                )}
+                <select className="fl-filter-sel" value={sort} onChange={(e) => setSort(e.target.value)}>
+                    <option value={SORT_NEWEST}>Newest</option>
+                    <option value={SORT_OLDEST}>Oldest</option>
+                    <option value={SORT_AZ}>A → Z</option>
+                </select>
             </div>
 
             {filtered.length > 0 ? (

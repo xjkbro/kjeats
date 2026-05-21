@@ -91,22 +91,16 @@ export default function RestaurantsIndex({ restaurants, group, scope, all_cuisin
                 </div>
             )}
 
-            <div className="fl-chips">
-                {cuisines.map((c) => (
-                    <button
-                        key={c}
-                        className={`fl-chip${filter === c ? ' active' : ''}`}
-                        onClick={() => setFilter(c)}
-                    >
-                        {c}
-                    </button>
-                ))}
-                <button
-                    className={`fl-chip${sort === 'rating' ? ' active' : ''}`}
-                    onClick={() => setSort((s) => (s === 'rating' ? 'recent' : 'rating'))}
-                >
-                    {sort === 'rating' ? '★ Top Rated' : 'Recent'}
-                </button>
+            <div className="fl-filters">
+                <select className="fl-filter-sel" value={filter} onChange={(e) => setFilter(e.target.value)}>
+                    {cuisines.map((c) => (
+                        <option key={c} value={c}>{c === ALL_CUISINES ? 'All Cuisines' : c}</option>
+                    ))}
+                </select>
+                <select className="fl-filter-sel" value={sort} onChange={(e) => setSort(e.target.value as 'recent' | 'rating')}>
+                    <option value="recent">Most Recent</option>
+                    <option value="rating">Top Rated</option>
+                </select>
             </div>
 
             {filtered.length > 0 ? (

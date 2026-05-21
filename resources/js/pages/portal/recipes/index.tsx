@@ -67,23 +67,18 @@ export default function RecipesIndex({ recipes, group, scope }: Props) {
                 </div>
             )}
 
-            <div className="fl-chips">
-                {categories.map((c) => (
-                    <button key={c} className={`fl-chip${catFilter === c ? ' active' : ''}`} onClick={() => setCatFilter(c)}>
-                        {c}
-                    </button>
-                ))}
-            </div>
-            <div className="fl-chips" style={{ marginTop: '-8px' }}>
-                {difficulties.map((d) => (
-                    <button
-                        key={d}
-                        className={`fl-chip${diffFilter === d ? ' active' : ''}`}
-                        onClick={() => setDiffFilter(diffFilter === d ? '' : d)}
-                    >
-                        {d}
-                    </button>
-                ))}
+            <div className="fl-filters">
+                <select className="fl-filter-sel" value={catFilter} onChange={(e) => setCatFilter(e.target.value)}>
+                    {categories.map((c) => (
+                        <option key={c} value={c}>{c === ALL ? 'All Categories' : c}</option>
+                    ))}
+                </select>
+                <select className="fl-filter-sel" value={diffFilter} onChange={(e) => setDiffFilter(e.target.value)}>
+                    <option value="">Any Difficulty</option>
+                    {difficulties.map((d) => (
+                        <option key={d} value={d}>{d}</option>
+                    ))}
+                </select>
             </div>
 
             {filtered.length > 0 ? (

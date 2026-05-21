@@ -77,7 +77,7 @@ export default function RecipeEdit({ recipe, all_tags }: Props) {
         recipe_photo: null,
         ingredients: recipe.ingredients.map((i) => ({ amount: i.amount, unit: i.unit, name: i.name })),
         steps: recipe.steps.map((s) => ({ instruction: s.instruction })),
-        has_nutrition: !!n,
+        has_nutrition: true,
         serving_size: n?.serving_size ?? '',
         servings_per_container: n?.servings_per_container != null ? String(n.servings_per_container) : '',
         calories: n?.calories != null ? String(n.calories) : '',
@@ -194,7 +194,7 @@ return;
 
     function submit(e: React.FormEvent) {
         e.preventDefault();
-        put(RecipeController.update(recipe.id).url);
+        put(RecipeController.update(recipe.id).url, { replace: true });
     }
 
     function handleDelete() {
@@ -206,7 +206,8 @@ return;
     }
 
     return (
-        <form className="fl-view fl-form" onSubmit={submit}>
+        <>
+        <form id="recipe-edit-form" className="fl-view fl-form" onSubmit={submit}>
             <div className="fl-fsec">
                 <h3 className="fl-fsec-ttl">Basic Information</h3>
 
@@ -417,82 +418,108 @@ photoRef.current.value = '';
             <div className="fl-fsec">
                 <div className="fl-fsec-hdr">
                     <h3 className="fl-fsec-ttl">Nutrition Facts</h3>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <button
-                            type="button"
-                            className="fl-btn fl-btn-sm fl-btn-sec"
-                            disabled={aiLoading || data.ingredients.length === 0}
-                            onClick={calculateNutrition}
-                            title={data.ingredients.length === 0 ? 'Add ingredients first' : 'Calculate nutrition with AI'}
-                        >
-                            {aiLoading ? 'Calculating…' : '✨ Calculate'}
-                        </button>
-                        <label className="fl-toggle">
-                            <input type="checkbox" checked={data.has_nutrition} onChange={(e) => setData('has_nutrition', e.target.checked)} />
-                            <span>Add</span>
-                        </label>
-                    </div>
+                    <button
+                        type="button"
+                        className="fl-btn fl-btn-sm fl-btn-sec"
+                        disabled={aiLoading || data.ingredients.length === 0}
+                        onClick={calculateNutrition}
+                        title={data.ingredients.length === 0 ? 'Add ingredients first' : 'Calculate nutrition with AI'}
+                    >
+                        {aiLoading ? 'Calculating…' : '✨ Calculate'}
+                    </button>
                 </div>
                 {aiError && <p style={{ color: 'var(--fl-red)', fontSize: '13px', marginBottom: '8px' }}>{aiError}</p>}
-                {data.has_nutrition && (
-                    <div className="fl-nutrition-form">
-                        <div className="fl-frow">
-                            <div className="fl-fgrp">
-                                <label className="fl-flbl">Serving Size</label>
-                                <input className="fl-fi" type="text" value={data.serving_size} onChange={(e) => setData('serving_size', e.target.value)} placeholder="e.g. 1 slice (85g)" />
-                            </div>
-                            <div className="fl-fgrp">
-                                <label className="fl-flbl">Servings per Container</label>
-                                <input className="fl-fi" type="number" value={data.servings_per_container} onChange={(e) => setData('servings_per_container', e.target.value)} />
-                            </div>
+                <div className="fl-nutrition-form">
+                    <div className="fl-nutr-serving-row">
+                        <div className="fl-fgrp">
+                            <label className="fl-flbl">Serving Size</label>
+                            <input className="fl-fi" type="text" value={data.serving_size} onChange={(e) => setData('serving_size', e.target.value)} placeholder="e.g. 1 slice (85g)" />
                         </div>
                         <div className="fl-fgrp">
-                            <label className="fl-flbl">Calories</label>
-                            <input className="fl-fi" type="number" value={data.calories} onChange={(e) => setData('calories', e.target.value)} />
+                            <label className="fl-flbl">Servings / Container</label>
+                            <input className="fl-fi" type="number" value={data.servings_per_container} onChange={(e) => setData('servings_per_container', e.target.value)} max={99999} />
                         </div>
-                        {([
-                            ['Total Fat (g)', 'total_fat_g'],
-                            ['Saturated Fat (g)', 'saturated_fat_g'],
-                            ['Trans Fat (g)', 'trans_fat_g'],
-                            ['Cholesterol (mg)', 'cholesterol_mg'],
-                            ['Sodium (mg)', 'sodium_mg'],
-                            ['Total Carbohydrate (g)', 'total_carbohydrate_g'],
-                            ['Dietary Fiber (g)', 'dietary_fiber_g'],
-                            ['Total Sugars (g)', 'total_sugars_g'],
-                            ['Added Sugars (g)', 'added_sugars_g'],
-                            ['Protein (g)', 'protein_g'],
-                            ['Vitamin D (mcg)', 'vitamin_d_mcg'],
-                            ['Calcium (mg)', 'calcium_mg'],
-                            ['Iron (mg)', 'iron_mg'],
-                            ['Potassium (mg)', 'potassium_mg'],
-                        ] as [string, keyof FormValues][]).map(([label, field]) => (
-                            <div key={field} className="fl-fgrp">
-                                <label className="fl-flbl">{label}</label>
-                                <input
-                                    className="fl-fi"
-                                    type="number"
-                                    step="any"
-                                    value={data[field] as string}
-                                    onChange={(e) => setData(field, e.target.value)}
-                                />
-                            </div>
-                        ))}
                     </div>
-                )}
+                    <div className="fl-nutr-label">
+                        <div className="fl-nutr-label-hdr">Per serving</div>
+                        <div className="fl-nutr-row fl-nutr-bold">
+                            <span>Calories</span>
+                            <input type="number" step="any" max={99999} value={data.calories} onChange={(e) => setData('calories', e.target.value)} />
+                        </div>
+                        <div className="fl-nutr-row fl-nutr-bold">
+                            <span>Total Fat (g)</span>
+                            <input type="number" step="any" max={99999} value={data.total_fat_g} onChange={(e) => setData('total_fat_g', e.target.value)} />
+                        </div>
+                        <div className="fl-nutr-row fl-nutr-sub">
+                            <span>Saturated Fat (g)</span>
+                            <input type="number" step="any" max={99999} value={data.saturated_fat_g} onChange={(e) => setData('saturated_fat_g', e.target.value)} />
+                        </div>
+                        <div className="fl-nutr-row fl-nutr-sub">
+                            <span>Trans Fat (g)</span>
+                            <input type="number" step="any" max={99999} value={data.trans_fat_g} onChange={(e) => setData('trans_fat_g', e.target.value)} />
+                        </div>
+                        <div className="fl-nutr-row fl-nutr-bold">
+                            <span>Cholesterol (mg)</span>
+                            <input type="number" step="any" max={99999} value={data.cholesterol_mg} onChange={(e) => setData('cholesterol_mg', e.target.value)} />
+                        </div>
+                        <div className="fl-nutr-row fl-nutr-bold">
+                            <span>Sodium (mg)</span>
+                            <input type="number" step="any" max={99999} value={data.sodium_mg} onChange={(e) => setData('sodium_mg', e.target.value)} />
+                        </div>
+                        <div className="fl-nutr-row fl-nutr-bold">
+                            <span>Total Carbohydrate (g)</span>
+                            <input type="number" step="any" max={99999} value={data.total_carbohydrate_g} onChange={(e) => setData('total_carbohydrate_g', e.target.value)} />
+                        </div>
+                        <div className="fl-nutr-row fl-nutr-sub">
+                            <span>Dietary Fiber (g)</span>
+                            <input type="number" step="any" max={99999} value={data.dietary_fiber_g} onChange={(e) => setData('dietary_fiber_g', e.target.value)} />
+                        </div>
+                        <div className="fl-nutr-row fl-nutr-sub">
+                            <span>Total Sugars (g)</span>
+                            <input type="number" step="any" max={99999} value={data.total_sugars_g} onChange={(e) => setData('total_sugars_g', e.target.value)} />
+                        </div>
+                        <div className="fl-nutr-row fl-nutr-sub">
+                            <span>Added Sugars (g)</span>
+                            <input type="number" step="any" max={99999} value={data.added_sugars_g} onChange={(e) => setData('added_sugars_g', e.target.value)} />
+                        </div>
+                        <div className="fl-nutr-row fl-nutr-bold">
+                            <span>Protein (g)</span>
+                            <input type="number" step="any" max={99999} value={data.protein_g} onChange={(e) => setData('protein_g', e.target.value)} />
+                        </div>
+                        <div className="fl-nutr-label-hdr" style={{ borderTop: '1px solid var(--fl-bdr-s)' }}>Micronutrients</div>
+                        <div className="fl-nutr-row">
+                            <span>Vitamin D (mcg)</span>
+                            <input type="number" step="any" max={99999} value={data.vitamin_d_mcg} onChange={(e) => setData('vitamin_d_mcg', e.target.value)} />
+                        </div>
+                        <div className="fl-nutr-row">
+                            <span>Calcium (mg)</span>
+                            <input type="number" step="any" max={99999} value={data.calcium_mg} onChange={(e) => setData('calcium_mg', e.target.value)} />
+                        </div>
+                        <div className="fl-nutr-row">
+                            <span>Iron (mg)</span>
+                            <input type="number" step="any" max={99999} value={data.iron_mg} onChange={(e) => setData('iron_mg', e.target.value)} />
+                        </div>
+                        <div className="fl-nutr-row">
+                            <span>Potassium (mg)</span>
+                            <input type="number" step="any" max={99999} value={data.potassium_mg} onChange={(e) => setData('potassium_mg', e.target.value)} />
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div className="fl-form-footer">
-                <button type="submit" className="fl-btn fl-btn-p" disabled={processing}>
-                    {processing ? 'Saving…' : 'Save Changes'}
-                </button>
-                <button type="button" className="fl-btn fl-btn-sec" onClick={() => router.visit(RecipeController.show(recipe.id).url)}>
-                    Discard
-                </button>
-                <button type="button" className="fl-btn fl-btn-danger" onClick={handleDelete}>
-                    Delete
-                </button>
-            </div>
         </form>
+        <div className="fl-form-footer">
+            <button type="button" className="fl-btn fl-btn-danger" style={{ marginRight: 'auto' }} onClick={handleDelete}>
+                Delete
+            </button>
+            <button type="button" className="fl-btn fl-btn-sec" onClick={() => router.visit(RecipeController.show(recipe.id).url)}>
+                Discard
+            </button>
+            <button type="submit" form="recipe-edit-form" className="fl-btn fl-btn-p" disabled={processing}>
+                {processing ? 'Saving…' : 'Save Changes'}
+            </button>
+        </div>
+        </>
     );
 }
 

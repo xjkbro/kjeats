@@ -34,9 +34,30 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
 
     const [searchOpen, setSearchOpen] = useState(false);
     const [addOpen, setAddOpen] = useState(false);
-    const [toasts, setToasts] = useState<Array<{ id: number; type: string; message: string }>>([]);
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+        try {
+            return localStorage.getItem('sidebar-collapsed') === '1';
+        } catch {
+            return false;
+        }
+    });
+    const [toasts, setToasts] = useState<Array<{ id: number; type: string; message: string }>>([])
     const searchRef = useRef<HTMLInputElement>(null);
     const toastId = useRef(0);
+
+    function toggleSidebar() {
+        setSidebarCollapsed((v) => {
+            const next = !v;
+
+            try {
+                localStorage.setItem('sidebar-collapsed', next ? '1' : '0');
+            } catch {
+                // ignore
+            }
+
+            return next;
+        });
+    }
 
     const isActive = (path: string) => url.startsWith(path);
 
@@ -75,7 +96,7 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
     }, []);
 
     return (
-        <div className="portal-shell">
+        <div className={`portal-shell${sidebarCollapsed ? ' sidebar-collapsed' : ''}`}>
             {/* HEADER */}
             <header className="fl-hdr">
                 <div className="fl-hdr-row">
@@ -115,8 +136,15 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
             {/* MAIN */}
             <main className="fl-main">{children}</main>
 
-            {/* BOTTOM NAV */}
+            {/* BOTTOM NAV / SIDEBAR */}
             <nav className="fl-nav">
+                {/* Logo area (desktop only) */}
+                <div className="fl-nav-logo">
+                    <Link href={dashboard()} className="fl-brand">
+                        <img src="/kjeats-logo.png" alt="kjeats" style={{ height: '22px', objectFit: 'contain' }} />
+                    </Link>
+                </div>
+
                 <Link href={dashboard()} className={`fl-nav-btn${isActive('/dashboard') ? ' active' : ''}`}>
                     <div className="fl-nav-ico">
                         <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
@@ -126,7 +154,7 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
                             <rect x="3" y="16" width="7" height="5" rx="1" />
                         </svg>
                     </div>
-                    <span>Home</span>
+                    <span className="fl-nav-label">Home</span>
                 </Link>
 
                 <Link href={RestaurantController.index().url} className={`fl-nav-btn${isActive('/restaurants') ? ' active' : ''}`}>
@@ -137,18 +165,8 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
                             <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7" />
                         </svg>
                     </div>
-                    <span>Reviews</span>
+                    <span className="fl-nav-label">Reviews</span>
                 </Link>
-
-                <button className="fl-nav-btn fl-nav-add" onClick={() => setAddOpen(true)}>
-                    <div className="fl-nav-add-ring">
-                        <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" viewBox="0 0 24 24">
-                            <line x1="12" y1="5" x2="12" y2="19" />
-                            <line x1="5" y1="12" x2="19" y2="12" />
-                        </svg>
-                    </div>
-                    {/* <span>Add</span> */}
-                </button>
 
                 <Link href={RecipeController.index().url} className={`fl-nav-btn${isActive('/recipes') ? ' active' : ''}`}>
                     <div className="fl-nav-ico">
@@ -159,7 +177,7 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
                             <line x1="9" y1="17" x2="15" y2="17" />
                         </svg>
                     </div>
-                    <span>Recipes</span>
+                    <span className="fl-nav-label">Recipes</span>
                 </Link>
 
                 <Link href={WantToTryController.index().url} className={`fl-nav-btn${isActive('/want-to-try') ? ' active' : ''}`}>
@@ -168,8 +186,29 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
                             <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
                         </svg>
                     </div>
-                    <span>Saved</span>
+                    <span className="fl-nav-label">Saved</span>
                 </Link>
+
+                {/* + Add button */}
+                <button className="fl-nav-btn fl-nav-add" onClick={() => setAddOpen(true)} aria-label="Add">
+                    <div className="fl-nav-ico">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" viewBox="0 0 24 24">
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                    </div>
+                    <span className="fl-nav-label">Add New</span>
+                </button>
+
+                {/* Collapse toggle (desktop only) */}
+                <button className="fl-nav-collapse" onClick={toggleSidebar} aria-label="Toggle sidebar">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
+                        {sidebarCollapsed
+                            ? <polyline points="9 18 15 12 9 6" />
+                            : <polyline points="15 18 9 12 15 6" />}
+                    </svg>
+                    <span className="fl-nav-label">Collapse</span>
+                </button>
             </nav>
 
             {/* ADD MENU OVERLAY */}

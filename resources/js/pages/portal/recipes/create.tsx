@@ -75,7 +75,7 @@ export default function RecipeCreate({ all_tags }: Props) {
         recipe_photo: null,
         ingredients: [],
         steps: [],
-        has_nutrition: false,
+        has_nutrition: true,
         serving_size: '',
         servings_per_container: '',
         calories: '',
@@ -254,7 +254,8 @@ return;
     }
 
     return (
-        <form className="fl-view fl-form" onSubmit={submit}>
+        <>
+        <form id="recipe-create-form" className="fl-view fl-form" onSubmit={submit}>
             <div className="fl-fsec">
                 <div className="fl-fsec-hdr">
                     <h3 className="fl-fsec-ttl">Basic Information</h3>
@@ -459,38 +460,32 @@ photoRef.current.value = '';
             <div className="fl-fsec">
                 <div className="fl-fsec-hdr">
                     <h3 className="fl-fsec-ttl">Nutrition Facts</h3>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <button
-                            type="button"
-                            className="fl-btn fl-btn-sm fl-btn-sec"
-                            disabled={aiLoading || data.ingredients.length === 0}
-                            onClick={calculateNutrition}
-                            title={data.ingredients.length === 0 ? 'Add ingredients first' : 'Calculate nutrition with AI'}
-                        >
-                            {aiLoading ? 'Calculating…' : '✨ Calculate'}
-                        </button>
-                        <label className="fl-toggle">
-                            <input type="checkbox" checked={data.has_nutrition} onChange={(e) => setData('has_nutrition', e.target.checked)} />
-                            <span>Add</span>
-                        </label>
-                    </div>
+                    <button
+                        type="button"
+                        className="fl-btn fl-btn-sm fl-btn-sec"
+                        disabled={aiLoading || data.ingredients.length === 0}
+                        onClick={calculateNutrition}
+                        title={data.ingredients.length === 0 ? 'Add ingredients first' : 'Calculate nutrition with AI'}
+                    >
+                        {aiLoading ? 'Calculating…' : '✨ Calculate'}
+                    </button>
                 </div>
                 {aiError && <p style={{ color: 'var(--fl-red)', fontSize: '13px', marginBottom: '8px' }}>{aiError}</p>}
-                {data.has_nutrition && (
-                    <div className="fl-nutrition-form">
-                        <div className="fl-frow">
-                            <div className="fl-fgrp">
-                                <label className="fl-flbl">Serving Size</label>
-                                <input className="fl-fi" type="text" value={data.serving_size} onChange={(e) => setData('serving_size', e.target.value)} placeholder="e.g. 1 slice (85g)" />
-                            </div>
-                            <div className="fl-fgrp">
-                                <label className="fl-flbl">Servings per Container</label>
-                                <input className="fl-fi" type="number" value={data.servings_per_container} onChange={(e) => setData('servings_per_container', e.target.value)} />
-                            </div>
+                <div className="fl-nutrition-form">
+                    <div className="fl-frow">
+                        <div className="fl-fgrp">
+                            <label className="fl-flbl">Serving Size</label>
+                            <input className="fl-fi" type="text" value={data.serving_size} onChange={(e) => setData('serving_size', e.target.value)} placeholder="e.g. 1 slice (85g)" />
                         </div>
                         <div className="fl-fgrp">
-                            <label className="fl-flbl">Calories</label>
-                            <input className="fl-fi" type="number" value={data.calories} onChange={(e) => setData('calories', e.target.value)} />
+                            <label className="fl-flbl">Servings / Container</label>
+                            <input className="fl-fi" type="number" value={data.servings_per_container} onChange={(e) => setData('servings_per_container', e.target.value)} max={99999} />
+                        </div>
+                    </div>
+                    <div className="fl-nutr-rows">
+                        <div className="fl-nutr-row">
+                            <span>Calories</span>
+                            <input type="number" step="any" max={99999} value={data.calories} onChange={(e) => setData('calories', e.target.value)} />
                         </div>
                         {([
                             ['Total Fat (g)', 'total_fat_g'],
@@ -508,25 +503,19 @@ photoRef.current.value = '';
                             ['Iron (mg)', 'iron_mg'],
                             ['Potassium (mg)', 'potassium_mg'],
                         ] as [string, keyof FormValues][]).map(([label, field]) => (
-                            <div key={field} className="fl-fgrp">
-                                <label className="fl-flbl">{label}</label>
+                            <div key={field} className="fl-nutr-row">
+                                <span>{label}</span>
                                 <input
-                                    className="fl-fi"
                                     type="number"
                                     step="any"
+                                    max={99999}
                                     value={data[field] as string}
                                     onChange={(e) => setData(field, e.target.value)}
                                 />
                             </div>
                         ))}
                     </div>
-                )}
-            </div>
-
-            <div className="fl-form-footer">
-                <button type="submit" className="fl-btn fl-btn-p" disabled={processing}>
-                    {processing ? 'Saving…' : 'Save Recipe'}
-                </button>
+                </div>
             </div>
 
             {/* IMPORT FROM URL DIALOG */}
@@ -570,6 +559,12 @@ photoRef.current.value = '';
                 </div>
             )}
         </form>
+        <div className="fl-form-footer">
+            <button type="submit" form="recipe-create-form" className="fl-btn fl-btn-p" disabled={processing}>
+                {processing ? 'Saving…' : 'Save Recipe'}
+            </button>
+        </div>
+        </>
     );
 }
 

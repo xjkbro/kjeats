@@ -385,9 +385,9 @@ export default function RecipeShow({ recipe, current_user_id }: Props) {
             )}
 
             <div className="fl-actions">
-                <Link href={RecipeController.edit(recipe.id).url} className="fl-btn fl-btn-sec">
+                <button className="fl-btn fl-btn-sec" onClick={() => router.visit(RecipeController.edit(recipe.id).url, { replace: true })}>
                     Edit Recipe
-                </Link>
+                </button>
                 <button className="fl-btn fl-btn-danger" onClick={handleDelete}>
                     Delete
                 </button>
