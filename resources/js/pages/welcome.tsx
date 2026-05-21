@@ -28,7 +28,7 @@ function getInitials(name: string | null | undefined): string {
 // ── Scroll-based Word Reveal ─────────────────────────────────────────
 
 function ScrollRevealText({ children, progress }: { children: string; progress: number }) {
-    const words = children.split(' ');
+    const words = (children ?? '').split(' ');
 
     return (
         <span style={{ display: 'inline' }}>
@@ -341,7 +341,7 @@ function WantToTryScene({ item, progress, align }: { item: FeedItemWantToTry; pr
             <FeedMeta user={item.user} action="saved" time={timeAgo(item.created_at)} progress={metaProgress} align={align} />
 
             <h2 style={{ fontSize: 'clamp(36px, 8vw, 64px)', fontWeight: 800, color: 'var(--wlc-tx)', letterSpacing: '-2px', marginBottom: 16, lineHeight: 1.05, opacity: titleProgress, y: (1 - titleProgress) * 30 }}>
-                <ScrollRevealText progress={titleProgress}>{item.emoji} {item.name}</ScrollRevealText>
+                <ScrollRevealText progress={titleProgress}>{`${item.emoji ?? ''} ${item.name ?? ''}`.trim()}</ScrollRevealText>
             </h2>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24, flexWrap: 'wrap', opacity: metaProgress, y: (1 - metaProgress) * 15, justifyContent: align === 'right' ? 'flex-end' : undefined }}>
