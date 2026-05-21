@@ -1241,14 +1241,14 @@ select.fl-fi {
     }
     .fl-desk-search {
         flex: 1; height: 38px; border-radius: 9999px;
-        background: var(--fl-s2);
-        border: 1.5px solid var(--fl-bdr-h);
+        background: #2a2d42;
+        border: 1.5px solid #4a4e70;
         display: flex; align-items: center; gap: 9px;
         padding: 0 16px; color: var(--fl-tx2); font-size: 13px;
         transition: background var(--fl-t1), border-color var(--fl-t1);
         max-width: 420px;
     }
-    .fl-desk-search:hover { background: var(--fl-s3); border-color: var(--fl-p-lt); color: var(--fl-tx); }
+    .fl-desk-search:hover { background: #363a55; border-color: var(--fl-p-lt); color: var(--fl-tx); }
     .fl-desk-search span { flex: 1; text-align: left; }
     .fl-desk-search kbd {
         font-size: 10px; font-family: inherit; color: var(--fl-tx3);
