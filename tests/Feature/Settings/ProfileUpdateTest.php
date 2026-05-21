@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 test('profile page is displayed', function () {
     $user = User::factory()->create();
@@ -82,4 +84,93 @@ test('correct password must be provided to delete account', function () {
         ->assertRedirect(route('profile.edit'));
 
     expect($user->fresh())->not->toBeNull();
+});
+
+test('avatar can be uploaded', function () {
+    Storage::fake('public');
+
+    $user = User::factory()->create();
+
+    $file = UploadedFile::fake()->image('avatar.jpg', 100, 100);
+
+    $response = $this
+        ->actingAs($user)
+        ->post(route('profile.avatar.update'), [
+            'avatar' => $file,
+        ]);
+
+    $response
+        ->assertSessionHasNoErrors()
+        ->assertRedirect(route('profile.edit'));
+
+    $user->refresh();
+    expect($user->avatar_path)->not->toBeNull();
+    Storage::disk('public')->assertExists($user->avatar_path);
+});
+
+test('avatar upload redirects to portal profile when _portal param is set', function () {
+    Storage::fake('public');
+
+    $user = User::factory()->create();
+
+    $file = UploadedFile::fake()->image('avatar.jpg', 100, 100);
+
+    $response = $this
+        ->actingAs($user)
+        ->post(route('profile.avatar.update', ['_portal' => '1']), [
+            'avatar' => $file,
+        ]);
+
+    $response
+        ->assertSessionHasNoErrors()
+        ->assertRedirect(route('portal.profile.edit'));
+
+    $user->refresh();
+    expect($user->avatar_path)->not->toBeNull();
+});
+
+test('avatar upload requires an image', function () {
+    $user = User::factory()->create();
+
+    $response = $this
+        ->actingAs($user)
+        ->from(route('profile.edit'))
+        ->post(route('profile.avatar.update'), [
+            'avatar' => UploadedFile::fake()->create('document.pdf', 100, 'application/pdf'),
+        ]);
+
+    $response->assertSessionHasErrors('avatar');
+});
+
+test('avatar upload rejects files larger than 3mb', function () {
+    Storage::fake('public');
+
+    $user = User::factory()->create();
+
+    $response = $this
+        ->actingAs($user)
+        ->from(route('profile.edit'))
+        ->post(route('profile.avatar.update'), [
+            'avatar' => UploadedFile::fake()->image('big.jpg')->size(4000),
+        ]);
+
+    $response->assertSessionHasErrors('avatar');
+});
+
+test('avatar can be deleted', function () {
+    Storage::fake('public');
+
+    $user = User::factory()->create(['avatar_path' => 'users/1/test.png']);
+    Storage::disk('public')->put('users/1/test.png', 'fake content');
+
+    $response = $this
+        ->actingAs($user)
+        ->delete(route('profile.avatar.delete'));
+
+    $response
+        ->assertSessionHasNoErrors()
+        ->assertRedirect(route('profile.edit'));
+
+    expect($user->fresh()->avatar_path)->toBeNull();
+    Storage::disk('public')->assertMissing('users/1/test.png');
 });

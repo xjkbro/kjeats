@@ -59,4 +59,22 @@ class CuisineController extends Controller
             'your_cuisines' => $yourCuisines,
         ]);
     }
+
+    public function portalSettings(Request $request)
+    {
+        $user = $request->user();
+        $cuisines = Cuisine::orderBy('name')->get();
+
+        $yourCuisines = $user->restaurants()
+            ->whereNotNull('cuisine')
+            ->pluck('cuisine')
+            ->unique()
+            ->sort()
+            ->values();
+
+        return inertia('portal/profile/cuisines', [
+            'cuisines' => $cuisines,
+            'your_cuisines' => $yourCuisines,
+        ]);
+    }
 }

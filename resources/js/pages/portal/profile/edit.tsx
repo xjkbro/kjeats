@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import * as ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import PortalLayout from '@/layouts/portal/portal-layout';
 import type { Auth } from '@/types';
+import * as Routes from '@/routes';
 
 function getInitials(name: string) {
     return name.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase();
@@ -19,9 +20,10 @@ export default function EditProfile({ mustVerifyEmail, status }: Props) {
     const user = auth.user;
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [preview, setPreview] = useState<string | null>(null);
+    const [pendingFile, setPendingFile] = useState<File | null>(null);
+    const [avatarUploading, setAvatarUploading] = useState(false);
+    const [avatarError, setAvatarError] = useState<string | null>(null);
     const avatarSrc = preview || user.avatar_url;
-
-    const avatarForm = useForm<{ avatar: File | null }>({ avatar: null });
 
     const { data, setData, patch, processing, errors, recentlySuccessful } = useForm({
         name: auth.user.name,
@@ -40,16 +42,38 @@ export default function EditProfile({ mustVerifyEmail, status }: Props) {
         const reader = new FileReader();
         reader.onload = () => setPreview(reader.result as string);
         reader.readAsDataURL(file);
-        avatarForm.setData('avatar', file);
-        avatarForm.post(ProfileController.updateAvatar.url() + '?_portal=1', {
-            forceFormData: true,
-            preserveScroll: true,
-            onSuccess: () => {
-                setPreview(null);
-                avatarForm.reset();
-                if (fileInputRef.current) fileInputRef.current.value = '';
+        setPendingFile(file);
+    }
+
+    function handleAvatarSave() {
+        if (!pendingFile) return;
+        setAvatarUploading(true);
+        setAvatarError(null);
+        router.post(
+            ProfileController.updateAvatar.url() + '?_portal=1',
+            { avatar: pendingFile },
+            {
+                forceFormData: true,
+                preserveScroll: true,
+                onSuccess: () => {
+                    setPreview(null);
+                    setPendingFile(null);
+                    setAvatarError(null);
+                    if (fileInputRef.current) fileInputRef.current.value = '';
+                },
+                onError: (errs) => {
+                    setAvatarError(errs.avatar ?? 'Upload failed. Please try again.');
+                },
+                onFinish: () => setAvatarUploading(false),
             },
-        });
+        );
+    }
+
+    function handleAvatarCancel() {
+        setPreview(null);
+        setPendingFile(null);
+        setAvatarError(null);
+        if (fileInputRef.current) fileInputRef.current.value = '';
     }
 
     function handleDeleteAvatar() {
@@ -71,18 +95,32 @@ export default function EditProfile({ mustVerifyEmail, status }: Props) {
                                 {getInitials(user.name)}
                             </div>
                         )}
-                        <div style={{ display: 'flex', gap: 8 }}>
-                            <button type="button" className="fl-btn fl-btn-out fl-btn-sm" onClick={() => fileInputRef.current?.click()}>
-                                {avatarSrc ? 'Change' : 'Upload'}
-                            </button>
-                            {avatarSrc && (
-                                <button type="button" className="fl-btn fl-btn-danger fl-btn-sm" onClick={handleDeleteAvatar}>
-                                    Remove
-                                </button>
+                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                            {pendingFile ? (
+                                <>
+                                    <button type="button" className="fl-btn fl-btn-p fl-btn-sm" onClick={handleAvatarSave} disabled={avatarUploading}>
+                                        {avatarUploading ? 'Saving…' : 'Save'}
+                                    </button>
+                                    <button type="button" className="fl-btn fl-btn-ghost fl-btn-sm" onClick={handleAvatarCancel} disabled={avatarUploading}>
+                                        Cancel
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    <button type="button" className="fl-btn fl-btn-out fl-btn-sm" onClick={() => fileInputRef.current?.click()}>
+                                        {avatarSrc ? 'Change' : 'Upload'}
+                                    </button>
+                                    {user.avatar_url && (
+                                        <button type="button" className="fl-btn fl-btn-danger fl-btn-sm" onClick={handleDeleteAvatar}>
+                                            Remove
+                                        </button>
+                                    )}
+                                </>
                             )}
                         </div>
                         <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
                     </div>
+                    {avatarError && <span className="fl-ferr">{avatarError}</span>}
                 </div>
 
                 <div className="fl-fsec">
@@ -137,6 +175,9 @@ export default function EditProfile({ mustVerifyEmail, status }: Props) {
                     <button type="submit" className="fl-btn fl-btn-p" disabled={processing}>
                         {processing ? 'Saving…' : 'Save Changes'}
                     </button>
+                    <Link href={Routes.home.url()} className="fl-btn fl-btn-ghost">
+                        Go to Home
+                    </Link>
                 </div>
             </form>
         </div>

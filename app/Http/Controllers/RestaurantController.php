@@ -43,6 +43,7 @@ class RestaurantController extends Controller
             'group' => $group,
             'scope' => $request->query('scope', 'mine'),
             'all_cuisines' => Cuisine::orderBy('name')->pluck('name')->values(),
+            'current_user_id' => $user->id,
         ]);
     }
 

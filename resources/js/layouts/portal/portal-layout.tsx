@@ -4,7 +4,7 @@ import * as RecipeController from '@/actions/App/Http/Controllers/RecipeControll
 import * as RestaurantController from '@/actions/App/Http/Controllers/RestaurantController';
 import * as WantToTryController from '@/actions/App/Http/Controllers/WantToTryController';
 import SearchPalette from '@/components/search-palette';
-import { dashboard } from '@/routes';
+import { dashboard, home } from '@/routes';
 
 interface Props {
     children: React.ReactNode;
@@ -156,7 +156,7 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
                                 <path d="M13.73 21a2 2 0 0 1-3.46 0" />
                             </svg>
                         </button>
-                        <Link href="/app/user/profile" className="fl-desk-user">
+                        <Link href="/app/profile" className="fl-desk-user">
                             <div className="fl-desk-user-info">
                                 <span className="fl-desk-user-name">{auth.user.name.split(' ')[0]}</span>
                                 <span className="fl-desk-user-email">{auth.user.email}</span>
@@ -191,7 +191,7 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
             <nav className="fl-nav">
                 {/* Logo area (desktop only) */}
                 <div className="fl-nav-logo">
-                    <Link href={dashboard()} className="fl-brand">
+                    <Link href={home()} className="fl-brand">
                         <img src="/kjeats-logo.png" alt="kjeats" style={{ height: '22px', objectFit: 'contain' }} />
                     </Link>
                 </div>
@@ -260,7 +260,7 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
             </nav>
 
             {/* Avatar — mobile bottom-right, outside pill */}
-            <Link href="/app/user/profile" className="fl-nav-avatar" aria-label="Profile">
+            <Link href="/app/profile" className="fl-nav-avatar" aria-label="Profile">
                 {auth.user.avatar_url ? (
                     <img src={auth.user.avatar_url} alt={auth.user.name} className="h-full w-full rounded-full object-cover" />
                 ) : (

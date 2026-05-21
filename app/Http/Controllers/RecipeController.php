@@ -38,6 +38,7 @@ class RecipeController extends Controller
             'recipes' => $recipes,
             'group' => $group,
             'scope' => $request->query('scope', 'mine'),
+            'current_user_id' => $user->id,
         ]);
     }
 

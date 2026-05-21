@@ -56,6 +56,7 @@ class WantToTryController extends Controller
                 'name' => $l->name,
                 'display_name' => $l->display_name,
             ])->values(),
+            'current_user_id' => $user->id,
         ]);
     }
 

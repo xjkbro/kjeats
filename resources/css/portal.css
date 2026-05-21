@@ -145,6 +145,7 @@
     padding: 0 14px; color: var(--fl-tx3); font-size: 14px;
     transition: background var(--fl-t1);
 }
+.fl-hdr-search:hover { background: var(--fl-s3); border-color: var(--fl-p-lt); color: var(--fl-tx); }
 .fl-hdr-search:active { background: var(--fl-s3); }
 .fl-hdr-search span { flex: 1; text-align: left; }
 
@@ -920,6 +921,8 @@ select.fl-fi {
 .fl-verify-note { font-size: 12px; color: var(--fl-tx2); margin-top: -4px; padding: 8px 10px; background: var(--fl-s2); border: 1px solid var(--fl-bdr-s); border-radius: var(--fl-r2); }
 .fl-toast-inline { font-size: 13px; font-weight: 600; padding: 10px 14px; border-radius: var(--fl-r3); margin-bottom: 12px; }
 .fl-toast-ok    { background: color-mix(in srgb, var(--fl-grn) 12%, transparent); color: var(--fl-grn); border: 1px solid color-mix(in srgb, var(--fl-grn) 30%, transparent); }
+.fl-toast-err   { background: color-mix(in srgb, var(--fl-red) 12%, transparent); color: var(--fl-red); border: 1px solid color-mix(in srgb, var(--fl-red) 30%, transparent); }
+.fl-fsec-sub    { font-size: 13px; color: var(--fl-tx2); margin-bottom: 12px; line-height: 1.5; }
 
 /* ── Segmented control ───────────────────────────────────── */
 .fl-seg     { display: flex; gap: 4px; background: var(--fl-s2); border: 1.5px solid var(--fl-bdr); border-radius: var(--fl-r3); padding: 4px; }

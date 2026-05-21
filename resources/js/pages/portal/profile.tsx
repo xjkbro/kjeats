@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import * as GroupController from '@/actions/App/Http/Controllers/GroupController';
 import PortalLayout from '@/layouts/portal/portal-layout';
 import type { Restaurant, Recipe } from '@/types/portal';
+import { home } from '@/routes';
 
 interface Props {
     user: {
@@ -99,12 +100,41 @@ export default function Profile({
 
             <section className="fl-section">
                 <div className="fl-section-hdr">
+                    <h3 className="fl-section-ttl">Links</h3>
+                </div>
+                <div className="fl-settings-list">
+                    <Link href={home()} className="fl-settings-item">
+                        <span className="fl-settings-ico"></span>
+                        <span>Home</span>
+                        <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <polyline points="9 18 15 12 9 6" />
+                        </svg>
+                    </Link>
+                </div>
+            </section>
+
+            <section className="fl-section">
+                <div className="fl-section-hdr">
                     <h3 className="fl-section-ttl">Settings</h3>
                 </div>
                 <div className="fl-settings-list">
                     <Link href={GroupController.index().url} className="fl-settings-item">
                         <span className="fl-settings-ico">👥</span>
                         <span>Groups</span>
+                        <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <polyline points="9 18 15 12 9 6" />
+                        </svg>
+                    </Link>
+                    <Link href="/app/user/cuisines" className="fl-settings-item">
+                        <span className="fl-settings-ico">🍜</span>
+                        <span>Cuisines</span>
+                        <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <polyline points="9 18 15 12 9 6" />
+                        </svg>
+                    </Link>
+                    <Link href="/app/user/locations" className="fl-settings-item">
+                        <span className="fl-settings-ico">📍</span>
+                        <span>Locations</span>
                         <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                             <polyline points="9 18 15 12 9 6" />
                         </svg>

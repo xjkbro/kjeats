@@ -79,4 +79,24 @@ class LocationController extends Controller
             'your_locations' => $yourLocations,
         ]);
     }
+
+    public function portalSettings(Request $request): Response
+    {
+        $user = $request->user();
+        $locations = Location::orderBy('display_name')->get();
+
+        $yourLocations = Restaurant::where('user_id', $user->id)
+            ->whereNotNull('location_id')
+            ->with('location')
+            ->get()
+            ->pluck('location.name')
+            ->unique()
+            ->sort()
+            ->values();
+
+        return Inertia::render('portal/profile/locations', [
+            'locations' => $locations,
+            'your_locations' => $yourLocations,
+        ]);
+    }
 }

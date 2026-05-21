@@ -27,6 +27,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('app/user/password', function () {
         return Inertia::render('portal/profile/password');
     })->name('portal.profile.password');
+
+    Route::get('app/user/cuisines', [CuisineController::class, 'portalSettings'])->name('portal.cuisines');
+    Route::get('app/user/locations', [LocationController::class, 'portalSettings'])->name('portal.locations');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
