@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Cuisine;
 use App\Models\Group;
+use App\Models\Location;
 use App\Models\Restaurant;
 use App\Models\WantToTry;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -146,6 +148,22 @@ class RestaurantController extends Controller
             $validated['date_visited'] = end($sorted);
         } else {
             $validated['visit_dates'] = [$validated['date_visited']];
+        }
+
+        // Resolve or create cuisine
+        if (! empty($validated['cuisine'])) {
+            $cuisine = Cuisine::firstOrCreate(
+                ['name' => $validated['cuisine']],
+                ['slug' => Str::slug($validated['cuisine'])]
+            );
+            $validated['cuisine'] = $cuisine->name;
+        }
+
+        // Resolve or create location and set FK
+        if (! empty($validated['location'])) {
+            $location = Location::findOrCreate($validated['location']);
+            $validated['location'] = $location->name;
+            $validated['location_id'] = $location->id;
         }
 
         $restaurant = $request->user()->restaurants()->create([
@@ -349,6 +367,22 @@ class RestaurantController extends Controller
             $validated['date_visited'] = end($sorted);
         } else {
             $validated['visit_dates'] = [$validated['date_visited']];
+        }
+
+        // Resolve or create cuisine
+        if (! empty($validated['cuisine'])) {
+            $cuisine = Cuisine::firstOrCreate(
+                ['name' => $validated['cuisine']],
+                ['slug' => Str::slug($validated['cuisine'])]
+            );
+            $validated['cuisine'] = $cuisine->name;
+        }
+
+        // Resolve or create location and set FK
+        if (! empty($validated['location'])) {
+            $location = Location::findOrCreate($validated['location']);
+            $validated['location'] = $location->name;
+            $validated['location_id'] = $location->id;
         }
 
         $restaurant->update($validated);

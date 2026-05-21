@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cuisine;
 use App\Models\Group;
 use App\Models\Location;
 use App\Models\WantToTry;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -33,13 +35,27 @@ class WantToTryController extends Controller
             $query = WantToTry::whereIn('user_id', $memberIds)->with('user')->whereNull('restaurant_id');
         }
 
-        $items = $query->latest()->get();
+        $items = $query->with(['user', 'locationRelation'])->latest()->get();
 
         return Inertia::render('portal/want-to-try/index', [
-            'items' => $items,
+            'items' => $items->map(fn ($item) => [
+                'id' => $item->id,
+                'emoji' => $item->emoji,
+                'name' => $item->name,
+                'cuisine' => $item->cuisine,
+                'location' => $item->location,
+                'location_display_name' => $item->locationRelation?->display_name ?? $item->location,
+                'notes' => $item->notes,
+                'restaurant_id' => $item->restaurant_id,
+                'created_at' => $item->created_at,
+                'user' => $item->user,
+            ])->values(),
             'group' => $group,
             'scope' => $request->query('scope', 'mine'),
-            'all_locations' => Location::orderBy('display_name')->pluck('name')->values(),
+            'all_locations' => Location::orderBy('display_name')->get()->map(fn ($l) => [
+                'name' => $l->name,
+                'display_name' => $l->display_name,
+            ])->values(),
         ]);
     }
 
@@ -56,6 +72,22 @@ class WantToTryController extends Controller
             'location' => 'nullable|string|max:255',
             'notes' => 'nullable|string|max:2000',
         ]);
+
+        // Resolve or create cuisine
+        if (! empty($validated['cuisine'])) {
+            $cuisine = Cuisine::firstOrCreate(
+                ['name' => $validated['cuisine']],
+                ['slug' => Str::slug($validated['cuisine'])]
+            );
+            $validated['cuisine'] = $cuisine->name;
+        }
+
+        // Resolve or create location and set FK
+        if (! empty($validated['location'])) {
+            $location = Location::findOrCreate($validated['location']);
+            $validated['location'] = $location->name;
+            $validated['location_id'] = $location->id;
+        }
 
         $groupId = (int) config('app.frontend_group_id', 0);
         $group = null;

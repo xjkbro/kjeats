@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import * as WantToTryController from '@/actions/App/Http/Controllers/WantToTryController';
 import PortalLayout from '@/layouts/portal/portal-layout';
-import { index as locationsIndexRoute, store as locationsStoreRoute } from '@/routes/locations';
+import { index as locationsIndexRoute } from '@/routes/locations';
 
 export default function WantToTryCreate() {
     const { data, setData, post, processing, errors } = useForm({
@@ -15,7 +15,6 @@ export default function WantToTryCreate() {
 
     const [locationSuggestions, setLocationSuggestions] = useState<Array<{ name: string; display_name: string }>>([]);
     const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
-    const [locationLoading, setLocationLoading] = useState(false);
     const locationInputRef = useRef<HTMLInputElement>(null);
 
     const fetchLocationSuggestions = useCallback(async (query: string) => {
@@ -25,53 +24,17 @@ export default function WantToTryCreate() {
             return;
         }
 
-        setLocationLoading(true);
-
         try {
             const res = await fetch(locationsIndexRoute.url({ query: { q: query } }));
             const result = await res.json();
             setLocationSuggestions(result);
         } catch {
             setLocationSuggestions([]);
-        } finally {
-            setLocationLoading(false);
         }
     }, []);
 
     function selectLocation(name: string) {
         setData('location', name);
-        setShowLocationSuggestions(false);
-    }
-
-    async function addNewLocation() {
-        if (!data.location.trim()) {
-return;
-}
-
-        try {
-            const res = await fetch(locationsStoreRoute.url(), {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '',
-                },
-                body: JSON.stringify({ name: data.location }),
-            });
-
-            if (res.ok) {
-                const created = await res.json();
-                setData('location', created.name);
-            } else if (res.status === 422) {
-                const suggestion = await res.json();
-
-                if (suggestion.suggestion) {
-                    setData('location', suggestion.suggestion);
-                }
-            }
-        } catch {
-            // Silently fail
-        }
-
         setShowLocationSuggestions(false);
     }
 
@@ -141,10 +104,7 @@ return;
                                 setData('location', e.target.value);
                                 setShowLocationSuggestions(e.target.value.length > 0);
                             }}
-                            onBlur={() => setTimeout(() => {
-                                setShowLocationSuggestions(false);
-                                addNewLocation();
-                            }, 200)}
+                            onBlur={() => setTimeout(() => setShowLocationSuggestions(false), 200)}
                             onFocus={() => data.location.length > 0 && setShowLocationSuggestions(true)}
                             placeholder="City or area"
                             autoComplete="off"
@@ -164,18 +124,6 @@ return;
                                         {loc.display_name !== loc.name ? `${loc.display_name} — ${loc.name}` : loc.name}
                                     </button>
                                 ))}
-                                {data.location.length > 0 && !locationLoading && filteredLocations.length === 0 && (
-                                    <button
-                                        type="button"
-                                        className="fl-autocomplete-item fl-autocomplete-add"
-                                        onMouseDown={(e) => {
-                                            e.preventDefault();
-                                            addNewLocation();
-                                        }}
-                                    >
-                                        + Add "{data.location}"
-                                    </button>
-                                )}
                             </div>
                         )}
                     </div>

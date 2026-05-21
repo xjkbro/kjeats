@@ -4,8 +4,8 @@ import type { ReactNode } from 'react';
 import * as RestaurantController from '@/actions/App/Http/Controllers/RestaurantController';
 import TagInput from '@/components/tag-input';
 import PortalLayout from '@/layouts/portal/portal-layout';
-import { index as cuisinesIndexRoute, store as cuisinesStoreRoute } from '@/routes/cuisines';
-import { index as locationsIndexRoute, store as locationsStoreRoute } from '@/routes/locations';
+import { index as cuisinesIndexRoute } from '@/routes/cuisines';
+import { index as locationsIndexRoute } from '@/routes/locations';
 
 interface Props {
     all_tags: string[];
@@ -101,7 +101,6 @@ export default function RestaurantCreate({ all_tags, want_to_tries = [] }: Props
     const [selectedWantToTryId, setSelectedWantToTryId] = useState<number | null>(null);
     const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
     const [locationSuggestions, setLocationSuggestions] = useState<Array<{ name: string; display_name: string }>>([]);
-    const [locationLoading, setLocationLoading] = useState(false);
     const locationInputRef = useRef<HTMLInputElement>(null);
 
     const fetchLocationSuggestions = useCallback(async (query: string) => {
@@ -111,16 +110,12 @@ export default function RestaurantCreate({ all_tags, want_to_tries = [] }: Props
             return;
         }
 
-        setLocationLoading(true);
-
         try {
             const res = await fetch(locationsIndexRoute.url({ query: { q: query } }));
             const result = await res.json();
             setLocationSuggestions(result);
         } catch {
             setLocationSuggestions([]);
-        } finally {
-            setLocationLoading(false);
         }
     }, []);
 
@@ -129,44 +124,11 @@ export default function RestaurantCreate({ all_tags, want_to_tries = [] }: Props
         setShowLocationSuggestions(false);
     }
 
-    async function addNewLocation() {
-        if (!data.location.trim()) {
-return;
-}
-
-        try {
-            const res = await fetch(locationsStoreRoute.url(), {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '',
-                },
-                body: JSON.stringify({ name: data.location }),
-            });
-
-            if (res.ok) {
-                const created = await res.json();
-                setData('location', created.name);
-            } else if (res.status === 422) {
-                const suggestion = await res.json();
-
-                if (suggestion.suggestion) {
-                    setData('location', suggestion.suggestion);
-                }
-            }
-        } catch {
-            // Silently fail - the location will still be saved as a string
-        }
-
-        setShowLocationSuggestions(false);
-    }
-
     const filteredLocations = locationSuggestions
         .filter((loc) => loc.name.toLowerCase() !== data.location.toLowerCase());
 
     const [cuisineSuggestions, setCuisineSuggestions] = useState<string[]>([]);
     const [showCuisineSuggestions, setShowCuisineSuggestions] = useState(false);
-    const [cuisineLoading, setCuisineLoading] = useState(false);
     const cuisineInputRef = useRef<HTMLInputElement>(null);
 
     const fetchCuisineSuggestions = useCallback(async (query: string) => {
@@ -176,47 +138,17 @@ return;
             return;
         }
 
-        setCuisineLoading(true);
-
         try {
             const res = await fetch(cuisinesIndexRoute.url({ query: { q: query } }));
             const data = await res.json();
             setCuisineSuggestions(data);
         } catch {
             setCuisineSuggestions([]);
-        } finally {
-            setCuisineLoading(false);
         }
     }, []);
 
     function selectCuisine(name: string) {
         setData('cuisine', name);
-        setShowCuisineSuggestions(false);
-    }
-
-    async function addNewCuisine() {
-        if (!data.cuisine.trim()) {
-return;
-}
-
-        try {
-            const res = await fetch(cuisinesStoreRoute.url(), {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '',
-                },
-                body: JSON.stringify({ name: data.cuisine }),
-            });
-
-            if (res.ok) {
-                const created = await res.json();
-                setData('cuisine', created.name);
-            }
-        } catch {
-            // Silently fail - the cuisine will still be saved as a string
-        }
-
         setShowCuisineSuggestions(false);
     }
 
@@ -371,10 +303,12 @@ return;
                             className={`fl-fi${errors.cuisine ? ' error' : ''}`}
                             type="text"
                             value={data.cuisine}
-                            onChange={(e) => setData('cuisine', e.target.value)}
+                            onChange={(e) => {
+                                setData('cuisine', e.target.value);
+                                setShowCuisineSuggestions(e.target.value.length > 0);
+                            }}
                             onBlur={() => setTimeout(() => {
                                 setShowCuisineSuggestions(false);
-                                addNewCuisine();
                             }, 200)}
                             onFocus={() => data.cuisine.length > 0 && setShowCuisineSuggestions(true)}
                             placeholder="e.g. Italian"
@@ -396,18 +330,6 @@ return;
                                         {c}
                                     </button>
                                 ))}
-                                {data.cuisine.length > 0 && !cuisineLoading && filteredCuisines.length === 0 && (
-                                    <button
-                                        type="button"
-                                        className="fl-autocomplete-item fl-autocomplete-add"
-                                        onMouseDown={(e) => {
-                                            e.preventDefault();
-                                            addNewCuisine();
-                                        }}
-                                    >
-                                        + Add "{data.cuisine}"
-                                    </button>
-                                )}
                             </div>
                         )}
                         {errors.cuisine && <span className="fl-ferr">{errors.cuisine}</span>}
@@ -444,7 +366,6 @@ return;
                             }}
                             onBlur={() => setTimeout(() => {
                                 setShowLocationSuggestions(false);
-                                addNewLocation();
                             }, 200)}
                             onFocus={() => data.location.length > 0 && setShowLocationSuggestions(true)}
                             placeholder="City, Neighborhood"
@@ -465,18 +386,6 @@ return;
                                         {loc.display_name !== loc.name ? `${loc.display_name} — ${loc.name}` : loc.name}
                                     </button>
                                 ))}
-                                {data.location.length > 0 && !locationLoading && filteredLocations.length === 0 && (
-                                    <button
-                                        type="button"
-                                        className="fl-autocomplete-item fl-autocomplete-add"
-                                        onMouseDown={(e) => {
-                                            e.preventDefault();
-                                            addNewLocation();
-                                        }}
-                                    >
-                                        + Add "{data.location}"
-                                    </button>
-                                )}
                             </div>
                         )}
                     </div>

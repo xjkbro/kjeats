@@ -12,6 +12,7 @@ interface Props {
         name: string;
         cuisine: string | null;
         location: string | null;
+        location_display_name: string | null;
         notes: string | null;
         restaurant_id: number | null;
         created_at: string;
@@ -19,7 +20,7 @@ interface Props {
     }>;
     group: { id: number; name: string } | null;
     scope: string;
-    all_locations: string[];
+    all_locations: Array<{ name: string; display_name: string }>;
 }
 
 function timeAgo(isoDate: string): string {
@@ -49,15 +50,15 @@ const SORT_OLDEST = 'Oldest';
 const SORT_AZ = 'A → Z';
 
 export default function WantToTryIndex({ items, group, scope, all_locations = [] }: Props) {
-    const [locationFilter, setLocationFilter] = useState(ALL);
+    const [locationFilter, setLocationFilter] = useState('');
     const [cuisineFilter, setCuisineFilter] = useState(ALL);
     const [sort, setSort] = useState<string>(SORT_NEWEST);
 
     const cuisines = [ALL, ...Array.from(new Set(items.map((i) => i.cuisine).filter(Boolean) as string[]))];
-    const locations = [ALL, ...all_locations];
+    const locations = [{ name: '', display_name: ALL }, ...all_locations];
 
     const filtered = items
-        .filter((item) => locationFilter === ALL || item.location === locationFilter)
+        .filter((item) => locationFilter === '' || item.location === locationFilter)
         .filter((item) => cuisineFilter === ALL || item.cuisine === cuisineFilter)
         .sort((a, b) => {
             if (sort === SORT_NEWEST) {
@@ -112,11 +113,11 @@ return a.name.localeCompare(b.name);
             <div className="fl-chips">
                 {locations.map((loc) => (
                     <button
-                        key={loc}
-                        className={`fl-chip${locationFilter === loc ? ' active' : ''}`}
-                        onClick={() => setLocationFilter(loc)}
+                        key={loc.name}
+                        className={`fl-chip${locationFilter === loc.name ? ' active' : ''}`}
+                        onClick={() => setLocationFilter(loc.name)}
                     >
-                        {loc}
+                        {loc.display_name}
                     </button>
                 ))}
             </div>
@@ -156,7 +157,7 @@ return a.name.localeCompare(b.name);
                                 <div className="fl-wtt-name">{item.name}</div>
                                 <div className="fl-wtt-meta">
                                     {item.cuisine && <span className="fl-badge fl-badge-org">{item.cuisine}</span>}
-                                    {item.location && <span className="fl-badge fl-badge-def">{item.location}</span>}
+                                    {item.location && <span className="fl-badge fl-badge-def">{item.location_display_name ?? item.location}</span>}
                                     {group && scope === 'group' && (
                                         <span className="fl-wtt-by">{item.user.name} · {timeAgo(item.created_at)}</span>
                                     )}

@@ -46,6 +46,11 @@ class WantToTry extends Model
         return $this->belongsTo(Restaurant::class);
     }
 
+    public function locationRelation(): BelongsTo
+    {
+        return $this->belongsTo(Location::class, 'location_id');
+    }
+
     public function getIsConvertedAttribute(): bool
     {
         return $this->restaurant_id !== null;
