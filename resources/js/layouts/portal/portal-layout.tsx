@@ -100,41 +100,86 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
             {/* HEADER */}
             <header className="fl-hdr">
                 <div className="fl-hdr-row">
-                    <div className="fl-hdr-l">
-                        {showBack ? (
+                    {showBack ? (
+                        <>
                             <button className="fl-back-btn" onClick={() => window.history.back()}>
                                 <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" viewBox="0 0 24 24">
                                     <polyline points="15 18 9 12 15 6" />
                                 </svg>
                             </button>
-                        ) : (
-                            <Link href={dashboard()} className="fl-brand">
-                                <img src="/kjeats-logo.png" alt="kjeats" style={{ height: '22px', objectFit: 'contain' }} />
-                            </Link>
-                        )}
-                        {title && !showBack && null}
-                        {title && showBack && <h1 className="fl-page-ttl">{title}</h1>}
-                    </div>
-                    <div className="fl-hdr-r">
-                        {!showBack && (
-                            <button className="fl-hdr-btn" onClick={() => setSearchOpen((v) => !v)} title="Search (Cmd+K)">
-                                <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
+                            {title && <h1 className="fl-page-ttl" style={{ flex: 1, minWidth: 0 }}>{title}</h1>}
+                        </>
+                    ) : (
+                        <>
+                            <button className="fl-hdr-bell" aria-label="Notifications">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
+                                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                                    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                                </svg>
+                            </button>
+                            <button className="fl-hdr-search" onClick={() => setSearchOpen((v) => !v)}>
+                                <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
                                     <circle cx="11" cy="11" r="8" />
                                     <line x1="21" y1="21" x2="16.65" y2="16.65" />
                                 </svg>
+                                <span>Search</span>
                             </button>
-                        )}
-                        <Link href="/app/profile" className="fl-avatar">
-                            {getInitials(auth.user.name)}
-                        </Link>
-                    </div>
+                            <button className="fl-hdr-add" onClick={() => setAddOpen(true)} aria-label="Add">
+                                <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" viewBox="0 0 24 24">
+                                    <line x1="12" y1="5" x2="12" y2="19" />
+                                    <line x1="5" y1="12" x2="19" y2="12" />
+                                </svg>
+                            </button>
+                        </>
+                    )}
                 </div>
             </header>
 
             <SearchPalette open={searchOpen} onClose={() => setSearchOpen(false)} />
 
             {/* MAIN */}
-            <main className="fl-main">{children}</main>
+            <main className="fl-main">
+                {/* Desktop top bar (hidden on mobile) */}
+                <div className="fl-desk-bar">
+                    <button className="fl-desk-search" onClick={() => setSearchOpen((v) => !v)}>
+                        <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
+                            <circle cx="11" cy="11" r="8" />
+                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                        </svg>
+                        <span>Search</span>
+                        <kbd>⌘K</kbd>
+                    </button>
+                    <div className="fl-desk-bar-r">
+                        <button className="fl-desk-bell" aria-label="Notifications">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
+                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                            </svg>
+                        </button>
+                        <Link href="/app/profile" className="fl-desk-user">
+                            <div className="fl-desk-user-info">
+                                <span className="fl-desk-user-name">{auth.user.name.split(' ')[0]}</span>
+                                <span className="fl-desk-user-email">{auth.user.email}</span>
+                            </div>
+                            <div className="fl-desk-avatar">{getInitials(auth.user.name)}</div>
+                        </Link>
+                    </div>
+                </div>
+                {/* Desktop back nav — shows above page content, hidden on mobile */}
+                <div className="fl-main-body">
+                    {showBack && (
+                        <div className="fl-view-nav">
+                            <button className="fl-back-btn" onClick={() => window.history.back()}>
+                                <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" viewBox="0 0 24 24">
+                                    <polyline points="15 18 9 12 15 6" />
+                                </svg>
+                            </button>
+                            {title && <h1 className="fl-desk-page-ttl">{title}</h1>}
+                        </div>
+                    )}
+                    {children}
+                </div>
+            </main>
 
             {/* BOTTOM NAV / SIDEBAR */}
             <nav className="fl-nav">
@@ -189,7 +234,7 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
                     <span className="fl-nav-label">Saved</span>
                 </Link>
 
-                {/* + Add button */}
+                {/* + Add button (desktop sidebar only) */}
                 <button className="fl-nav-btn fl-nav-add" onClick={() => setAddOpen(true)} aria-label="Add">
                     <div className="fl-nav-ico">
                         <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" viewBox="0 0 24 24">
@@ -199,17 +244,19 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
                     </div>
                     <span className="fl-nav-label">Add New</span>
                 </button>
-
-                {/* Collapse toggle (desktop only) */}
                 <button className="fl-nav-collapse" onClick={toggleSidebar} aria-label="Toggle sidebar">
                     <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
                         {sidebarCollapsed
                             ? <polyline points="9 18 15 12 9 6" />
                             : <polyline points="15 18 9 12 15 6" />}
                     </svg>
-                    <span className="fl-nav-label">Collapse</span>
                 </button>
             </nav>
+
+            {/* Avatar — mobile bottom-right, outside pill */}
+            <Link href="/app/profile" className="fl-nav-avatar" aria-label="Profile">
+                {getInitials(auth.user.name)}
+            </Link>
 
             {/* ADD MENU OVERLAY */}
             {addOpen && (
