@@ -1,8 +1,13 @@
-import { Link, useForm, usePage } from '@inertiajs/react';
+import { Link, router, useForm, usePage } from '@inertiajs/react';
+import { useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import * as ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import PortalLayout from '@/layouts/portal/portal-layout';
 import type { Auth } from '@/types';
+
+function getInitials(name: string) {
+    return name.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase();
+}
 
 interface Props {
     mustVerifyEmail: boolean;
@@ -11,6 +16,12 @@ interface Props {
 
 export default function EditProfile({ mustVerifyEmail, status }: Props) {
     const { auth } = usePage<{ auth: Auth }>().props;
+    const user = auth.user;
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [preview, setPreview] = useState<string | null>(null);
+    const avatarSrc = preview || user.avatar_url;
+
+    const avatarForm = useForm<{ avatar: File | null }>({ avatar: null });
 
     const { data, setData, patch, processing, errors, recentlySuccessful } = useForm({
         name: auth.user.name,
@@ -23,16 +34,57 @@ export default function EditProfile({ mustVerifyEmail, status }: Props) {
         patch(ProfileController.update().url, { preserveScroll: true });
     }
 
+    function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => setPreview(reader.result as string);
+        reader.readAsDataURL(file);
+        avatarForm.setData('avatar', file);
+        avatarForm.post(ProfileController.updateAvatar.url() + '?_portal=1', {
+            forceFormData: true,
+            preserveScroll: true,
+            onSuccess: () => {
+                setPreview(null);
+                avatarForm.reset();
+                if (fileInputRef.current) fileInputRef.current.value = '';
+            },
+        });
+    }
+
+    function handleDeleteAvatar() {
+        router.delete(ProfileController.deleteAvatar.url() + '?_portal=1', {
+            preserveScroll: true,
+        });
+    }
+
     return (
         <div className="fl-view">
-            <Link href="/app/profile" className="fl-back-btn">
-                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                    <polyline points="15 18 9 12 15 6" />
-                </svg>
-                Profile
-            </Link>
+            <form className="fl-form" onSubmit={handleSubmit}>
+                <div className="fl-fsec">
+                    <h3 className="fl-fsec-ttl">Profile Photo</h3>
+                    <div className="fl-fgrp" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                        {avatarSrc ? (
+                            <img src={avatarSrc} alt={user.name} style={{ width: 64, height: 64, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                        ) : (
+                            <div className="fl-desk-avatar" style={{ width: 64, height: 64, fontSize: 20 }}>
+                                {getInitials(user.name)}
+                            </div>
+                        )}
+                        <div style={{ display: 'flex', gap: 8 }}>
+                            <button type="button" className="fl-btn fl-btn-out fl-btn-sm" onClick={() => fileInputRef.current?.click()}>
+                                {avatarSrc ? 'Change' : 'Upload'}
+                            </button>
+                            {avatarSrc && (
+                                <button type="button" className="fl-btn fl-btn-danger fl-btn-sm" onClick={handleDeleteAvatar}>
+                                    Remove
+                                </button>
+                            )}
+                        </div>
+                        <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
+                    </div>
+                </div>
 
-            <form className="fl-form" onSubmit={handleSubmit} style={{ marginTop: '16px' }}>
                 <div className="fl-fsec">
                     <h3 className="fl-fsec-ttl">Edit Profile</h3>
 

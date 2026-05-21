@@ -29,7 +29,7 @@ function getInitials(name: string) {
 
 export default function PortalLayout({ children, title, showBack = false }: Props) {
     const { url, props } = usePage();
-    const auth = props.auth as { user: { name: string; email: string } };
+    const auth = props.auth as { user: { name: string; email: string; avatar_url?: string | null } };
     const flash = props.flash as { type?: string; message?: string } | undefined;
 
     const [searchOpen, setSearchOpen] = useState(false);
@@ -156,12 +156,18 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
                                 <path d="M13.73 21a2 2 0 0 1-3.46 0" />
                             </svg>
                         </button>
-                        <Link href="/app/profile" className="fl-desk-user">
+                        <Link href="/app/user/profile" className="fl-desk-user">
                             <div className="fl-desk-user-info">
                                 <span className="fl-desk-user-name">{auth.user.name.split(' ')[0]}</span>
                                 <span className="fl-desk-user-email">{auth.user.email}</span>
                             </div>
-                            <div className="fl-desk-avatar">{getInitials(auth.user.name)}</div>
+                            <div className="fl-desk-avatar">
+                                {auth.user.avatar_url ? (
+                                    <img src={auth.user.avatar_url} alt={auth.user.name} className="h-full w-full rounded-full object-cover" />
+                                ) : (
+                                    getInitials(auth.user.name)
+                                )}
+                            </div>
                         </Link>
                     </div>
                 </div>
@@ -254,8 +260,12 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
             </nav>
 
             {/* Avatar — mobile bottom-right, outside pill */}
-            <Link href="/app/profile" className="fl-nav-avatar" aria-label="Profile">
-                {getInitials(auth.user.name)}
+            <Link href="/app/user/profile" className="fl-nav-avatar" aria-label="Profile">
+                {auth.user.avatar_url ? (
+                    <img src={auth.user.avatar_url} alt={auth.user.name} className="h-full w-full rounded-full object-cover" />
+                ) : (
+                    getInitials(auth.user.name)
+                )}
             </Link>
 
             {/* ADD MENU OVERLAY */}

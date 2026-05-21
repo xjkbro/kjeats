@@ -9,6 +9,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -48,11 +49,64 @@ class ProfileController extends Controller
     }
 
     /**
+     * Upload a profile avatar for the user.
+     */
+    public function updateAvatar(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'avatar' => 'required|image|max:2048',
+        ]);
+
+        $user = $request->user();
+
+        if ($user->avatar_path) {
+            Storage::disk('public')->delete($user->avatar_path);
+        }
+
+        $path = $request->file('avatar')->store("users/{$user->id}", 'public');
+
+        $user->update(['avatar_path' => $path]);
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Avatar updated.')]);
+
+        if ($request->boolean('_portal')) {
+            return to_route('portal.profile.edit');
+        }
+
+        return to_route('profile.edit');
+    }
+
+    /**
+     * Delete the user's profile avatar.
+     */
+    public function deleteAvatar(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+
+        if ($user->avatar_path) {
+            Storage::disk('public')->delete($user->avatar_path);
+            $user->update(['avatar_path' => null]);
+        }
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Avatar removed.')]);
+
+        if ($request->boolean('_portal')) {
+            return to_route('portal.profile.edit');
+        }
+
+        return to_route('profile.edit');
+    }
+
+    /**
      * Delete the user's profile.
      */
     public function destroy(ProfileDeleteRequest $request): RedirectResponse
     {
         $user = $request->user();
+
+        if ($user->avatar_path) {
+            Storage::disk('public')->delete($user->avatar_path);
+        }
 
         Auth::logout();
 
