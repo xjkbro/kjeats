@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DishController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LocationController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\NutritionController;
 use App\Http\Controllers\ProfileController;
@@ -46,6 +47,9 @@ Route::middleware(['auth', 'verified'])->prefix('app')->group(function () {
 
     Route::get('cuisines', [CuisineController::class, 'index'])->name('cuisines.index');
     Route::post('cuisines', [CuisineController::class, 'store'])->name('cuisines.store');
+
+    Route::get('locations', [LocationController::class, 'index'])->name('locations.index');
+    Route::post('locations', [LocationController::class, 'store'])->name('locations.store');
 
     Route::resource('groups', GroupController::class)
         ->only(['index', 'show', 'create', 'store']);

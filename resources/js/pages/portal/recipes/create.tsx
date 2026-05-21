@@ -366,7 +366,10 @@ return;
                                     className="fl-visit-chip-rm"
                                     onClick={() => {
                                         setData('recipe_photo', null);
-                                        if (photoRef.current) photoRef.current.value = '';
+
+                                        if (photoRef.current) {
+photoRef.current.value = '';
+}
                                     }}
                                 >
                                     ✕

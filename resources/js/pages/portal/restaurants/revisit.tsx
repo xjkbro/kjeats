@@ -176,7 +176,9 @@ export default function RestaurantRevisit({ restaurant }: Props) {
                         <div className="fl-fgrp">
                             <label className="fl-flbl">Photo</label>
                             <input
-                                ref={(el) => { dishPhotoRefs.current[idx] = el; }}
+                                ref={(el) => {
+ dishPhotoRefs.current[idx] = el; 
+}}
                                 type="file"
                                 accept="image/*"
                                 style={{ display: 'none' }}
@@ -199,7 +201,10 @@ export default function RestaurantRevisit({ restaurant }: Props) {
                                             onClick={() => {
                                                 updateDishPhoto(idx, null);
                                                 const ref = dishPhotoRefs.current[idx];
-                                                if (ref) ref.value = '';
+
+                                                if (ref) {
+ref.value = '';
+}
                                             }}
                                         >✕</button>
                                     </span>

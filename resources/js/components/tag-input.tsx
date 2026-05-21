@@ -19,9 +19,11 @@ export default function TagInput({ value, onChange, suggestions = [], placeholde
 
     function addTag(tag: string) {
         const t = tag.trim();
+
         if (t && !value.includes(t)) {
             onChange([...value, t]);
         }
+
         setInput('');
         setOpen(false);
         inputRef.current?.focus();
@@ -34,6 +36,7 @@ export default function TagInput({ value, onChange, suggestions = [], placeholde
     function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
         if (e.key === 'Enter') {
             e.preventDefault();
+
             if (input.trim()) {
                 addTag(input);
             }
@@ -73,7 +76,9 @@ export default function TagInput({ value, onChange, suggestions = [], placeholde
                         }}
                         onKeyDown={handleKeyDown}
                         onFocus={() => {
-                            if (input) setOpen(true);
+                            if (input) {
+setOpen(true);
+}
                         }}
                         onBlur={() => setTimeout(() => setOpen(false), 150)}
                     />
@@ -81,7 +86,13 @@ export default function TagInput({ value, onChange, suggestions = [], placeholde
                         type="button"
                         className="fl-btn fl-btn-sec fl-btn-sm"
                         disabled={!input.trim()}
-                        onMouseDown={(e) => { e.preventDefault(); if (input.trim()) addTag(input); }}
+                        onMouseDown={(e) => {
+ e.preventDefault();
+
+ if (input.trim()) {
+addTag(input);
+} 
+}}
                     >
                         Add
                     </button>

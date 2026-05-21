@@ -2,9 +2,10 @@ import { router, useForm } from '@inertiajs/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import * as RestaurantController from '@/actions/App/Http/Controllers/RestaurantController';
-import { index as cuisinesIndexRoute, store as cuisinesStoreRoute } from '@/routes/cuisines';
 import TagInput from '@/components/tag-input';
 import PortalLayout from '@/layouts/portal/portal-layout';
+import { index as cuisinesIndexRoute, store as cuisinesStoreRoute } from '@/routes/cuisines';
+import { index as locationsIndexRoute, store as locationsStoreRoute } from '@/routes/locations';
 import type { Restaurant } from '@/types/portal';
 
 interface Props {
@@ -61,6 +62,71 @@ export default function RestaurantEdit({ restaurant, all_tags }: Props) {
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [newVisitDate, setNewVisitDate] = useState('');
 
+    const [locationSuggestions, setLocationSuggestions] = useState<Array<{ name: string; display_name: string }>>([]);
+    const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
+    const [locationLoading, setLocationLoading] = useState(false);
+    const locationInputRef = useRef<HTMLInputElement>(null);
+
+    const fetchLocationSuggestions = useCallback(async (query: string) => {
+        if (!query.trim()) {
+            setLocationSuggestions([]);
+
+            return;
+        }
+
+        setLocationLoading(true);
+
+        try {
+            const res = await fetch(locationsIndexRoute.url({ query: { q: query } }));
+            const result = await res.json();
+            setLocationSuggestions(result);
+        } catch {
+            setLocationSuggestions([]);
+        } finally {
+            setLocationLoading(false);
+        }
+    }, []);
+
+    function selectLocation(name: string) {
+        setData('location', name);
+        setShowLocationSuggestions(false);
+    }
+
+    async function addNewLocation() {
+        if (!data.location.trim()) {
+return;
+}
+
+        try {
+            const res = await fetch(locationsStoreRoute.url(), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '',
+                },
+                body: JSON.stringify({ name: data.location }),
+            });
+
+            if (res.ok) {
+                const created = await res.json();
+                setData('location', created.name);
+            } else if (res.status === 422) {
+                const suggestion = await res.json();
+
+                if (suggestion.suggestion) {
+                    setData('location', suggestion.suggestion);
+                }
+            }
+        } catch {
+            // Silently fail
+        }
+
+        setShowLocationSuggestions(false);
+    }
+
+    const filteredLocations = locationSuggestions
+        .filter((loc) => loc.name.toLowerCase() !== data.location.toLowerCase());
+
     const [cuisineSuggestions, setCuisineSuggestions] = useState<string[]>([]);
     const [showCuisineSuggestions, setShowCuisineSuggestions] = useState(false);
     const [cuisineLoading, setCuisineLoading] = useState(false);
@@ -69,6 +135,7 @@ export default function RestaurantEdit({ restaurant, all_tags }: Props) {
     const fetchCuisineSuggestions = useCallback(async (query: string) => {
         if (!query.trim()) {
             setCuisineSuggestions([]);
+
             return;
         }
 
@@ -91,7 +158,9 @@ export default function RestaurantEdit({ restaurant, all_tags }: Props) {
     }
 
     async function addNewCuisine() {
-        if (!data.cuisine.trim()) return;
+        if (!data.cuisine.trim()) {
+return;
+}
 
         try {
             const res = await fetch(cuisinesStoreRoute.url(), {
@@ -128,6 +197,18 @@ export default function RestaurantEdit({ restaurant, all_tags }: Props) {
 
         return () => clearTimeout(timer);
     }, [data.cuisine, fetchCuisineSuggestions]);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (data.location.length > 0) {
+                fetchLocationSuggestions(data.location);
+            } else {
+                setLocationSuggestions([]);
+            }
+        }, 150);
+
+        return () => clearTimeout(timer);
+    }, [data.location, fetchLocationSuggestions]);
 
     function submit(e: React.FormEvent) {
         e.preventDefault();
@@ -246,11 +327,50 @@ export default function RestaurantEdit({ restaurant, all_tags }: Props) {
                         <label className="fl-flbl" htmlFor="location">Location</label>
                         <input
                             id="location"
+                            ref={locationInputRef}
                             className="fl-fi"
                             type="text"
                             value={data.location}
-                            onChange={(e) => setData('location', e.target.value)}
+                            onChange={(e) => {
+                                setData('location', e.target.value);
+                                setShowLocationSuggestions(e.target.value.length > 0);
+                            }}
+                            onBlur={() => setTimeout(() => {
+                                setShowLocationSuggestions(false);
+                                addNewLocation();
+                            }, 200)}
+                            onFocus={() => data.location.length > 0 && setShowLocationSuggestions(true)}
+                            autoComplete="off"
                         />
+                        {showLocationSuggestions && (
+                            <div className="fl-autocomplete-dropdown">
+                                {filteredLocations.slice(0, 8).map((loc) => (
+                                    <button
+                                        key={loc.name}
+                                        type="button"
+                                        className="fl-autocomplete-item"
+                                        onMouseDown={(e) => {
+                                            e.preventDefault();
+                                            selectLocation(loc.name);
+                                        }}
+                                    >
+                                        {loc.display_name !== loc.name ? `${loc.display_name} — ${loc.name}` : loc.name}
+                                    </button>
+                                ))}
+                                {data.location.length > 0 && !locationLoading && filteredLocations.length === 0 && (
+                                    <button
+                                        type="button"
+                                        className="fl-autocomplete-item fl-autocomplete-add"
+                                        onMouseDown={(e) => {
+                                            e.preventDefault();
+                                            addNewLocation();
+                                        }}
+                                    >
+                                        + Add "{data.location}"
+                                    </button>
+                                )}
+                            </div>
+                        )}
                     </div>
                     <div className="fl-fgrp">
                         <label className="fl-flbl" htmlFor="date_visited">Date Visited</label>

@@ -2,8 +2,8 @@ import { Link, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import type { ReactNode } from 'react';
 import * as RestaurantController from '@/actions/App/Http/Controllers/RestaurantController';
-import { index as restaurantsIndexRoute } from '@/routes/restaurants';
 import PortalLayout from '@/layouts/portal/portal-layout';
+import { index as restaurantsIndexRoute } from '@/routes/restaurants';
 import type { Restaurant } from '@/types/portal';
 
 interface Props {

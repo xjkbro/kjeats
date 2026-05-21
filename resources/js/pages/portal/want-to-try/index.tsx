@@ -2,8 +2,8 @@ import { Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import type { ReactNode } from 'react';
 import * as WantToTryController from '@/actions/App/Http/Controllers/WantToTryController';
-import { index as wantToTryIndexRoute } from '@/routes/want-to-try';
 import PortalLayout from '@/layouts/portal/portal-layout';
+import { index as wantToTryIndexRoute } from '@/routes/want-to-try';
 
 interface Props {
     items: Array<{
@@ -26,12 +26,19 @@ function timeAgo(isoDate: string): string {
     const diff = Date.now() - new Date(isoDate).getTime();
     const days = Math.floor(diff / 86400000);
 
-    if (days >= 30) return `${Math.floor(days / 30)}mo ago`;
-    if (days >= 1) return `${days}d ago`;
+    if (days >= 30) {
+return `${Math.floor(days / 30)}mo ago`;
+}
+
+    if (days >= 1) {
+return `${days}d ago`;
+}
 
     const hours = Math.floor(diff / 3600000);
 
-    if (hours >= 1) return `${hours}h ago`;
+    if (hours >= 1) {
+return `${hours}h ago`;
+}
 
     return 'just now';
 }
@@ -53,9 +60,17 @@ export default function WantToTryIndex({ items, group, scope, all_locations = []
         .filter((item) => locationFilter === ALL || item.location === locationFilter)
         .filter((item) => cuisineFilter === ALL || item.cuisine === cuisineFilter)
         .sort((a, b) => {
-            if (sort === SORT_NEWEST) return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-            if (sort === SORT_OLDEST) return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-            if (sort === SORT_AZ) return a.name.localeCompare(b.name);
+            if (sort === SORT_NEWEST) {
+return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+}
+
+            if (sort === SORT_OLDEST) {
+return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+}
+
+            if (sort === SORT_AZ) {
+return a.name.localeCompare(b.name);
+}
 
             return 0;
         });

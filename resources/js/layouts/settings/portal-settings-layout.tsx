@@ -3,6 +3,7 @@ import type { PropsWithChildren, ReactNode } from 'react';
 import PortalLayout from '@/layouts/portal/portal-layout';
 import { edit as editAppearance } from '@/routes/appearance';
 import { settings as cuisinesSettings } from '@/routes/cuisines';
+import { settings as locationsSettings } from '@/routes/locations';
 import { edit } from '@/routes/profile';
 import { edit as editSecurity } from '@/routes/security';
 
@@ -16,6 +17,7 @@ function SettingsNav({ active }: SettingsNavProps) {
         { id: 'security', label: 'Security', href: editSecurity() },
         { id: 'appearance', label: 'Appearance', href: editAppearance() },
         { id: 'cuisines', label: 'Cuisines', href: cuisinesSettings() },
+        { id: 'locations', label: 'Locations', href: locationsSettings() },
     ];
 
     return (

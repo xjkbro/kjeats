@@ -1,6 +1,6 @@
 import { Link, router } from '@inertiajs/react';
-import * as GroupController from '@/actions/App/Http/Controllers/GroupController';
 import type { ReactNode } from 'react';
+import * as GroupController from '@/actions/App/Http/Controllers/GroupController';
 import PortalLayout from '@/layouts/portal/portal-layout';
 import type { Restaurant, Recipe } from '@/types/portal';
 

@@ -103,9 +103,13 @@ export default function RecipeEdit({ recipe, all_tags }: Props) {
     const [aiError, setAiError] = useState('');
 
     async function calculateNutrition() {
-        if (data.ingredients.length === 0) return;
+        if (data.ingredients.length === 0) {
+return;
+}
+
         setAiLoading(true);
         setAiError('');
+
         try {
             const xsrfToken = document.cookie
                 .split('; ')
@@ -125,10 +129,13 @@ export default function RecipeEdit({ recipe, all_tags }: Props) {
                 }),
             });
             const json = await response.json();
+
             if (!response.ok) {
                 setAiError(json.error ?? 'Failed to calculate nutrition.');
+
                 return;
             }
+
             setData((prev) => ({
                 ...prev,
                 has_nutrition: true,
@@ -317,7 +324,10 @@ export default function RecipeEdit({ recipe, all_tags }: Props) {
                                     className="fl-visit-chip-rm"
                                     onClick={() => {
                                         setData('recipe_photo', null);
-                                        if (photoRef.current) photoRef.current.value = '';
+
+                                        if (photoRef.current) {
+photoRef.current.value = '';
+}
                                     }}
                                 >
                                     ✕
