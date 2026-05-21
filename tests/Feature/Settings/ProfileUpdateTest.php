@@ -142,7 +142,7 @@ test('avatar upload requires an image', function () {
     $response->assertSessionHasErrors('avatar');
 });
 
-test('avatar upload rejects files larger than 3mb', function () {
+test('avatar upload rejects files larger than 10mb', function () {
     Storage::fake('public');
 
     $user = User::factory()->create();
@@ -151,7 +151,7 @@ test('avatar upload rejects files larger than 3mb', function () {
         ->actingAs($user)
         ->from(route('profile.edit'))
         ->post(route('profile.avatar.update'), [
-            'avatar' => UploadedFile::fake()->image('big.jpg')->size(4000),
+            'avatar' => UploadedFile::fake()->image('big.jpg')->size(11000),
         ]);
 
     $response->assertSessionHasErrors('avatar');
