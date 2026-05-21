@@ -10,6 +10,7 @@ interface Props {
     restaurants: Restaurant[];
     group: { id: number; name: string } | null;
     scope: string;
+    all_cuisines: string[];
 }
 
 function StarDisplay({ rating }: { rating: number | string }) {
@@ -28,11 +29,13 @@ function StarDisplay({ rating }: { rating: number | string }) {
 
 const ALL_CUISINES = 'All';
 
-export default function RestaurantsIndex({ restaurants, group, scope }: Props) {
+export default function RestaurantsIndex({ restaurants, group, scope, all_cuisines = [] }: Props) {
     const { url } = usePage();
     const revisitMode = new URLSearchParams(url.split('?')[1] ?? '').get('revisit') === '1';
 
-    const cuisines = [ALL_CUISINES, ...Array.from(new Set(restaurants.map((r) => r.cuisine)))];
+    const cuisines = [ALL_CUISINES, ...all_cuisines.filter((c) =>
+        restaurants.some((r) => r.cuisine === c)
+    )];
     const [filter, setFilter] = useState(ALL_CUISINES);
     const [sort, setSort] = useState<'recent' | 'rating'>('recent');
 

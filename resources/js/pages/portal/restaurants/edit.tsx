@@ -1,7 +1,8 @@
 import { router, useForm } from '@inertiajs/react';
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import * as RestaurantController from '@/actions/App/Http/Controllers/RestaurantController';
+import { index as cuisinesIndexRoute, store as cuisinesStoreRoute } from '@/routes/cuisines';
 import TagInput from '@/components/tag-input';
 import PortalLayout from '@/layouts/portal/portal-layout';
 import type { Restaurant } from '@/types/portal';
@@ -60,6 +61,74 @@ export default function RestaurantEdit({ restaurant, all_tags }: Props) {
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [newVisitDate, setNewVisitDate] = useState('');
 
+    const [cuisineSuggestions, setCuisineSuggestions] = useState<string[]>([]);
+    const [showCuisineSuggestions, setShowCuisineSuggestions] = useState(false);
+    const [cuisineLoading, setCuisineLoading] = useState(false);
+    const cuisineInputRef = useRef<HTMLInputElement>(null);
+
+    const fetchCuisineSuggestions = useCallback(async (query: string) => {
+        if (!query.trim()) {
+            setCuisineSuggestions([]);
+            return;
+        }
+
+        setCuisineLoading(true);
+
+        try {
+            const res = await fetch(cuisinesIndexRoute.url({ query: { q: query } }));
+            const result = await res.json();
+            setCuisineSuggestions(result);
+        } catch {
+            setCuisineSuggestions([]);
+        } finally {
+            setCuisineLoading(false);
+        }
+    }, []);
+
+    function selectCuisine(name: string) {
+        setData('cuisine', name);
+        setShowCuisineSuggestions(false);
+    }
+
+    async function addNewCuisine() {
+        if (!data.cuisine.trim()) return;
+
+        try {
+            const res = await fetch(cuisinesStoreRoute.url(), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '',
+                },
+                body: JSON.stringify({ name: data.cuisine }),
+            });
+
+            if (res.ok) {
+                const created = await res.json();
+                setData('cuisine', created.name);
+            }
+        } catch {
+            // Silently fail - the cuisine will still be saved as a string
+        }
+
+        setShowCuisineSuggestions(false);
+    }
+
+    const filteredCuisines = cuisineSuggestions
+        .filter((c) => c.toLowerCase() !== data.cuisine.toLowerCase());
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (data.cuisine.length > 0) {
+                fetchCuisineSuggestions(data.cuisine);
+            } else {
+                setCuisineSuggestions([]);
+            }
+        }, 150);
+
+        return () => clearTimeout(timer);
+    }, [data.cuisine, fetchCuisineSuggestions]);
+
     function submit(e: React.FormEvent) {
         e.preventDefault();
         put(RestaurantController.update(restaurant.id).url);
@@ -111,12 +180,48 @@ export default function RestaurantEdit({ restaurant, all_tags }: Props) {
                         <label className="fl-flbl" htmlFor="cuisine">Cuisine *</label>
                         <input
                             id="cuisine"
+                            ref={cuisineInputRef}
                             className={`fl-fi${errors.cuisine ? ' error' : ''}`}
                             type="text"
                             value={data.cuisine}
                             onChange={(e) => setData('cuisine', e.target.value)}
+                            onBlur={() => setTimeout(() => {
+                                setShowCuisineSuggestions(false);
+                                addNewCuisine();
+                            }, 200)}
+                            onFocus={() => data.cuisine.length > 0 && setShowCuisineSuggestions(true)}
                             required
+                            autoComplete="off"
                         />
+                        {showCuisineSuggestions && (
+                            <div className="fl-autocomplete-dropdown">
+                                {filteredCuisines.slice(0, 8).map((c) => (
+                                    <button
+                                        key={c}
+                                        type="button"
+                                        className="fl-autocomplete-item"
+                                        onMouseDown={(e) => {
+                                            e.preventDefault();
+                                            selectCuisine(c);
+                                        }}
+                                    >
+                                        {c}
+                                    </button>
+                                ))}
+                                {data.cuisine.length > 0 && !cuisineLoading && filteredCuisines.length === 0 && (
+                                    <button
+                                        type="button"
+                                        className="fl-autocomplete-item fl-autocomplete-add"
+                                        onMouseDown={(e) => {
+                                            e.preventDefault();
+                                            addNewCuisine();
+                                        }}
+                                    >
+                                        + Add "{data.cuisine}"
+                                    </button>
+                                )}
+                            </div>
+                        )}
                         {errors.cuisine && <span className="fl-ferr">{errors.cuisine}</span>}
                     </div>
                     <div className="fl-fgrp">

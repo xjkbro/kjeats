@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cuisine;
 use App\Models\Group;
 use App\Models\Restaurant;
 use App\Models\WantToTry;
@@ -39,6 +40,7 @@ class RestaurantController extends Controller
             'restaurants' => $restaurants,
             'group' => $group,
             'scope' => $request->query('scope', 'mine'),
+            'all_cuisines' => Cuisine::orderBy('name')->pluck('name')->values(),
         ]);
     }
 

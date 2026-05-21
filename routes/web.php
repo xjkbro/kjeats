@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CuisineController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DishController;
 use App\Http\Controllers\GroupController;
@@ -42,6 +43,9 @@ Route::middleware(['auth', 'verified'])->prefix('app')->group(function () {
     Route::post('recipes/import', RecipeImportController::class)->name('recipes.import');
 
     Route::get('search', SearchController::class)->name('search');
+
+    Route::get('cuisines', [CuisineController::class, 'index'])->name('cuisines.index');
+    Route::post('cuisines', [CuisineController::class, 'store'])->name('cuisines.store');
 
     Route::resource('groups', GroupController::class)
         ->only(['index', 'show', 'create', 'store']);

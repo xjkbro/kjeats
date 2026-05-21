@@ -920,6 +920,9 @@ select.fl-fi {
 }
 .fl-autocomplete-item:hover,
 .fl-autocomplete-item:active { background: var(--fl-s3); }
+.fl-autocomplete-add { color: var(--fl-p); font-weight: 600; }
+.fl-autocomplete-add:hover,
+.fl-autocomplete-add:active { background: var(--fl-p-dim); }
 
 /* ── Want to Try List ───────────────────────────────────── */
 .fl-wtt-list { display: flex; flex-direction: column; margin-bottom: 20px; }
