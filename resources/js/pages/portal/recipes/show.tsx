@@ -408,7 +408,7 @@ export default function RecipeShow({ recipe, current_user_id }: Props) {
                             return (
                                 <div key={revision.id} className="fl-revision-row">
                                     <div className="fl-revision-meta">
-                                        <span className="fl-revision-user">{revision.user.name}</span>
+                                        <span className="fl-revision-user">{revision.user.first_name}</span>
                                         <span className="fl-revision-time">
                                             {new Date(revision.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                                         </span>

@@ -32,7 +32,7 @@ export default function WantToTryShow({ item }: Props) {
                     {item.location && <span className="fl-badge fl-badge-def">{item.location}</span>}
                 </div>
                 <p className="fl-wtt-by">
-                    Added by {item.user.name} · {formatDate(item.created_at)}
+                    Added by {item.user.first_name} · {formatDate(item.created_at)}
                 </p>
             </div>
 

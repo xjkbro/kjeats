@@ -82,7 +82,8 @@ class HomeController extends Controller
                             'image_url' => $d->images->first()?->url,
                         ])->values(),
                         'user' => [
-                            'name' => $r->user->name,
+                            'first_name' => $r->user->first_name,
+                            'last_name' => $r->user->last_name,
                             'avatar_url' => $r->user->avatar_url,
                         ],
                         'created_at' => $r->created_at->toISOString(),
@@ -99,7 +100,8 @@ class HomeController extends Controller
                         'image_url' => $r->images->first()?->url,
                         'ingredients' => $r->ingredients->take(5)->map(fn ($i) => $i->name)->values(),
                         'user' => [
-                            'name' => $r->user->name,
+                            'first_name' => $r->user->first_name,
+                            'last_name' => $r->user->last_name,
                             'avatar_url' => $r->user->avatar_url,
                         ],
                         'created_at' => $r->created_at->toISOString(),
@@ -113,7 +115,8 @@ class HomeController extends Controller
                         'location' => $w->location,
                         'notes' => $w->notes ? Str::limit($w->notes, 150) : null,
                         'user' => [
-                            'name' => $w->user->name,
+                            'first_name' => $w->user->first_name,
+                            'last_name' => $w->user->last_name,
                             'avatar_url' => $w->user->avatar_url,
                         ],
                         'created_at' => $w->created_at->toISOString(),
@@ -128,9 +131,10 @@ class HomeController extends Controller
                         'restaurant_id' => $d->restaurant_id,
                         'restaurant_name' => $d->restaurant->name,
                         'restaurant_emoji' => $d->restaurant->emoji,
-                        'restaurant_owner' => $d->restaurant->user->name,
+                        'restaurant_owner' => $d->restaurant->user->first_name,
                         'user' => [
-                            'name' => $d->user->name,
+                            'first_name' => $d->user->first_name,
+                            'last_name' => $d->user->last_name,
                             'avatar_url' => $d->user->avatar_url,
                         ],
                         'created_at' => $d->created_at->toISOString(),

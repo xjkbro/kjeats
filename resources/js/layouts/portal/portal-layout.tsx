@@ -18,13 +18,10 @@ function getGreeting() {
     return h < 12 ? 'Morning' : h < 17 ? 'Afternoon' : 'Evening';
 }
 
-function getInitials(name: string) {
-    return name
-        .split(' ')
-        .map((n) => n[0])
-        .slice(0, 2)
-        .join('')
-        .toUpperCase();
+function getInitials(firstName: string, lastName?: string | null) {
+    const first = (firstName || '')[0] || '';
+    const last = (lastName || '')[0] || '';
+    return (first + last || first || '?').toUpperCase();
 }
 
 export default function PortalLayout({ children, title, showBack = false }: Props) {
@@ -158,14 +155,14 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
                         </button>
                         <Link href="/app/profile" className="fl-desk-user">
                             <div className="fl-desk-user-info">
-                                <span className="fl-desk-user-name">{auth.user.name.split(' ')[0]}</span>
+                                <span className="fl-desk-user-name">{auth.user.first_name}</span>
                                 <span className="fl-desk-user-email">{auth.user.email}</span>
                             </div>
                             <div className="fl-desk-avatar">
                                 {auth.user.avatar_url ? (
-                                    <img src={auth.user.avatar_url} alt={auth.user.name} className="h-full w-full rounded-full object-cover" />
+                                    <img src={auth.user.avatar_url} alt={auth.user.first_name} className="h-full w-full rounded-full object-cover" />
                                 ) : (
-                                    getInitials(auth.user.name)
+                                    getInitials(auth.user.first_name, auth.user.last_name)
                                 )}
                             </div>
                         </Link>
@@ -262,9 +259,9 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
             {/* Avatar — mobile bottom-right, outside pill */}
             <Link href="/app/profile" className="fl-nav-avatar" aria-label="Profile">
                 {auth.user.avatar_url ? (
-                    <img src={auth.user.avatar_url} alt={auth.user.name} className="h-full w-full rounded-full object-cover" />
+                    <img src={auth.user.avatar_url} alt={auth.user.first_name} className="h-full w-full rounded-full object-cover" />
                 ) : (
-                    getInitials(auth.user.name)
+                    getInitials(auth.user.first_name, auth.user.last_name)
                 )}
             </Link>
 

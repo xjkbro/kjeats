@@ -5,7 +5,7 @@
     "display": "standalone",
     "description": "Your personal food log \u2014 restaurant reviews and recipes.",
     "theme_color": "#ff6040",
-    "start_url": "/",
+    "start_url": "/app/launch",
     "icons": [
         {
             "src": "logo.png",

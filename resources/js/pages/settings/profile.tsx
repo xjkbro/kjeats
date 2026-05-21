@@ -10,13 +10,10 @@ import { Label } from '@/components/ui/label';
 import SettingsLayout from '@/layouts/settings/portal-settings-layout';
 import { send } from '@/routes/verification';
 
-function getInitials(name: string) {
-    return name
-        .split(' ')
-        .map((n) => n[0])
-        .slice(0, 2)
-        .join('')
-        .toUpperCase();
+function getInitials(firstName: string, lastName?: string | null) {
+    const first = (firstName || '')[0] || '';
+    const last = (lastName || '')[0] || '';
+    return (first + last || first || '?').toUpperCase();
 }
 
 interface Props {
@@ -26,7 +23,7 @@ interface Props {
 
 export default function Profile({ mustVerifyEmail, status }: Props) {
     const { auth } = usePage().props;
-    const user = auth.user as { name: string; email: string; avatar_url?: string | null };
+    const user = auth.user as { first_name: string; last_name: string | null; email: string; avatar_url?: string | null };
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [preview, setPreview] = useState<string | null>(null);
 
@@ -73,12 +70,12 @@ return;
                         {avatarSrc ? (
                             <img
                                 src={avatarSrc}
-                                alt={user.name}
+                                alt={user.first_name}
                                 className="h-16 w-16 rounded-full object-cover ring-2 ring-zinc-200 dark:ring-zinc-600"
                             />
                         ) : (
                             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-zinc-100 text-sm font-medium text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300">
-                                {getInitials(user.name)}
+                                {getInitials(user.first_name, user.last_name)}
                             </div>
                         )}
 
@@ -122,24 +119,42 @@ return;
                         <>
                             <div className="rounded-lg border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
                                 <div className="grid gap-4">
-                                    <div className="grid gap-2">
-                                        <Label htmlFor="name">Name</Label>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="first_name">First name</Label>
 
-                                        <Input
-                                            id="name"
-                                            className="mt-1 block w-full"
-                                            defaultValue={auth.user.name}
-                                            name="name"
-                                            required
-                                            autoComplete="name"
-                                            placeholder="Full name"
-                                        />
+                                    <Input
+                                        id="first_name"
+                                        className="mt-1 block w-full"
+                                        defaultValue={auth.user.first_name}
+                                        name="first_name"
+                                        required
+                                        autoComplete="given-name"
+                                        placeholder="First name"
+                                    />
 
-                                        <InputError
-                                            className="mt-2"
-                                            message={errors.name}
-                                        />
-                                    </div>
+                                    <InputError
+                                        className="mt-2"
+                                        message={errors.first_name}
+                                    />
+                                </div>
+
+                                <div className="grid gap-2">
+                                    <Label htmlFor="last_name">Last name</Label>
+
+                                    <Input
+                                        id="last_name"
+                                        className="mt-1 block w-full"
+                                        defaultValue={auth.user.last_name ?? ''}
+                                        name="last_name"
+                                        autoComplete="family-name"
+                                        placeholder="Last name (optional)"
+                                    />
+
+                                    <InputError
+                                        className="mt-2"
+                                        message={errors.last_name}
+                                    />
+                                </div>
 
                                     <div className="grid gap-2">
                                         <Label htmlFor="email">Email address</Label>

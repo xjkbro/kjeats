@@ -1,5 +1,5 @@
 import { Link, router, usePage } from '@inertiajs/react';
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import type { ReactNode } from 'react';
 import * as RestaurantController from '@/actions/App/Http/Controllers/RestaurantController';
 import PortalLayout from '@/layouts/portal/portal-layout';
@@ -8,10 +8,9 @@ import type { Restaurant } from '@/types/portal';
 
 interface Props {
     restaurants: Restaurant[];
-    group: { id: number; name: string } | null;
+    groups: { id: number; name: string }[];
     scope: string;
     all_cuisines: string[];
-    current_user_id: number;
 }
 
 function StarDisplay({ rating }: { rating: number | string }) {
@@ -28,26 +27,9 @@ function StarDisplay({ rating }: { rating: number | string }) {
     );
 }
 
-function Checkbox({ checked, onChange }: { checked: boolean; onChange: () => void }) {
-    return (
-        <button
-            type="button"
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); onChange(); }}
-            className="fl-chk"
-            aria-label={checked ? 'Deselect' : 'Select'}
-        >
-            {checked ? (
-                <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                    <polyline points="20 6 9 17 4 12" />
-                </svg>
-            ) : null}
-        </button>
-    );
-}
-
 const ALL_CUISINES = 'All';
 
-export default function RestaurantsIndex({ restaurants, group, scope, all_cuisines = [], current_user_id }: Props) {
+export default function RestaurantsIndex({ restaurants, groups, scope, all_cuisines = [] }: Props) {
     const { url } = usePage();
     const revisitMode = new URLSearchParams(url.split('?')[1] ?? '').get('revisit') === '1';
 
@@ -56,8 +38,6 @@ export default function RestaurantsIndex({ restaurants, group, scope, all_cuisin
     )];
     const [filter, setFilter] = useState(ALL_CUISINES);
     const [sort, setSort] = useState<'recent' | 'rating'>('recent');
-    const [selectMode, setSelectMode] = useState(false);
-    const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
 
     const filtered = restaurants
         .filter((r) => filter === ALL_CUISINES || r.cuisine === filter)
@@ -69,37 +49,7 @@ export default function RestaurantsIndex({ restaurants, group, scope, all_cuisin
             return new Date(b.date_visited).getTime() - new Date(a.date_visited).getTime();
         });
 
-    const filteredIds = filtered.map((r) => r.id);
-    const allSelected = filteredIds.length > 0 && filteredIds.every((id) => selectedIds.has(id));
-    const someSelected = filteredIds.some((id) => selectedIds.has(id));
-
-    const selectAll = useCallback(() => {
-        setSelectedIds(new Set(filteredIds));
-    }, [filteredIds]);
-
-    const selectMine = useCallback(() => {
-        setSelectedIds(new Set(filtered.filter((r) => r.user_id === current_user_id).map((r) => r.id)));
-    }, [filtered, current_user_id]);
-
-    const selectGroup = useCallback(() => {
-        setSelectedIds(new Set(filtered.filter((r) => r.user_id !== current_user_id).map((r) => r.id)));
-    }, [filtered, current_user_id]);
-
-    const clearSelection = useCallback(() => {
-        setSelectedIds(new Set());
-    }, []);
-
-    const toggleSelect = useCallback((id: number) => {
-        setSelectedIds((prev) => {
-            const next = new Set(prev);
-            if (next.has(id)) next.delete(id); else next.add(id);
-            return next;
-        });
-    }, []);
-
     function setScope(newScope: string) {
-        if (selectMode) { setSelectMode(false); setSelectedIds(new Set()); }
-
         router.get(
             restaurantsIndexRoute.url({ query: { scope: newScope } }),
             {},
@@ -107,33 +57,15 @@ export default function RestaurantsIndex({ restaurants, group, scope, all_cuisin
         );
     }
 
-    function toggleSelectMode() {
-        setSelectMode((prev) => {
-            if (prev) setSelectedIds(new Set());
-            return !prev;
-        });
-    }
-
     return (
         <div className="fl-view">
             <div className="fl-view-hdr">
                 <h2 className="fl-view-ttl">{revisitMode ? 'Select a Restaurant' : 'Restaurant Reviews'}</h2>
-                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                    {!revisitMode && (
-                        <button
-                            type="button"
-                            onClick={toggleSelectMode}
-                            className={`fl-btn fl-btn-sm ${selectMode ? 'fl-btn-p' : 'fl-btn-ghost'}`}
-                        >
-                            {selectMode ? 'Done' : 'Select'}
-                        </button>
-                    )}
-                    {!revisitMode && !selectMode && (
-                        <Link href={RestaurantController.create().url} className="fl-btn fl-btn-p fl-btn-sm">
-                            + Add
-                        </Link>
-                    )}
-                </div>
+                {!revisitMode && (
+                    <Link href={RestaurantController.create().url} className="fl-btn fl-btn-p fl-btn-sm">
+                        + Add
+                    </Link>
+                )}
             </div>
 
             {revisitMode && (
@@ -142,53 +74,23 @@ export default function RestaurantsIndex({ restaurants, group, scope, all_cuisin
                 </div>
             )}
 
-            {group && !revisitMode && !selectMode && (
+            {groups.length > 0 && !revisitMode && (
                 <div className="fl-scope-toggle">
-                    <button
-                        className={`fl-scope-btn${scope === 'group' ? ' active' : ''}`}
-                        onClick={() => setScope('group')}
-                    >
-                        {group.name}
-                    </button>
                     <button
                         className={`fl-scope-btn${scope === 'mine' ? ' active' : ''}`}
                         onClick={() => setScope('mine')}
                     >
                         Mine
                     </button>
-                </div>
-            )}
-
-            {selectMode && (
-                <div className="fl-sel-bar">
-                    <div className="fl-sel-btns">
-                        <button type="button" onClick={selectAll} className="fl-sel-btn">All</button>
-                        <button type="button" onClick={selectMine} className="fl-sel-btn">Mine</button>
-                        {group && (
-                            <button type="button" onClick={selectGroup} className="fl-sel-btn">{group.name}</button>
-                        )}
-                        {selectedIds.size > 0 && (
-                            <button type="button" onClick={clearSelection} className="fl-sel-btn fl-sel-btn-clear">Clear</button>
-                        )}
-                    </div>
-                    <span className="fl-sel-count">
-                        {selectedIds.size} selected
-                    </span>
-                    {allSelected ? (
-                        <button type="button" onClick={clearSelection} className="fl-chk fl-chk-checked" aria-label="Deselect all">
-                            <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                                <polyline points="20 6 9 17 4 12" />
-                            </svg>
+                    {groups.map((g) => (
+                        <button
+                            key={g.id}
+                            className={`fl-scope-btn${scope === String(g.id) ? ' active' : ''}`}
+                            onClick={() => setScope(String(g.id))}
+                        >
+                            {g.name}
                         </button>
-                    ) : someSelected ? (
-                        <button type="button" onClick={selectAll} className="fl-chk fl-chk-partial" aria-label="Select all">
-                            <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                                <line x1="5" y1="12" x2="19" y2="12" />
-                            </svg>
-                        </button>
-                    ) : (
-                        <button type="button" onClick={selectAll} className="fl-chk" aria-label="Select all" />
-                    )}
+                    ))}
                 </div>
             )}
 
@@ -207,53 +109,29 @@ export default function RestaurantsIndex({ restaurants, group, scope, all_cuisin
             {filtered.length > 0 ? (
                 <div className="fl-card-list">
                     {filtered.map((r) => (
-                        selectMode ? (
-                            <div key={r.id} className={`fl-card${selectedIds.has(r.id) ? ' fl-card-sel' : ''}`}>
-                                <Checkbox checked={selectedIds.has(r.id)} onChange={() => toggleSelect(r.id)} />
-                                <div className="fl-card-emoji">{r.emoji}</div>
-                                <div className="fl-card-body">
-                                    <div className="fl-card-name">{r.name}</div>
-                                    <div className="fl-card-meta">
-                                        <StarDisplay rating={r.overall_rating} />
-                                        <span className="fl-badge fl-badge-org">{r.cuisine}</span>
-                                    </div>
-                                    <div className="fl-card-sub">
-                                        {r.location} · {r.price_range} · {r.dishes.length} dish{r.dishes.length !== 1 ? 'es' : ''}
-                                    </div>
-                                    {(r.tags ?? []).length > 0 && (
-                                        <div className="fl-card-tags">
-                                            {(r.tags ?? []).slice(0, 3).map((tag) => (
-                                                <span key={tag} className="fl-badge fl-badge-def">{tag}</span>
-                                            ))}
-                                        </div>
-                                    )}
+                        <Link key={r.id} href={RestaurantController.show(r.id).url} className="fl-card">
+                            <div className="fl-card-emoji">{r.emoji}</div>
+                            <div className="fl-card-body">
+                                <div className="fl-card-name">{r.name}</div>
+                                <div className="fl-card-meta">
+                                    <StarDisplay rating={r.overall_rating} />
+                                    <span className="fl-badge fl-badge-org">{r.cuisine}</span>
                                 </div>
+                                <div className="fl-card-sub">
+                                    {r.location} · {r.price_range} · {r.dishes.length} dish{r.dishes.length !== 1 ? 'es' : ''}
+                                </div>
+                                {(r.tags ?? []).length > 0 && (
+                                    <div className="fl-card-tags">
+                                        {(r.tags ?? []).slice(0, 3).map((tag) => (
+                                            <span key={tag} className="fl-badge fl-badge-def">{tag}</span>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
-                        ) : (
-                            <Link key={r.id} href={RestaurantController.show(r.id).url} className="fl-card">
-                                <div className="fl-card-emoji">{r.emoji}</div>
-                                <div className="fl-card-body">
-                                    <div className="fl-card-name">{r.name}</div>
-                                    <div className="fl-card-meta">
-                                        <StarDisplay rating={r.overall_rating} />
-                                        <span className="fl-badge fl-badge-org">{r.cuisine}</span>
-                                    </div>
-                                    <div className="fl-card-sub">
-                                        {r.location} · {r.price_range} · {r.dishes.length} dish{r.dishes.length !== 1 ? 'es' : ''}
-                                    </div>
-                                    {(r.tags ?? []).length > 0 && (
-                                        <div className="fl-card-tags">
-                                            {(r.tags ?? []).slice(0, 3).map((tag) => (
-                                                <span key={tag} className="fl-badge fl-badge-def">{tag}</span>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                                <svg className="fl-card-chev" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
-                                    <polyline points="9 18 15 12 9 6" />
-                                </svg>
-                            </Link>
-                        )
+                            <svg className="fl-card-chev" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
+                                <polyline points="9 18 15 12 9 6" />
+                            </svg>
+                        </Link>
                     ))}
                 </div>
             ) : (

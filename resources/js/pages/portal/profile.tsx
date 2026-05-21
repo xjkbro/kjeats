@@ -8,7 +8,8 @@ import { home } from '@/routes';
 interface Props {
     user: {
         id: number;
-        name: string;
+        first_name: string;
+        last_name: string | null;
         email: string;
         created_at: string;
     };
@@ -24,8 +25,10 @@ interface Props {
     recent_recipes: Recipe[];
 }
 
-function getInitials(name: string) {
-    return name.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase();
+function getInitials(firstName: string, lastName?: string | null) {
+    const first = (firstName || '')[0] || '';
+    const last = (lastName || '')[0] || '';
+    return (first + last || first || '?').toUpperCase();
 }
 
 export default function Profile({
@@ -39,8 +42,8 @@ export default function Profile({
     return (
         <div className="fl-view">
             <div className="fl-profile-hero">
-                <div className="fl-profile-avatar">{getInitials(user.name)}</div>
-                <h1 className="fl-profile-name">{user.name}</h1>
+                <div className="fl-profile-avatar">{getInitials(user.first_name, user.last_name)}</div>
+                <h1 className="fl-profile-name">{user.first_name}</h1>
                 <p className="fl-profile-email">{user.email}</p>
                 <p className="fl-profile-since">Member since {memberSince}</p>
             </div>

@@ -188,6 +188,7 @@
     transition: all var(--fl-t1);
 }
 .fl-hdr-btn:active { background: var(--fl-s3); color: var(--fl-tx); }
+.fl-hdr-btn-active { background: var(--fl-p) !important; color: #fff !important; }
 
 .fl-avatar {
     width: 34px; height: 34px; border-radius: var(--fl-r3);

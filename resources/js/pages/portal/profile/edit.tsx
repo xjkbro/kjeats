@@ -6,8 +6,10 @@ import PortalLayout from '@/layouts/portal/portal-layout';
 import type { Auth } from '@/types';
 import * as Routes from '@/routes';
 
-function getInitials(name: string) {
-    return name.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase();
+function getInitials(firstName: string, lastName?: string | null) {
+    const first = (firstName || '')[0] || '';
+    const last = (lastName || '')[0] || '';
+    return (first + last || first || '?').toUpperCase();
 }
 
 interface Props {
@@ -26,7 +28,8 @@ export default function EditProfile({ mustVerifyEmail, status }: Props) {
     const avatarSrc = preview || user.avatar_url;
 
     const { data, setData, patch, processing, errors, recentlySuccessful } = useForm({
-        name: auth.user.name,
+        first_name: auth.user.first_name,
+        last_name: auth.user.last_name ?? '',
         email: auth.user.email,
         _portal: true as boolean,
     });
@@ -89,10 +92,10 @@ export default function EditProfile({ mustVerifyEmail, status }: Props) {
                     <h3 className="fl-fsec-ttl">Profile Photo</h3>
                     <div className="fl-fgrp" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                         {avatarSrc ? (
-                            <img src={avatarSrc} alt={user.name} style={{ width: 64, height: 64, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                            <img src={avatarSrc} alt={user.first_name} style={{ width: 64, height: 64, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
                         ) : (
                             <div className="fl-desk-avatar" style={{ width: 64, height: 64, fontSize: 20 }}>
-                                {getInitials(user.name)}
+                                {getInitials(user.first_name, user.last_name)}
                             </div>
                         )}
                         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -135,19 +138,34 @@ export default function EditProfile({ mustVerifyEmail, status }: Props) {
                     )}
 
                     <div className="fl-fgrp">
-                        <label className="fl-flbl" htmlFor="name">
-                            Name <span className="fl-req">*</span>
+                        <label className="fl-flbl" htmlFor="first_name">
+                            First name <span className="fl-req">*</span>
                         </label>
                         <input
-                            id="name"
-                            className={`fl-fi${errors.name ? ' error' : ''}`}
+                            id="first_name"
+                            className={`fl-fi${errors.first_name ? ' error' : ''}`}
                             type="text"
-                            value={data.name}
-                            onChange={(e) => setData('name', e.target.value)}
+                            value={data.first_name}
+                            onChange={(e) => setData('first_name', e.target.value)}
                             required
-                            autoComplete="name"
+                            autoComplete="given-name"
                         />
-                        {errors.name && <span className="fl-ferr">{errors.name}</span>}
+                        {errors.first_name && <span className="fl-ferr">{errors.first_name}</span>}
+                    </div>
+
+                    <div className="fl-fgrp">
+                        <label className="fl-flbl" htmlFor="last_name">
+                            Last name
+                        </label>
+                        <input
+                            id="last_name"
+                            className={`fl-fi${errors.last_name ? ' error' : ''}`}
+                            type="text"
+                            value={data.last_name}
+                            onChange={(e) => setData('last_name', e.target.value)}
+                            autoComplete="family-name"
+                        />
+                        {errors.last_name && <span className="fl-ferr">{errors.last_name}</span>}
                     </div>
 
                     <div className="fl-fgrp">

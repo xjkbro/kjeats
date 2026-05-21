@@ -8,13 +8,13 @@ import type { Recipe } from '@/types/portal';
 
 interface Props {
     recipes: Recipe[];
-    group: { id: number; name: string } | null;
+    groups: { id: number; name: string }[];
     scope: string;
 }
 
 const ALL = 'All';
 
-export default function RecipesIndex({ recipes, group, scope }: Props) {
+export default function RecipesIndex({ recipes, groups, scope }: Props) {
     const categories = [ALL, ...Array.from(new Set(recipes.map((r) => r.category)))];
     const difficulties = ['Easy', 'Medium', 'Hard'];
 
@@ -50,20 +50,23 @@ export default function RecipesIndex({ recipes, group, scope }: Props) {
                 </Link>
             </div>
 
-            {group && (
+            {groups.length > 0 && (
                 <div className="fl-scope-toggle">
-                    <button
-                        className={`fl-scope-btn${scope === 'group' ? ' active' : ''}`}
-                        onClick={() => setScope('group')}
-                    >
-                        {group.name}
-                    </button>
                     <button
                         className={`fl-scope-btn${scope === 'mine' ? ' active' : ''}`}
                         onClick={() => setScope('mine')}
                     >
                         Mine
                     </button>
+                    {groups.map((g) => (
+                        <button
+                            key={g.id}
+                            className={`fl-scope-btn${scope === String(g.id) ? ' active' : ''}`}
+                            onClick={() => setScope(String(g.id))}
+                        >
+                            {g.name}
+                        </button>
+                    ))}
                 </div>
             )}
 

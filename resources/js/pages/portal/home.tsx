@@ -67,7 +67,7 @@ function RestaurantFeedItem({ item }: { item: FeedItemRestaurant }) {
             <div className="fl-feed-ico">{item.emoji}</div>
             <div className="fl-feed-body">
                 <div className="fl-feed-actor">
-                    <span className="fl-feed-user">{item.user.name}</span>
+                    <span className="fl-feed-user">{item.user.first_name}</span>
                     <span>·</span>
                     <span>restaurant visit</span>
                 </div>
@@ -94,7 +94,7 @@ function RecipeFeedItem({ item }: { item: FeedItemRecipe }) {
             <div className="fl-feed-ico">{item.emoji}</div>
             <div className="fl-feed-body">
                 <div className="fl-feed-actor">
-                    <span className="fl-feed-user">{item.user.name}</span>
+                    <span className="fl-feed-user">{item.user.first_name}</span>
                     <span>·</span>
                     <span>new recipe</span>
                 </div>
@@ -119,7 +119,7 @@ function DishRatingFeedItem({ item }: { item: FeedItemDishRating }) {
             <div className="fl-feed-ico">{item.restaurant_emoji}</div>
             <div className="fl-feed-body">
                 <div className="fl-feed-actor">
-                    <span className="fl-feed-user">{item.user.name}</span>
+                    <span className="fl-feed-user">{item.user.first_name}</span>
                     <span>·</span>
                     <span>rated a dish</span>
                 </div>

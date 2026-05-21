@@ -107,7 +107,7 @@ class DashboardController extends Controller
                         'date_visited' => $r->date_visited->format('Y-m-d'),
                         'overall_rating' => (string) $r->overall_rating,
                         'price_range' => $r->price_range,
-                        'user' => ['name' => $r->user->name],
+                        'user' => ['first_name' => $r->user->first_name],
                         'created_at' => $r->created_at->toISOString(),
                     ]))
                     ->merge($groupRecipes->map(fn ($r) => [
@@ -118,7 +118,7 @@ class DashboardController extends Controller
                         'category' => $r->category,
                         'difficulty' => $r->difficulty,
                         'total_time' => $r->prep_time + $r->cook_time + $r->rest_time,
-                        'user' => ['name' => $r->user->name],
+                        'user' => ['first_name' => $r->user->first_name],
                         'created_at' => $r->created_at->toISOString(),
                     ]))
                     ->merge($dishRatings->map(fn ($d) => [
@@ -129,8 +129,8 @@ class DashboardController extends Controller
                         'restaurant_id' => $d->restaurant_id,
                         'restaurant_name' => $d->restaurant->name,
                         'restaurant_emoji' => $d->restaurant->emoji,
-                        'restaurant_owner' => $d->restaurant->user->name,
-                        'user' => ['name' => $d->user->name],
+                        'restaurant_owner' => $d->restaurant->user->first_name,
+                        'user' => ['first_name' => $d->user->first_name],
                         'created_at' => $d->created_at->toISOString(),
                     ]))
                     ->merge($groupWantToTries->map(fn ($w) => [
@@ -140,7 +140,7 @@ class DashboardController extends Controller
                         'name' => $w->name,
                         'cuisine' => $w->cuisine,
                         'location' => $w->location,
-                        'user' => ['name' => $w->user->name],
+                        'user' => ['first_name' => $w->user->first_name],
                         'created_at' => $w->created_at->toISOString(),
                     ]))
                     ->sortByDesc('created_at')

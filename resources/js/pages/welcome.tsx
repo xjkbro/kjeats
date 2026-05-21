@@ -20,9 +20,10 @@ function formatVisitDate(dateStr: string): string {
     return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-function getInitials(name: string | null | undefined): string {
-    if (!name) return '?';
-    return name.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase();
+function getInitials(firstName: string | null | undefined, lastName?: string | null): string {
+    const first = (firstName || '')[0] || '';
+    const last = (lastName || '')[0] || '';
+    return (first + last || first || '?').toUpperCase();
 }
 
 // ── Scroll-based Word Reveal ─────────────────────────────────────────
@@ -175,9 +176,9 @@ function FloatingShapes() {
 
 // ── Avatar ───────────────────────────────────────────────────────────
 
-function Avatar({ user, size = 24 }: { user: { name: string; avatar_url: string | null }; size?: number }) {
+function Avatar({ user, size = 24 }: { user: { first_name: string; last_name: string | null; avatar_url: string | null }; size?: number }) {
     if (user.avatar_url) {
-        return <img src={user.avatar_url} alt={user.name} style={{ width: size, height: size, borderRadius: '50%', objectFit: 'cover' }} />;
+        return <img src={user.avatar_url} alt={user.first_name} style={{ width: size, height: size, borderRadius: '50%', objectFit: 'cover' }} />;
     }
     return (
         <div style={{
@@ -186,7 +187,7 @@ function Avatar({ user, size = 24 }: { user: { name: string; avatar_url: string 
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: size * 0.35, fontWeight: 700, color: '#fff', flexShrink: 0,
         }}>
-            {getInitials(user.name)}
+            {getInitials(user.first_name, user.last_name)}
         </div>
     );
 }
@@ -218,14 +219,14 @@ function Scene({ children, align = 'left' }: { children: ReactNode; align?: 'lef
 
 // ── Feed Scenes (scrollytelling, one item per viewport) ──────────────
 
-function FeedMeta({ user, action, time, progress, align = 'left' }: { user: { name: string; avatar_url: string | null }; action: string; time: string; progress: number; align?: 'left' | 'right' }) {
+function FeedMeta({ user, action, time, progress, align = 'left' }: { user: { first_name: string; last_name: string | null; avatar_url: string | null }; action: string; time: string; progress: number; align?: 'left' | 'right' }) {
     const y = (1 - progress) * 15;
 
     return (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, opacity: progress, y, justifyContent: align === 'right' ? 'flex-end' : undefined }}>
             <Avatar user={user} />
             <span style={{ fontSize: 13, color: 'var(--wlc-tx3)', fontWeight: 500 }}>
-                <span style={{ color: 'var(--wlc-tx)', fontWeight: 600 }}>{user.name}</span>{' '}
+                <span style={{ color: 'var(--wlc-tx)', fontWeight: 600 }}>{user.first_name}</span>{' '}
                 {action}{' '}
                 <span style={{ color: 'var(--wlc-tx3)' }}>{time}</span>
             </span>
@@ -394,7 +395,7 @@ function DishRatingScene({ item, progress, align }: { item: FeedItemDishRating; 
 
 // ── Hero ─────────────────────────────────────────────────────────────
 
-function HeroSection({ group, hasFeed, auth }: { group: { id: number; name: string } | null; hasFeed: boolean; auth: { user: { name: string } | null; canLogin: boolean; canRegister: boolean } }) {
+function HeroSection({ group, hasFeed, auth }: { group: { id: number; name: string } | null; hasFeed: boolean; auth: { user: { first_name: string } | null; canLogin: boolean; canRegister: boolean } }) {
     const { scrollY } = useScroll();
     const y1 = useTransform(scrollY, [0, 800], [0, 300]);
     const y2 = useTransform(scrollY, [0, 800], [0, -180]);
@@ -518,7 +519,7 @@ function StatCounter({ target }: { target: number }) {
 
 // ── CTA ──────────────────────────────────────────────────────────────
 
-function CtaSection({ auth }: { auth: { user: { name: string } | null; canLogin: boolean; canRegister: boolean } }) {
+function CtaSection({ auth }: { auth: { user: { first_name: string } | null; canLogin: boolean; canRegister: boolean } }) {
     const ref = useRef(null);
     const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'center center'] });
     const opacity = useTransform(scrollYProgress, [0, 0.4, 1], [0, 1, 1]);
@@ -593,7 +594,7 @@ interface Props {
 
 export default function Welcome({ canRegister = true, canLogin = true, feed, group, stats }: Props) {
     const { auth } = usePage().props;
-    const user = auth.user as { name: string; email: string; avatar_url?: string | null } | null;
+    const user = auth.user as { first_name: string; last_name: string | null; email: string; avatar_url?: string | null } | null;
 
     return (
         <>
@@ -624,7 +625,7 @@ export default function Welcome({ canRegister = true, canLogin = true, feed, gro
                 </header>
 
                 <main className="wlc-main">
-                    <HeroSection group={group} hasFeed={feed !== null && feed.length > 0} auth={{ user: user ? { name: user.name } : null, canLogin, canRegister }} />
+                    <HeroSection group={group} hasFeed={feed !== null && feed.length > 0} auth={{ user: user ? { first_name: user.first_name } : null, canLogin, canRegister }} />
 
                     {feed !== null && feed.length > 0 && stats && (
                         <>
@@ -646,7 +647,7 @@ export default function Welcome({ canRegister = true, canLogin = true, feed, gro
                     )}
 
                     {feed !== null && feed.length > 0 && (
-                        <CtaSection auth={{ user: user ? { name: user.name } : null, canLogin, canRegister }} />
+                        <CtaSection auth={{ user: user ? { first_name: user.first_name } : null, canLogin, canRegister }} />
                     )}
                 </main>
             </div>

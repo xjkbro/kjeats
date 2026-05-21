@@ -16,9 +16,10 @@ interface Props {
         notes: string | null;
         restaurant_id: number | null;
         created_at: string;
+        user_id: number;
         user: { id: number; name: string };
     }>;
-    group: { id: number; name: string } | null;
+    groups: { id: number; name: string }[];
     scope: string;
     all_locations: Array<{ name: string; display_name: string }>;
 }
@@ -49,7 +50,7 @@ const SORT_NEWEST = 'Newest';
 const SORT_OLDEST = 'Oldest';
 const SORT_AZ = 'A → Z';
 
-export default function WantToTryIndex({ items, group, scope, all_locations = [] }: Props) {
+export default function WantToTryIndex({ items, groups, scope, all_locations = [] }: Props) {
     const [locationFilter, setLocationFilter] = useState('');
     const [cuisineFilter, setCuisineFilter] = useState(ALL);
     const [sort, setSort] = useState<string>(SORT_NEWEST);
@@ -93,20 +94,23 @@ return a.name.localeCompare(b.name);
                 </Link>
             </div>
 
-            {group && (
+            {groups.length > 0 && (
                 <div className="fl-scope-toggle">
-                    <button
-                        className={`fl-scope-btn${scope === 'group' ? ' active' : ''}`}
-                        onClick={() => setScope('group')}
-                    >
-                        {group.name}
-                    </button>
                     <button
                         className={`fl-scope-btn${scope === 'mine' ? ' active' : ''}`}
                         onClick={() => setScope('mine')}
                     >
                         Mine
                     </button>
+                    {groups.map((g) => (
+                        <button
+                            key={g.id}
+                            className={`fl-scope-btn${scope === String(g.id) ? ' active' : ''}`}
+                            onClick={() => setScope(String(g.id))}
+                        >
+                            {g.name}
+                        </button>
+                    ))}
                 </div>
             )}
 
@@ -140,10 +144,10 @@ return a.name.localeCompare(b.name);
                                 <div className="fl-wtt-meta">
                                     {item.cuisine && <span className="fl-badge fl-badge-org">{item.cuisine}</span>}
                                     {item.location && <span className="fl-badge fl-badge-def">{item.location_display_name ?? item.location}</span>}
-                                    {group && scope === 'group' && (
+                                    {scope !== 'mine' && (
                                         <span className="fl-wtt-by">{item.user.name} · {timeAgo(item.created_at)}</span>
                                     )}
-                                    {(!group || scope === 'mine') && (
+                                    {scope === 'mine' && (
                                         <span className="fl-wtt-by">{timeAgo(item.created_at)}</span>
                                     )}
                                 </div>

@@ -18,32 +18,29 @@ class RestaurantController extends Controller
     public function index(Request $request): Response
     {
         $user = $request->user();
-        $groupId = (int) config('app.frontend_group_id', 0);
-        $group = null;
+        $groups = $user->groups->map(fn ($g) => ['id' => $g->id, 'name' => $g->name])->values();
 
-        if ($groupId > 0) {
-            $foundGroup = Group::find($groupId);
-
-            if ($foundGroup && $foundGroup->isMember($user)) {
-                $group = ['id' => $foundGroup->id, 'name' => $foundGroup->name];
-            }
-        }
+        $scope = $request->query('scope', 'mine');
+        $scopeGroupId = ($scope !== 'mine') ? (int) $scope : null;
 
         $query = $user->restaurants()->with('dishes');
 
-        if ($group && $request->query('scope') === 'group') {
-            $memberIds = Group::find($groupId)->members()->pluck('users.id');
-            $query = Restaurant::whereIn('user_id', $memberIds)->with(['dishes', 'user']);
+        if ($scopeGroupId) {
+            $scopeGroup = $user->groups->firstWhere('id', $scopeGroupId);
+
+            if ($scopeGroup) {
+                $memberIds = Group::find($scopeGroupId)->members()->pluck('users.id');
+                $query = Restaurant::whereIn('user_id', $memberIds)->with(['dishes', 'user']);
+            }
         }
 
         $restaurants = $query->orderByDesc('date_visited')->get();
 
         return Inertia::render('portal/restaurants/index', [
             'restaurants' => $restaurants,
-            'group' => $group,
-            'scope' => $request->query('scope', 'mine'),
+            'groups' => $groups,
+            'scope' => $scope,
             'all_cuisines' => Cuisine::orderBy('name')->pluck('name')->values(),
-            'current_user_id' => $user->id,
         ]);
     }
 
@@ -52,11 +49,12 @@ class RestaurantController extends Controller
         $this->authorize('view', $restaurant);
 
         $user = $request->user();
-        $groupId = (int) config('app.frontend_group_id', 0);
         $canAddDish = $user->id === $restaurant->user_id;
-        if (! $canAddDish && $groupId > 0) {
-            $group = Group::find($groupId);
-            $canAddDish = $group && $group->isMember($user);
+
+        if (! $canAddDish) {
+            $canAddDish = $user->groups()
+                ->whereHas('members', fn ($q) => $q->where('users.id', $restaurant->user_id))
+                ->exists();
         }
 
         return Inertia::render('portal/restaurants/show', [
@@ -69,24 +67,20 @@ class RestaurantController extends Controller
     public function create(): Response
     {
         $user = auth()->user();
-        $groupId = (int) config('app.frontend_group_id', 0);
+        $userGroups = $user->groups;
 
         $wantToTries = $user->wantToTries()
             ->whereNull('restaurant_id')
             ->latest()
             ->get();
 
-        if ($groupId > 0) {
-            $group = Group::find($groupId);
-
-            if ($group && $group->isMember($user)) {
-                $memberIds = $group->members()->pluck('users.id');
-                $wantToTries = WantToTry::whereIn('user_id', $memberIds)
-                    ->whereNull('restaurant_id')
-                    ->with('user')
-                    ->latest()
-                    ->get();
-            }
+        if ($userGroups->isNotEmpty()) {
+            $memberIds = $userGroups->flatMap(fn ($g) => $g->members()->pluck('users.id'))->unique()->values();
+            $wantToTries = WantToTry::whereIn('user_id', $memberIds)
+                ->whereNull('restaurant_id')
+                ->with('user')
+                ->latest()
+                ->get();
         }
 
         return Inertia::render('portal/restaurants/create', [

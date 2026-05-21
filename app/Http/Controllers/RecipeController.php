@@ -14,31 +14,28 @@ class RecipeController extends Controller
     public function index(Request $request): Response
     {
         $user = $request->user();
-        $groupId = (int) config('app.frontend_group_id', 0);
-        $group = null;
+        $groups = $user->groups->map(fn ($g) => ['id' => $g->id, 'name' => $g->name])->values();
 
-        if ($groupId > 0) {
-            $foundGroup = Group::find($groupId);
-
-            if ($foundGroup && $foundGroup->isMember($user)) {
-                $group = ['id' => $foundGroup->id, 'name' => $foundGroup->name];
-            }
-        }
+        $scope = $request->query('scope', 'mine');
+        $scopeGroupId = ($scope !== 'mine') ? (int) $scope : null;
 
         $query = $user->recipes()->with(['ingredients', 'steps', 'nutrition']);
 
-        if ($group && $request->query('scope') === 'group') {
-            $memberIds = Group::find($groupId)->members()->pluck('users.id');
-            $query = Recipe::whereIn('user_id', $memberIds)->with(['ingredients', 'steps', 'nutrition', 'user']);
+        if ($scopeGroupId) {
+            $scopeGroup = $user->groups->firstWhere('id', $scopeGroupId);
+
+            if ($scopeGroup) {
+                $memberIds = Group::find($scopeGroupId)->members()->pluck('users.id');
+                $query = Recipe::whereIn('user_id', $memberIds)->with(['ingredients', 'steps', 'nutrition', 'user']);
+            }
         }
 
         $recipes = $query->orderByDesc('created_at')->get();
 
         return Inertia::render('portal/recipes/index', [
             'recipes' => $recipes,
-            'group' => $group,
-            'scope' => $request->query('scope', 'mine'),
-            'current_user_id' => $user->id,
+            'groups' => $groups,
+            'scope' => $scope,
         ]);
     }
 

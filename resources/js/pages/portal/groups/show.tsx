@@ -32,8 +32,8 @@ export default function GroupsShow({ group, isOwner, maxMembers }: Props) {
         router.delete(GroupController.leave(group.id).url);
     }
 
-    function handleRemoveMember(member: GroupMember & { user: { id: number; name: string; email: string } }) {
-        if (!confirm(`Remove ${member.user.name} from the group?`)) {
+    function handleRemoveMember(member: GroupMember & { user: { id: number; first_name: string; email: string } }) {
+        if (!confirm(`Remove ${member.user.first_name} from the group?`)) {
             return;
         }
 
@@ -88,9 +88,9 @@ export default function GroupsShow({ group, isOwner, maxMembers }: Props) {
                 <div className="fl-member-list">
                     {group.group_members.map((member) => (
                         <div key={member.id} className="fl-member-row">
-                            <div className="fl-avatar fl-avatar-sm">{getInitials(member.user.name)}</div>
+                            <div className="fl-avatar fl-avatar-sm">{getInitials(member.user.first_name)}</div>
                             <div className="fl-member-body">
-                                <div className="fl-member-name">{member.user.name}</div>
+                                <div className="fl-member-name">{member.user.first_name}</div>
                                 <div className="fl-member-email">{member.user.email}</div>
                             </div>
                             <span className={`fl-badge ${member.role === 'owner' ? 'fl-badge-org' : 'fl-badge-def'}`}>

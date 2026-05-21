@@ -19,6 +19,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
 
+Route::get('app/launch', function () {
+    return auth()->check()
+        ? redirect()->route('dashboard')
+        : redirect()->route('login');
+})->name('app.launch');
+
 Route::middleware(['auth', 'verified'])->prefix('app')->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
 

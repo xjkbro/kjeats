@@ -100,12 +100,10 @@ test('group members can see each others want to try items', function () {
     $group->members()->attach($user->id, ['role' => 'owner']);
     $group->members()->attach($member->id, ['role' => 'member']);
 
-    WantToTry::factory()->create(['user_id' => $member->id, 'group_id' => $group->id]);
-
-    config(['app.frontend_group_id' => $group->id]);
+    WantToTry::factory()->create(['user_id' => $member->id]);
 
     $response = $this->actingAs($user)
-        ->get(route('want-to-try.index', ['scope' => 'group']));
+        ->get(route('want-to-try.index', ['scope' => $group->id]));
 
     $response->assertOk()
         ->assertInertia(fn (Assert $page) => $page

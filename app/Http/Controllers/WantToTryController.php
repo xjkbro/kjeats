@@ -17,22 +17,20 @@ class WantToTryController extends Controller
     public function index(Request $request): Response
     {
         $user = $request->user();
-        $groupId = (int) config('app.frontend_group_id', 0);
-        $group = null;
+        $groups = $user->groups->map(fn ($g) => ['id' => $g->id, 'name' => $g->name])->values();
 
-        if ($groupId > 0) {
-            $foundGroup = Group::find($groupId);
-
-            if ($foundGroup && $foundGroup->isMember($user)) {
-                $group = ['id' => $foundGroup->id, 'name' => $foundGroup->name];
-            }
-        }
+        $scope = $request->query('scope', 'mine');
+        $scopeGroupId = ($scope !== 'mine') ? (int) $scope : null;
 
         $query = $user->wantToTries()->with('user')->whereNull('restaurant_id');
 
-        if ($group && $request->query('scope') === 'group') {
-            $memberIds = Group::find($groupId)->members()->pluck('users.id');
-            $query = WantToTry::whereIn('user_id', $memberIds)->with('user')->whereNull('restaurant_id');
+        if ($scopeGroupId) {
+            $scopeGroup = $user->groups->firstWhere('id', $scopeGroupId);
+
+            if ($scopeGroup) {
+                $memberIds = Group::find($scopeGroupId)->members()->pluck('users.id');
+                $query = WantToTry::whereIn('user_id', $memberIds)->with('user')->whereNull('restaurant_id');
+            }
         }
 
         $items = $query->with(['user', 'locationRelation'])->latest()->get();
@@ -47,16 +45,16 @@ class WantToTryController extends Controller
                 'location_display_name' => $item->locationRelation?->display_name ?? $item->location,
                 'notes' => $item->notes,
                 'restaurant_id' => $item->restaurant_id,
+                'user_id' => $item->user_id,
                 'created_at' => $item->created_at,
                 'user' => $item->user,
             ])->values(),
-            'group' => $group,
-            'scope' => $request->query('scope', 'mine'),
+            'groups' => $groups,
+            'scope' => $scope,
             'all_locations' => Location::orderBy('display_name')->get()->map(fn ($l) => [
                 'name' => $l->name,
                 'display_name' => $l->display_name,
             ])->values(),
-            'current_user_id' => $user->id,
         ]);
     }
 
@@ -88,17 +86,6 @@ class WantToTryController extends Controller
             $location = Location::findOrCreate($validated['location']);
             $validated['location'] = $location->name;
             $validated['location_id'] = $location->id;
-        }
-
-        $groupId = (int) config('app.frontend_group_id', 0);
-        $group = null;
-
-        if ($groupId > 0) {
-            $group = Group::find($groupId);
-
-            if ($group && $group->isMember($request->user())) {
-                $validated['group_id'] = $groupId;
-            }
         }
 
         $request->user()->wantToTries()->create([
