@@ -187,10 +187,17 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
             {/* BOTTOM NAV / SIDEBAR */}
             <nav className="fl-nav">
                 {/* Logo area (desktop only) */}
-                <div className="fl-nav-logo">
+                <div className="fl-nav-logo flex justify-between items-center">
                     <Link href={home()} className="fl-brand">
                         <img src="/kjeats-logo.png" alt="kjeats" style={{ height: '22px', objectFit: 'contain' }} />
                     </Link>
+                    <span className="hover:cursor-pointer fl-nav-btn inline-block !w-auto" onClick={toggleSidebar} aria-label="Toggle sidebar">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
+                            {sidebarCollapsed
+                                ? <polyline points="9 18 15 12 9 6" />
+                                : <polyline points="15 18 9 12 15 6" />}
+                        </svg>
+                    </span>
                 </div>
 
                 <Link href={dashboard()} className={`fl-nav-btn${isActive('/dashboard') ? ' active' : ''}`}>
@@ -238,7 +245,7 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
                 </Link>
 
                 {/* + Add button (desktop sidebar only) */}
-                <button className="fl-nav-btn fl-nav-add" onClick={() => setAddOpen(true)} aria-label="Add">
+                <span className="hover:cursor-pointer fl-nav-btn -fl-nav-add text-[unset]" onClick={() => setAddOpen(true)} aria-label="Add">
                     <div className="fl-nav-ico">
                         <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" viewBox="0 0 24 24">
                             <line x1="12" y1="5" x2="12" y2="19" />
@@ -246,14 +253,8 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
                         </svg>
                     </div>
                     <span className="fl-nav-label">Add New</span>
-                </button>
-                <button className="fl-nav-collapse" onClick={toggleSidebar} aria-label="Toggle sidebar">
-                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
-                        {sidebarCollapsed
-                            ? <polyline points="9 18 15 12 9 6" />
-                            : <polyline points="15 18 9 12 15 6" />}
-                    </svg>
-                </button>
+                </span>
+
             </nav>
 
             {/* Avatar — mobile bottom-right, outside pill */}
