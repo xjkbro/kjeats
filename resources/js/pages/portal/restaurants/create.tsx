@@ -44,7 +44,7 @@ interface FormValues {
     dishes: DishInput[];
 }
 
-const EMOJIS = ['🍽️', '🍕', '🍣', '🌮', '🍜', '🥩', '🥗', '🍔', '🥐', '🍱', '🍛', '🍝'];
+const EMOJIS = ['\uD83C\uDF7D\uFE0F', '\uD83C\uDF55', '\uD83C\uDF63', '\uD83C\uDF2E', '\uD83C\uDF5C', '\uD83E\uDD69', '\uD83E\uDD57', '\uD83C\uDF54', '\uD83E\uDD50', '\uD83C\uDF71', '\uD83C\uDF5B', '\uD83C\uDF5D'];
 const PRICE_RANGES = ['$', '$$', '$$$', '$$$$'];
 
 function StarInput({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
@@ -52,22 +52,22 @@ function StarInput({ label, value, onChange }: { label: string; value: string; o
     const current = parseFloat(value) || 0;
 
     return (
-        <div className="fl-star-inp">
-            <label className="fl-flbl">{label}</label>
-            <div className="fl-stars-row">
+        <div className="mb-3">
+            <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]">{label}</label>
+            <div className="flex items-center gap-[2px]">
                 {[1, 2, 3, 4, 5].map((i) => (
                     <button
                         key={i}
                         type="button"
-                        className={i <= (hovered || current) ? 'filled' : ''}
+                        className={`w-[34px] h-[34px] flex items-center justify-center text-lg cursor-pointer border-none transition-all duration-100 active:scale-[.9] ${i <= (hovered || current) ? 'text-[var(--fl-gold)] drop-shadow-[0_1px_2px_rgba(255,183,77,.4)]' : 'text-[var(--fl-tx3)] hover:text-[var(--fl-gold)]'}`}
                         onMouseEnter={() => setHovered(i)}
                         onMouseLeave={() => setHovered(0)}
                         onClick={() => onChange(String(i))}
                     >
-                        ★
+                        {'\u2605'}
                     </button>
                 ))}
-                {current > 0 && <span className="fl-star-val">{current.toFixed(1)}</span>}
+                {current > 0 && <span className="ml-1 text-sm font-bold text-[var(--fl-gold)]">{current.toFixed(1)}</span>}
             </div>
         </div>
     );
@@ -75,7 +75,7 @@ function StarInput({ label, value, onChange }: { label: string; value: string; o
 
 export default function RestaurantCreate({ all_tags, want_to_tries = [] }: Props) {
     const { data, setData, post, processing, errors } = useForm<FormValues>({
-        emoji: '🍽️',
+        emoji: '\uD83C\uDF7D\uFE0F',
         name: '',
         cuisine: '',
         location: '',
@@ -171,11 +171,6 @@ export default function RestaurantCreate({ all_tags, want_to_tries = [] }: Props
         }
     }
 
-    function selectLocation(locName: string) {
-        setData('location', locName);
-        setShowLocationSuggestions(false);
-    }
-
     useEffect(() => {
         const timer = setTimeout(() => {
             if (data.location.length > 0) {
@@ -226,27 +221,27 @@ export default function RestaurantCreate({ all_tags, want_to_tries = [] }: Props
     }
 
     return (
-        <form className="fl-view fl-form" onSubmit={submit}>
+        <form className="p-4 lg:p-7 kj-anim-viewin pb-[calc(var(--fl-nav-h)+var(--fl-safe)+80px)] lg:pb-[100px]" onSubmit={submit}>
             {want_to_tries.length > 0 && (
-                <div className="fl-fsec">
-                    <div className="fl-fsec-hdr">
-                        <h3 className="fl-fsec-ttl">From Want to Try</h3>
-                        <button type="button" className="fl-btn fl-btn-ghost fl-btn-sm" onClick={() => setShowWantToTry((v) => !v)}>
+                <div className="mb-6">
+                    <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-[10px] font-bold text-[var(--fl-tx2)] uppercase tracking-[1px] mb-3 flex items-center gap-2">From Want to Try</h3>
+                        <button type="button" className="inline-flex items-center justify-center gap-[7px] px-[22px] py-[11px] rounded-full text-[15px] font-bold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-transparent text-[var(--fl-tx2)] border-[var(--fl-bdr-h)] active:bg-[var(--fl-s2)] active:scale-[.97] px-[14px] py-2 text-sm font-semibold rounded-xl" onClick={() => setShowWantToTry((v) => !v)}>
                             {showWantToTry ? 'Hide' : 'Select'}
                         </button>
                     </div>
                     {showWantToTry && (
-                        <div className="fl-wtt-picker-list">
+                        <div className="flex flex-col gap-2 mt-[10px]">
                             {want_to_tries.map((w) => (
                                 <button
                                     key={w.id}
                                     type="button"
-                                    className={`fl-wtt-picker-item${selectedWantToTryId === w.id ? ' selected' : ''}`}
+                                    className={`flex items-center gap-3 px-3 py-3 bg-[var(--fl-s1)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl text-left cursor-pointer transition-all duration-100 active:bg-[var(--fl-s2)]${selectedWantToTryId === w.id ? ' border-[var(--fl-p)] bg-[var(--fl-p-dim)]' : ''}`}
                                     onClick={() => selectWantToTry(w.id)}
                                 >
-                                    <span className="fl-wtt-picker-emoji">{w.emoji}</span>
-                                    <span className="fl-wtt-picker-name">{w.name}</span>
-                                    {w.cuisine && <span className="fl-wtt-picker-cuisine">{w.cuisine}</span>}
+                                    <span className="text-[22px] shrink-0">{w.emoji}</span>
+                                    <span className="flex-1 text-sm font-semibold text-[var(--fl-tx)]">{w.name}</span>
+                                    {w.cuisine && <span className="text-xs text-[var(--fl-tx2)]">{w.cuisine}</span>}
                                 </button>
                             ))}
                         </div>
@@ -254,16 +249,16 @@ export default function RestaurantCreate({ all_tags, want_to_tries = [] }: Props
                 </div>
             )}
 
-            <div className="fl-fsec">
-                <h3 className="fl-fsec-ttl">Basic Information</h3>
+            <div className="mb-6">
+                <h3 className="text-[10px] font-bold text-[var(--fl-tx2)] uppercase tracking-[1px] mb-3 flex items-center gap-2">Basic Information</h3>
 
-                <div className="fl-fgrp fl-emoji-grp">
-                    <label className="fl-flbl">Icon</label>
-                    <button type="button" className="fl-emoji-btn" onClick={() => setShowEmojiPicker((v) => !v)}>
+                <div className="mb-3 relative">
+                    <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]">Icon</label>
+                    <button type="button" className="text-4xl leading-none bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[14px] py-2 cursor-pointer transition-colors duration-100 hover:border-[var(--fl-bdr-h)]" onClick={() => setShowEmojiPicker((v) => !v)}>
                         {data.emoji}
                     </button>
                     {showEmojiPicker && (
-                        <div className="fl-emoji-picker">
+                        <div className="grid grid-cols-6 gap-1 bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl p-[10px] mt-2 absolute z-10 left-0 shadow-[var(--fl-sh2)]">
                             {EMOJIS.map((e) => (
                                 <button
                                     key={e}
@@ -280,27 +275,27 @@ export default function RestaurantCreate({ all_tags, want_to_tries = [] }: Props
                     )}
                 </div>
 
-                <div className="fl-fgrp">
-                    <label className="fl-flbl" htmlFor="name">Restaurant Name *</label>
+                <div className="mb-3 relative">
+                    <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]" htmlFor="name">Restaurant Name <span className="text-[var(--fl-red)] ml-[2px]">*</span></label>
                     <input
                         id="name"
-                        className={`fl-fi${errors.name ? ' error' : ''}`}
+                        className={`w-full bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none placeholder:text-[var(--fl-tx3)] focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none${errors.name ? ' border-[var(--fl-red)]' : ''}`}
                         type="text"
                         value={data.name}
                         onChange={(e) => setData('name', e.target.value)}
                         placeholder="e.g. The Golden Fork"
                         required
                     />
-                    {errors.name && <span className="fl-ferr">{errors.name}</span>}
+                    {errors.name && <span className="block text-xs text-[var(--fl-red)] mt-[5px]">{errors.name}</span>}
                 </div>
 
-                <div className="fl-frow">
-                    <div className="fl-fgrp">
-                        <label className="fl-flbl" htmlFor="cuisine">Cuisine *</label>
+                <div className="grid grid-cols-2 gap-[10px]">
+                    <div className="mb-3 relative">
+                        <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]" htmlFor="cuisine">Cuisine <span className="text-[var(--fl-red)] ml-[2px]">*</span></label>
                         <input
                             id="cuisine"
                             ref={cuisineInputRef}
-                            className={`fl-fi${errors.cuisine ? ' error' : ''}`}
+                            className={`w-full bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none placeholder:text-[var(--fl-tx3)] focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none${errors.cuisine ? ' border-[var(--fl-red)]' : ''}`}
                             type="text"
                             value={data.cuisine}
                             onChange={(e) => {
@@ -316,12 +311,12 @@ export default function RestaurantCreate({ all_tags, want_to_tries = [] }: Props
                             autoComplete="off"
                         />
                         {showCuisineSuggestions && (
-                            <div className="fl-autocomplete-dropdown">
+                            <div className="absolute top-full left-0 right-0 bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl mt-1 shadow-[var(--fl-sh2)] z-40 overflow-hidden">
                                 {filteredCuisines.slice(0, 8).map((c) => (
                                     <button
                                         key={c}
                                         type="button"
-                                        className="fl-autocomplete-item"
+                                        className="w-full px-[13px] py-[10px] text-left text-sm text-[var(--fl-tx)] transition-colors duration-100 hover:bg-[var(--fl-s3)] active:bg-[var(--fl-s3)]"
                                         onMouseDown={(e) => {
                                             e.preventDefault();
                                             selectCuisine(c);
@@ -332,16 +327,16 @@ export default function RestaurantCreate({ all_tags, want_to_tries = [] }: Props
                                 ))}
                             </div>
                         )}
-                        {errors.cuisine && <span className="fl-ferr">{errors.cuisine}</span>}
+                        {errors.cuisine && <span className="block text-xs text-[var(--fl-red)] mt-[5px]">{errors.cuisine}</span>}
                     </div>
-                    <div className="fl-fgrp">
-                        <label className="fl-flbl">Price Range</label>
-                        <div className="fl-seg">
+                    <div className="mb-3 relative">
+                        <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]">Price Range</label>
+                        <div className="flex gap-1 bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl p-1">
                             {PRICE_RANGES.map((p) => (
                                 <button
                                     key={p}
                                     type="button"
-                                    className={`fl-seg-btn${data.price_range === p ? ' active' : ''}`}
+                                    className={`flex-1 px-[10px] py-[7px] rounded-[10px] text-sm font-semibold bg-transparent transition-all duration-100 cursor-pointer whitespace-nowrap active:scale-[.97]${data.price_range === p ? ' bg-[var(--fl-s3)] text-[var(--fl-tx)] shadow-sm' : ' text-[var(--fl-tx2)]'}`}
                                     onClick={() => setData('price_range', p)}
                                 >
                                     {p}
@@ -351,13 +346,13 @@ export default function RestaurantCreate({ all_tags, want_to_tries = [] }: Props
                     </div>
                 </div>
 
-                <div className="fl-frow">
-                    <div className="fl-fgrp">
-                        <label className="fl-flbl" htmlFor="location">Location</label>
+                <div className="grid grid-cols-2 gap-[10px]">
+                    <div className="mb-3 relative">
+                        <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]" htmlFor="location">Location</label>
                         <input
                             id="location"
                             ref={locationInputRef}
-                            className="fl-fi"
+                            className="w-full bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none placeholder:text-[var(--fl-tx3)] focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none"
                             type="text"
                             value={data.location}
                             onChange={(e) => {
@@ -372,28 +367,28 @@ export default function RestaurantCreate({ all_tags, want_to_tries = [] }: Props
                             autoComplete="off"
                         />
                         {showLocationSuggestions && (
-                            <div className="fl-autocomplete-dropdown">
+                            <div className="absolute top-full left-0 right-0 bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl mt-1 shadow-[var(--fl-sh2)] z-40 overflow-hidden">
                                 {filteredLocations.slice(0, 8).map((loc) => (
                                     <button
                                         key={loc.name}
                                         type="button"
-                                        className="fl-autocomplete-item"
+                                        className="w-full px-[13px] py-[10px] text-left text-sm text-[var(--fl-tx)] transition-colors duration-100 hover:bg-[var(--fl-s3)] active:bg-[var(--fl-s3)]"
                                         onMouseDown={(e) => {
                                             e.preventDefault();
                                             selectLocation(loc.name);
                                         }}
                                     >
-                                        {loc.display_name !== loc.name ? `${loc.display_name} — ${loc.name}` : loc.name}
+                                        {loc.display_name !== loc.name ? `${loc.display_name} \u2014 ${loc.name}` : loc.name}
                                     </button>
                                 ))}
                             </div>
                         )}
                     </div>
-                    <div className="fl-fgrp">
-                        <label className="fl-flbl" htmlFor="date_visited">Date Visited</label>
+                    <div className="mb-3 relative">
+                        <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]" htmlFor="date_visited">Date Visited</label>
                         <input
                             id="date_visited"
-                            className="fl-fi"
+                            className="w-full bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none placeholder:text-[var(--fl-tx3)] focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none"
                             type="date"
                             value={data.date_visited}
                             onChange={(e) => setData('date_visited', e.target.value)}
@@ -401,31 +396,31 @@ export default function RestaurantCreate({ all_tags, want_to_tries = [] }: Props
                     </div>
                 </div>
 
-                <div className="fl-fgrp">
-                    <label className="fl-flbl">Additional Visit Dates</label>
-                    <div className="fl-visit-dates">
+                <div className="mb-3 relative">
+                    <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]">Additional Visit Dates</label>
+                    <div className="flex flex-col gap-2">
                         {data.visit_dates.map((d) => (
-                            <span key={d} className="fl-visit-chip">
+                            <span key={d} className="inline-flex items-center gap-2 bg-[var(--fl-s3)] border border-[var(--fl-bdr)] rounded-full px-[10px] py-[5px] text-sm text-[var(--fl-tx2)] w-fit">
                                 {new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                                 <button
                                     type="button"
-                                    className="fl-visit-chip-rm"
+                                    className="text-[var(--fl-tx3)] text-xs cursor-pointer transition-colors duration-100 hover:text-[var(--fl-red)]"
                                     onClick={() => setData('visit_dates', data.visit_dates.filter((x) => x !== d))}
                                 >
-                                    ✕
+                                    {'\u2715'}
                                 </button>
                             </span>
                         ))}
-                        <div className="fl-visit-add">
+                        <div className="flex gap-2 items-center">
                             <input
-                                className="fl-fi"
+                                className="w-full bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none placeholder:text-[var(--fl-tx3)] focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none"
                                 type="date"
                                 value={newVisitDate}
                                 onChange={(e) => setNewVisitDate(e.target.value)}
                             />
                             <button
                                 type="button"
-                                className="fl-btn fl-btn-ghost fl-btn-sm"
+                                className="inline-flex items-center justify-center gap-[7px] px-[22px] py-[11px] rounded-full text-[15px] font-bold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-transparent text-[var(--fl-tx2)] border-[var(--fl-bdr-h)] active:bg-[var(--fl-s2)] active:scale-[.97] px-[14px] py-2 text-sm font-semibold rounded-xl"
                                 disabled={!newVisitDate || data.visit_dates.includes(newVisitDate)}
                                 onClick={() => {
                                     if (newVisitDate && !data.visit_dates.includes(newVisitDate)) {
@@ -440,8 +435,8 @@ export default function RestaurantCreate({ all_tags, want_to_tries = [] }: Props
                     </div>
                 </div>
 
-                <div className="fl-fgrp">
-                    <label className="fl-flbl">Tags</label>
+                <div className="mb-3 relative">
+                    <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]">Tags</label>
                     <TagInput
                         value={data.tags}
                         onChange={(tags) => setData('tags', tags)}
@@ -450,8 +445,8 @@ export default function RestaurantCreate({ all_tags, want_to_tries = [] }: Props
                     />
                 </div>
 
-                <div className="fl-fgrp">
-                    <label className="fl-flbl">Photo</label>
+                <div className="mb-3 relative">
+                    <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]">Photo</label>
                     <input
                         ref={restaurantPhotoRef}
                         type="file"
@@ -462,17 +457,17 @@ export default function RestaurantCreate({ all_tags, want_to_tries = [] }: Props
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                         <button
                             type="button"
-                            className="fl-btn fl-btn-ghost fl-btn-sm"
+                            className="inline-flex items-center justify-center gap-[7px] px-[22px] py-[11px] rounded-full text-[15px] font-bold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-transparent text-[var(--fl-tx2)] border-[var(--fl-bdr-h)] active:bg-[var(--fl-s2)] active:scale-[.97] px-[14px] py-2 text-sm font-semibold rounded-xl"
                             onClick={() => restaurantPhotoRef.current?.click()}
                         >
-                            📷 {data.restaurant_photo ? 'Change Photo' : 'Add Photo'}
+                            {'\uD83D\uDCF7'} {data.restaurant_photo ? 'Change Photo' : 'Add Photo'}
                         </button>
                         {data.restaurant_photo && (
-                            <span className="fl-visit-chip">
+                            <span className="inline-flex items-center gap-2 bg-[var(--fl-s3)] border border-[var(--fl-bdr)] rounded-full px-[10px] py-[5px] text-sm text-[var(--fl-tx2)] w-fit">
                                 {data.restaurant_photo.name}
                                 <button
                                     type="button"
-                                    className="fl-visit-chip-rm"
+                                    className="text-[var(--fl-tx3)] text-xs cursor-pointer transition-colors duration-100 hover:text-[var(--fl-red)]"
                                     onClick={() => {
                                         setData('restaurant_photo', null);
 
@@ -480,77 +475,77 @@ export default function RestaurantCreate({ all_tags, want_to_tries = [] }: Props
 restaurantPhotoRef.current.value = '';
 }
                                     }}
-                                >✕</button>
+                                >{'\u2715'}</button>
                             </span>
                         )}
                     </div>
                 </div>
             </div>
 
-            <div className="fl-fsec">
-                <h3 className="fl-fsec-ttl">Ratings</h3>
+            <div className="mb-6">
+                <h3 className="text-[10px] font-bold text-[var(--fl-tx2)] uppercase tracking-[1px] mb-3 flex items-center gap-2">Ratings</h3>
                 <StarInput label="Overall Rating *" value={data.overall_rating} onChange={(v) => setData('overall_rating', v)} />
-                {errors.overall_rating && <span className="fl-ferr">{errors.overall_rating}</span>}
+                {errors.overall_rating && <span className="block text-xs text-[var(--fl-red)] mt-[5px]">{errors.overall_rating}</span>}
                 <StarInput label="Atmosphere" value={data.atmosphere_rating} onChange={(v) => setData('atmosphere_rating', v)} />
                 <StarInput label="Service" value={data.service_rating} onChange={(v) => setData('service_rating', v)} />
                 <StarInput label="Value" value={data.value_rating} onChange={(v) => setData('value_rating', v)} />
             </div>
 
-            <div className="fl-fsec">
-                <h3 className="fl-fsec-ttl">Your Review</h3>
-                <div className="fl-fgrp">
-                    <label className="fl-flbl" htmlFor="review">Review</label>
+            <div className="mb-6">
+                <h3 className="text-[10px] font-bold text-[var(--fl-tx2)] uppercase tracking-[1px] mb-3 flex items-center gap-2">Your Review</h3>
+                <div className="mb-3 relative">
+                    <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]" htmlFor="review">Review</label>
                     <textarea
                         id="review"
-                        className="fl-fi fl-ftxt"
+                        className="w-full bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none placeholder:text-[var(--fl-tx3)] focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none min-h-[90px] resize-y leading-[1.55]"
                         value={data.review}
                         onChange={(e) => setData('review', e.target.value)}
-                        placeholder="Share your experience…"
+                        placeholder="Share your experience\u2026"
                         rows={4}
                     />
                 </div>
             </div>
 
-            <div className="fl-fsec">
-                <div className="fl-fsec-hdr">
-                    <h3 className="fl-fsec-ttl">Dishes</h3>
-                    <button type="button" className="fl-btn fl-btn-ghost fl-btn-sm" onClick={addDish}>
+            <div className="mb-6">
+                <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-[10px] font-bold text-[var(--fl-tx2)] uppercase tracking-[1px] mb-3 flex items-center gap-2">Dishes</h3>
+                    <button type="button" className="inline-flex items-center justify-center gap-[7px] px-[22px] py-[11px] rounded-full text-[15px] font-bold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-transparent text-[var(--fl-tx2)] border-[var(--fl-bdr-h)] active:bg-[var(--fl-s2)] active:scale-[.97] px-[14px] py-2 text-sm font-semibold rounded-xl" onClick={addDish}>
                         + Add Dish
                     </button>
                 </div>
                 {data.dishes.map((dish, idx) => (
-                    <div key={idx} className="fl-dish-form">
-                        <button type="button" className="fl-dish-remove" onClick={() => removeDish(idx)}>✕</button>
-                        <div className="fl-frow">
-                            <div className="fl-fgrp" style={{ flex: 2 }}>
-                                <label className="fl-flbl">Dish Name</label>
+                    <div key={idx} className="relative bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl p-[14px] pt-[18px] mb-[10px]">
+                        <button type="button" className="shrink-0 self-end w-6 h-6 rounded-xl bg-[var(--fl-red-d)] text-[var(--fl-red)] flex items-center justify-center text-xs cursor-pointer transition-colors duration-100 mb-3 active:bg-[rgba(255,69,96,.3)]" onClick={() => removeDish(idx)}>{'\u2715'}</button>
+                        <div className="grid grid-cols-2 gap-[10px]">
+                            <div className="mb-3 relative" style={{ flex: 2 }}>
+                                <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]">Dish Name</label>
                                 <input
-                                    className="fl-fi"
+                                    className="w-full bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none placeholder:text-[var(--fl-tx3)] focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none"
                                     type="text"
                                     value={dish.name}
                                     onChange={(e) => updateDish(idx, 'name', e.target.value)}
                                     placeholder="e.g. Margherita Pizza"
                                 />
                             </div>
-                            <div className="fl-fgrp">
-                                <label className="fl-flbl">Rating</label>
-                                <select className="fl-fi" value={dish.rating} onChange={(e) => updateDish(idx, 'rating', e.target.value)}>
-                                    {[1, 2, 3, 4, 5].map((n) => <option key={n} value={n}>{n} ★</option>)}
+                            <div className="mb-3 relative">
+                                <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]">Rating</label>
+                                <select className="w-full bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none placeholder:text-[var(--fl-tx3)] focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none" value={dish.rating} onChange={(e) => updateDish(idx, 'rating', e.target.value)}>
+                                    {[1, 2, 3, 4, 5].map((n) => <option key={n} value={n}>{n} {'\u2605'}</option>)}
                                 </select>
                             </div>
                         </div>
-                        <div className="fl-fgrp">
-                            <label className="fl-flbl">Notes</label>
+                        <div className="mb-3 relative">
+                            <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]">Notes</label>
                             <input
-                                className="fl-fi"
+                                className="w-full bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none placeholder:text-[var(--fl-tx3)] focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none"
                                 type="text"
                                 value={dish.notes}
                                 onChange={(e) => updateDish(idx, 'notes', e.target.value)}
                                 placeholder="Any notes about this dish?"
                             />
                         </div>
-                        <div className="fl-fgrp">
-                            <label className="fl-flbl">Photo</label>
+                        <div className="mb-3 relative">
+                            <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]">Photo</label>
                             <input
                                 ref={(el) => {
  dishPhotoRefs.current[idx] = el; 
@@ -563,17 +558,17 @@ restaurantPhotoRef.current.value = '';
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                                 <button
                                     type="button"
-                                    className="fl-btn fl-btn-ghost fl-btn-sm"
+                                    className="inline-flex items-center justify-center gap-[7px] px-[22px] py-[11px] rounded-full text-[15px] font-bold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-transparent text-[var(--fl-tx2)] border-[var(--fl-bdr-h)] active:bg-[var(--fl-s2)] active:scale-[.97] px-[14px] py-2 text-sm font-semibold rounded-xl"
                                     onClick={() => dishPhotoRefs.current[idx]?.click()}
                                 >
-                                    📷 {dish.photo ? 'Change Photo' : 'Add Photo'}
+                                    {'\uD83D\uDCF7'} {dish.photo ? 'Change Photo' : 'Add Photo'}
                                 </button>
                                 {dish.photo && (
-                                    <span className="fl-visit-chip">
+                                    <span className="inline-flex items-center gap-2 bg-[var(--fl-s3)] border border-[var(--fl-bdr)] rounded-full px-[10px] py-[5px] text-sm text-[var(--fl-tx2)] w-fit">
                                         {dish.photo.name}
                                         <button
                                             type="button"
-                                            className="fl-visit-chip-rm"
+                                            className="text-[var(--fl-tx3)] text-xs cursor-pointer transition-colors duration-100 hover:text-[var(--fl-red)]"
                                             onClick={() => {
                                                 updateDishPhoto(idx, null);
                                                 const ref = dishPhotoRefs.current[idx];
@@ -582,7 +577,7 @@ restaurantPhotoRef.current.value = '';
 ref.value = '';
 }
                                             }}
-                                        >✕</button>
+                                        >{'\u2715'}</button>
                                     </span>
                                 )}
                             </div>
@@ -590,13 +585,13 @@ ref.value = '';
                     </div>
                 ))}
                 {data.dishes.length === 0 && (
-                    <p className="fl-empty-inline">No dishes added yet. Click "+ Add Dish" above.</p>
+                    <p className="text-sm text-[var(--fl-tx3)] text-center p-3">No dishes added yet. Click &quot;+ Add Dish&quot; above.</p>
                 )}
             </div>
 
             <div className="fl-form-footer">
-                <button type="submit" className="fl-btn fl-btn-p" disabled={processing}>
-                    {processing ? 'Saving…' : 'Save Review'}
+                <button type="submit" className="inline-flex items-center justify-center gap-[7px] px-[22px] py-[11px] rounded-full text-[15px] font-bold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-gradient-to-br from-[var(--fl-p)] to-[#FF7D62] text-white shadow-[var(--fl-p-glw)] active:scale-[.97] active:shadow-[0_2px_8px_rgba(255,96,64,.3)]" disabled={processing}>
+                    {processing ? 'Saving\u2026' : 'Save Review'}
                 </button>
             </div>
         </form>

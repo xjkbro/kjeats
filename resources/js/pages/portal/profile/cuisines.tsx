@@ -58,18 +58,18 @@ export default function PortalCuisines({ cuisines: initialCuisines, your_cuisine
     }
 
     return (
-        <div className="fl-view">
-            <div className="fl-form">
-                <div className="fl-fsec">
-                    <h3 className="fl-fsec-ttl">Request a Cuisine</h3>
-                    <p className="fl-fsec-sub">
+        <div className="p-4 lg:p-7 kj-anim-viewin">
+            <div className="pb-[calc(var(--fl-nav-h)+var(--fl-safe)+80px)] lg:pb-[100px]">
+                <div className="mb-6">
+                    <h3 className="text-[10px] font-bold text-[var(--fl-tx2)] uppercase tracking-[1px] mb-3 flex items-center gap-2">Request a Cuisine</h3>
+                    <p className="text-xs text-[var(--fl-tx3)] mb-3 leading-[1.5]">
                         Don't see a cuisine in autocomplete? Add it here so it appears in suggestions.
                     </p>
 
                     <form onSubmit={handleSubmit} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                        <div className="fl-fgrp" style={{ flex: 1 }}>
+                        <div className="mb-3 relative" style={{ flex: 1, marginBottom: 0 }}>
                             <input
-                                className="fl-fi"
+                                className="w-full bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none placeholder:text-[var(--fl-tx3)] focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none"
                                 type="text"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
@@ -79,24 +79,24 @@ export default function PortalCuisines({ cuisines: initialCuisines, your_cuisine
                         </div>
                         <button
                             type="submit"
-                            className="fl-btn fl-btn-p"
+                            className="inline-flex items-center justify-center gap-[7px] px-[22px] py-[11px] rounded-full text-[15px] font-bold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-gradient-to-br from-[var(--fl-p)] to-[#FF7D62] text-white shadow-[var(--fl-p-glw)] active:scale-[.97] active:shadow-[0_2px_8px_rgba(255,96,64,.3)] shrink-0"
                             disabled={submitting || !name.trim()}
                         >
                             {submitting ? 'Adding…' : 'Add'}
                         </button>
                     </form>
 
-                    {message && <p className="fl-toast-inline fl-toast-ok">{message}</p>}
-                    {error && <p className="fl-toast-inline fl-toast-err">{error}</p>}
+                    {message && <div className="text-sm font-semibold px-[14px] py-[10px] rounded-xl mb-3 bg-[color-mix(in_srgb,var(--fl-grn)_12%,transparent)] text-[var(--fl-grn)] border border-[color-mix(in_srgb,var(--fl-grn)_30%,transparent)] mt-3">{message}</div>}
+                    {error && <div className="text-sm font-semibold px-[14px] py-[10px] rounded-xl mb-3 bg-[color-mix(in_srgb,var(--fl-red)_12%,transparent)] text-[var(--fl-red)] border border-[color-mix(in_srgb,var(--fl-red)_30%,transparent)] mt-3">{error}</div>}
                 </div>
 
-                <div className="fl-fsec">
+                <div className="mb-6">
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 12 }}>
-                        <h3 className="fl-fsec-ttl" style={{ marginBottom: 0 }}>
+                        <h3 className="text-[10px] font-bold text-[var(--fl-tx2)] uppercase tracking-[1px] flex items-center gap-2" style={{ marginBottom: 0 }}>
                             All Cuisines ({cuisines.length})
                         </h3>
                         <input
-                            className="fl-fi"
+                            className="w-full bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none placeholder:text-[var(--fl-tx3)] focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none"
                             style={{ maxWidth: 160, padding: '6px 12px', fontSize: 13 }}
                             type="text"
                             value={search}
@@ -111,7 +111,7 @@ export default function PortalCuisines({ cuisines: initialCuisines, your_cuisine
                                 key={c.id}
                                 style={{
                                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                                    padding: '8px 12px', borderRadius: 'var(--fl-r2)',
+                                    padding: '8px 12px', borderRadius: '12px',
                                     background: your_cuisines.includes(c.name) ? 'var(--fl-p-dim)' : 'var(--fl-s2)',
                                     color: your_cuisines.includes(c.name) ? 'var(--fl-p-lt)' : 'var(--fl-tx2)',
                                     fontSize: 14,

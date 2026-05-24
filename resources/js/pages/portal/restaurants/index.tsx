@@ -17,7 +17,7 @@ function StarDisplay({ rating }: { rating: number | string }) {
     const r = parseFloat(String(rating));
 
     return (
-        <div className="fl-stars">
+        <div className="inline-flex items-center gap-[2px]">
             {[1, 2, 3, 4, 5].map((i) => (
                 <span key={i} className={i <= Math.round(r) ? 'filled' : ''}>
                     ★
@@ -58,11 +58,11 @@ export default function RestaurantsIndex({ restaurants, groups, scope, all_cuisi
     }
 
     return (
-        <div className="fl-view">
-            <div className="fl-view-hdr">
-                <h2 className="fl-view-ttl">{revisitMode ? 'Select a Restaurant' : 'Restaurant Reviews'}</h2>
+        <div className="p-4 lg:p-7 kj-anim-viewin">
+            <div className="flex items-center justify-between mb-4">
+                <h2 className="text-[22px] font-black text-[var(--fl-tx)] tracking-[-.5px]">{revisitMode ? 'Select a Restaurant' : 'Restaurant Reviews'}</h2>
                 {!revisitMode && (
-                    <Link href={RestaurantController.create().url} className="fl-btn fl-btn-p fl-btn-sm">
+                    <Link href={RestaurantController.create().url} className="inline-flex items-center justify-center gap-[7px] px-[22px] py-[11px] rounded-full text-[15px] font-bold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-gradient-to-br from-[var(--fl-p)] to-[#FF7D62] text-white shadow-[var(--fl-p-glw)] active:scale-[.97] active:shadow-[0_2px_8px_rgba(255,96,64,.3)] px-[14px] py-2 text-sm font-semibold rounded-xl">
                         + Add
                     </Link>
                 )}
@@ -75,9 +75,9 @@ export default function RestaurantsIndex({ restaurants, groups, scope, all_cuisi
             )}
 
             {groups.length > 0 && !revisitMode && (
-                <div className="fl-scope-toggle">
+                <div className="flex gap-1 bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl p-1 mb-[14px]">
                     <button
-                        className={`fl-scope-btn${scope === 'mine' ? ' active' : ''}`}
+                        className={`flex-1 px-[10px] py-[7px] rounded-[10px] text-sm font-semibold text-[var(--fl-tx2)] bg-transparent transition-all duration-100 cursor-pointer${scope === 'mine' ? ' bg-[var(--fl-s3)] text-[var(--fl-tx)]' : ''}`}
                         onClick={() => setScope('mine')}
                     >
                         Mine
@@ -85,7 +85,7 @@ export default function RestaurantsIndex({ restaurants, groups, scope, all_cuisi
                     {groups.map((g) => (
                         <button
                             key={g.id}
-                            className={`fl-scope-btn${scope === String(g.id) ? ' active' : ''}`}
+                            className={`flex-1 px-[10px] py-[7px] rounded-[10px] text-sm font-semibold text-[var(--fl-tx2)] bg-transparent transition-all duration-100 cursor-pointer${scope === String(g.id) ? ' bg-[var(--fl-s3)] text-[var(--fl-tx)]' : ''}`}
                             onClick={() => setScope(String(g.id))}
                         >
                             {g.name}
@@ -94,13 +94,13 @@ export default function RestaurantsIndex({ restaurants, groups, scope, all_cuisi
                 </div>
             )}
 
-            <div className="fl-filters">
-                <select className="fl-filter-sel" value={filter} onChange={(e) => setFilter(e.target.value)}>
+            <div className="flex gap-2 mb-[14px]">
+                <select className="flex-1 appearance-none bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-full px-[13px] py-[7px] pr-[30px] text-sm font-semibold text-[var(--fl-tx2)] cursor-pointer whitespace-nowrap transition-colors duration-100 focus:outline-none focus:border-[var(--fl-p)]" value={filter} onChange={(e) => setFilter(e.target.value)}>
                     {cuisines.map((c) => (
                         <option key={c} value={c}>{c === ALL_CUISINES ? 'All Cuisines' : c}</option>
                     ))}
                 </select>
-                <select className="fl-filter-sel" value={sort} onChange={(e) => setSort(e.target.value as 'recent' | 'rating')}>
+                <select className="flex-1 appearance-none bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-full px-[13px] py-[7px] pr-[30px] text-sm font-semibold text-[var(--fl-tx2)] cursor-pointer whitespace-nowrap transition-colors duration-100 focus:outline-none focus:border-[var(--fl-p)]" value={sort} onChange={(e) => setSort(e.target.value as 'recent' | 'rating')}>
                     <option value="recent">Most Recent</option>
                     <option value="rating">Top Rated</option>
                 </select>
@@ -115,15 +115,15 @@ export default function RestaurantsIndex({ restaurants, groups, scope, all_cuisi
                                 <div className="fl-card-name">{r.name}</div>
                                 <div className="fl-card-meta">
                                     <StarDisplay rating={r.overall_rating} />
-                                    <span className="fl-badge fl-badge-org">{r.cuisine}</span>
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold whitespace-nowrap bg-[var(--fl-p-dim)] text-[var(--fl-p-lt)]">{r.cuisine}</span>
                                 </div>
                                 <div className="fl-card-sub">
                                     {r.location} · {r.price_range} · {r.dishes.length} dish{r.dishes.length !== 1 ? 'es' : ''}
                                 </div>
                                 {(r.tags ?? []).length > 0 && (
-                                    <div className="fl-card-tags">
+                                    <div className="flex gap-[5px] flex-wrap mt-[6px]">
                                         {(r.tags ?? []).slice(0, 3).map((tag) => (
-                                            <span key={tag} className="fl-badge fl-badge-def">{tag}</span>
+                                            <span key={tag} className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold whitespace-nowrap bg-[var(--fl-s3)] text-[var(--fl-tx2)]">{tag}</span>
                                         ))}
                                     </div>
                                 )}
@@ -135,11 +135,11 @@ export default function RestaurantsIndex({ restaurants, groups, scope, all_cuisi
                     ))}
                 </div>
             ) : (
-                <div className="fl-empty">
+                <div className="flex flex-col items-center px-4 py-12 text-center">
                     <span>🍽️</span>
                     <p>{filter !== ALL_CUISINES ? `No ${filter} restaurants` : 'No restaurants yet'}</p>
                     {filter === ALL_CUISINES && (
-                        <Link href={RestaurantController.create().url} className="fl-btn fl-btn-p">
+                        <Link href={RestaurantController.create().url} className="inline-flex items-center justify-center gap-[7px] px-[22px] py-[11px] rounded-full text-[15px] font-bold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-gradient-to-br from-[var(--fl-p)] to-[#FF7D62] text-white shadow-[var(--fl-p-glw)] active:scale-[.97] active:shadow-[0_2px_8px_rgba(255,96,64,.3)]">
                             Add your first review
                         </Link>
                     )}

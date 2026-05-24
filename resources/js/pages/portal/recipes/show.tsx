@@ -245,7 +245,7 @@ inputRef.current.value = '';
             <input ref={inputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleChange} />
             <button
                 type="button"
-                className="fl-btn fl-btn-ghost fl-btn-sm"
+                className="inline-flex items-center justify-center gap-[7px] px-[14px] py-2 rounded-xl text-sm font-semibold tracking-[-.2px] cursor-pointer border-none whitespace-nowrap transition-all duration-100 bg-transparent text-[var(--fl-tx2)] active:bg-[var(--fl-s2)] active:scale-[.97]"
                 disabled={form.processing}
                 onClick={() => inputRef.current?.click()}
             >
@@ -267,11 +267,11 @@ export default function RecipeShow({ recipe, current_user_id }: Props) {
     }
 
     return (
-        <div className="fl-view">
-            <div className="fl-hero">
-                <div className="fl-hero-emoji">{recipe.emoji}</div>
-                <h1 className="fl-hero-name">{recipe.name}</h1>
-                <div className="fl-hero-meta">
+        <div className="p-4 lg:p-7 kj-anim-viewin">
+            <div className="flex flex-col items-center text-center mb-8">
+                <div className="text-5xl leading-none mb-2">{recipe.emoji}</div>
+                <h1 className="text-2xl font-bold text-[var(--fl-tx)] tracking-tight mb-2">{recipe.name}</h1>
+                <div className="flex flex-wrap items-center justify-center gap-2">
                     <span className={`fl-badge fl-badge-${recipe.difficulty === 'Easy' ? 'grn' : recipe.difficulty === 'Hard' ? 'red' : 'gold'}`}>
                         {recipe.difficulty}
                     </span>
@@ -283,57 +283,57 @@ export default function RecipeShow({ recipe, current_user_id }: Props) {
 
             </div>
 
-            <div className="fl-info-grid fl-recipe-grid">
-                <div className="fl-info-item">
-                    <div className="fl-info-ico">⏱️</div>
-                    <div className="fl-info-body">
-                        <div className="fl-info-lbl">Prep</div>
-                        <div className="fl-info-val">{recipe.prep_time} min</div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
+                <div className="flex items-center gap-3 bg-[var(--fl-s2)] rounded-xl p-4">
+                    <div className="text-2xl leading-none">⏱️</div>
+                    <div>
+                        <div className="text-xs text-[var(--fl-tx2)]">Prep</div>
+                        <div className="text-sm font-semibold text-[var(--fl-tx)]">{recipe.prep_time} min</div>
                     </div>
                 </div>
-                <div className="fl-info-item">
-                    <div className="fl-info-ico">🔥</div>
-                    <div className="fl-info-body">
-                        <div className="fl-info-lbl">Cook</div>
-                        <div className="fl-info-val">{recipe.cook_time} min</div>
+                <div className="flex items-center gap-3 bg-[var(--fl-s2)] rounded-xl p-4">
+                    <div className="text-2xl leading-none">🔥</div>
+                    <div>
+                        <div className="text-xs text-[var(--fl-tx2)]">Cook</div>
+                        <div className="text-sm font-semibold text-[var(--fl-tx)]">{recipe.cook_time} min</div>
                     </div>
                 </div>
                 {recipe.rest_time > 0 && (
-                    <div className="fl-info-item">
-                        <div className="fl-info-ico">💤</div>
-                        <div className="fl-info-body">
-                            <div className="fl-info-lbl">Rest</div>
-                            <div className="fl-info-val">{recipe.rest_time} min</div>
+                    <div className="flex items-center gap-3 bg-[var(--fl-s2)] rounded-xl p-4">
+                        <div className="text-2xl leading-none">💤</div>
+                        <div>
+                            <div className="text-xs text-[var(--fl-tx2)]">Rest</div>
+                            <div className="text-sm font-semibold text-[var(--fl-tx)]">{recipe.rest_time} min</div>
                         </div>
                     </div>
                 )}
-                <div className="fl-info-item">
-                    <div className="fl-info-ico">⏰</div>
-                    <div className="fl-info-body">
-                        <div className="fl-info-lbl">Total</div>
-                        <div className="fl-info-val">{totalTime} min</div>
+                <div className="flex items-center gap-3 bg-[var(--fl-s2)] rounded-xl p-4">
+                    <div className="text-2xl leading-none">⏰</div>
+                    <div>
+                        <div className="text-xs text-[var(--fl-tx2)]">Total</div>
+                        <div className="text-sm font-semibold text-[var(--fl-tx)]">{totalTime} min</div>
                     </div>
                 </div>
-                <div className="fl-info-item">
-                    <div className="fl-info-ico">🍽️</div>
-                    <div className="fl-info-body">
-                        <div className="fl-info-lbl">Servings</div>
-                        <div className="fl-info-val">{recipe.servings}</div>
+                <div className="flex items-center gap-3 bg-[var(--fl-s2)] rounded-xl p-4">
+                    <div className="text-2xl leading-none">🍽️</div>
+                    <div>
+                        <div className="text-xs text-[var(--fl-tx2)]">Servings</div>
+                        <div className="text-sm font-semibold text-[var(--fl-tx)]">{recipe.servings}</div>
                     </div>
                 </div>
             </div>
 
             {recipe.description && (
-                <div className="fl-quote">
-                    <div className="fl-quote-mark">"</div>
+                <div className="bg-[var(--fl-s2)] border-l-4 border-[var(--fl-bdr)] rounded-xl p-5 mb-6 italic text-[var(--fl-tx2)]">
+                    <div className="text-4xl leading-none text-[var(--fl-bdr)] mb-2">"</div>
                     <p>{recipe.description}</p>
                 </div>
             )}
 
             {(recipe.images.length > 0 || recipe.user_id === current_user_id) && (
-                <section className="fl-section">
-                    <div className="fl-section-hdr">
-                        <h3 className="fl-section-ttl">Photos</h3>
+                <section className="mb-6">
+                    <div className="flex items-center justify-between gap-2 mb-3">
+                        <h3 className="text-[10px] font-bold text-[var(--fl-tx2)] uppercase tracking-[1px] flex items-center gap-2">Photos</h3>
                         {recipe.user_id === current_user_id && (
                             <ImageUploadForm action={MediaController.storeRecipe(recipe.id).url} />
                         )}
@@ -343,16 +343,16 @@ export default function RecipeShow({ recipe, current_user_id }: Props) {
             )}
 
             {recipe.ingredients.length > 0 && (
-                <section className="fl-section">
-                    <div className="fl-section-hdr">
-                        <h3 className="fl-section-ttl">Ingredients ({recipe.ingredients.length})</h3>
+                <section className="mb-6">
+                    <div className="flex items-center justify-between gap-2 mb-3">
+                        <h3 className="text-[10px] font-bold text-[var(--fl-tx2)] uppercase tracking-[1px] flex items-center gap-2">Ingredients ({recipe.ingredients.length})</h3>
                     </div>
-                    <div className="fl-ing-disp">
+                    <div className="space-y-1">
                         {recipe.ingredients.map((ing) => (
-                            <div key={ing.id} className="fl-ing-item">
-                                <div className="fl-ing-dot" />
-                                <span className="fl-ing-amount">{ing.amount} {ing.unit}</span>
-                                <span className="fl-ing-name">{ing.name}</span>
+                            <div key={ing.id} className="flex items-center gap-2">
+                                <div className="w-1.5 h-1.5 rounded-full bg-[var(--fl-bdr)] shrink-0" />
+                                <span className="text-sm text-[var(--fl-tx2)]">{ing.amount} {ing.unit}</span>
+                                <span className="text-sm font-medium text-[var(--fl-tx)]">{ing.name}</span>
                             </div>
                         ))}
                     </div>
@@ -360,15 +360,15 @@ export default function RecipeShow({ recipe, current_user_id }: Props) {
             )}
 
             {recipe.steps.length > 0 && (
-                <section className="fl-section">
-                    <div className="fl-section-hdr">
-                        <h3 className="fl-section-ttl">Instructions</h3>
+                <section className="mb-6">
+                    <div className="flex items-center justify-between gap-2 mb-3">
+                        <h3 className="text-[10px] font-bold text-[var(--fl-tx2)] uppercase tracking-[1px] flex items-center gap-2">Instructions</h3>
                     </div>
-                    <div className="fl-steps">
+                    <div className="space-y-3">
                         {recipe.steps.map((step) => (
-                            <div key={step.id} className="fl-step">
-                                <div className="fl-step-num">{step.step_number}</div>
-                                <p className="fl-step-txt">{step.instruction}</p>
+                            <div key={step.id} className="flex gap-3">
+                                <div className="flex items-center justify-center w-7 h-7 rounded-full bg-[var(--fl-s3)] text-xs font-bold text-[var(--fl-tx2)] shrink-0 mt-0.5">{step.step_number}</div>
+                                <p className="text-sm text-[var(--fl-tx)] leading-relaxed">{step.instruction}</p>
                             </div>
                         ))}
                     </div>
@@ -376,29 +376,29 @@ export default function RecipeShow({ recipe, current_user_id }: Props) {
             )}
 
             {recipe.nutrition && (
-                <section className="fl-section">
-                    <div className="fl-section-hdr">
-                        <h3 className="fl-section-ttl">Nutrition Facts</h3>
+                <section className="mb-6">
+                    <div className="flex items-center justify-between gap-2 mb-3">
+                        <h3 className="text-[10px] font-bold text-[var(--fl-tx2)] uppercase tracking-[1px] flex items-center gap-2">Nutrition Facts</h3>
                     </div>
                     <NutritionLabel nutrition={recipe.nutrition} />
                 </section>
             )}
 
-            <div className="fl-actions">
-                <button className="fl-btn fl-btn-sec" onClick={() => router.visit(RecipeController.edit(recipe.id).url, { replace: true })}>
+            <div className="flex gap-[10px] mt-8 pt-6 border-t border-[var(--fl-bdr-s)]">
+                <button className="inline-flex items-center justify-center gap-[7px] px-[22px] py-[11px] rounded-full text-[15px] font-bold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-[var(--fl-s2)] text-[var(--fl-tx)] border-[var(--fl-bdr-h)] active:bg-[var(--fl-s3)] active:scale-[.97]" onClick={() => router.visit(RecipeController.edit(recipe.id).url, { replace: true })}>
                     Edit Recipe
                 </button>
-                <button className="fl-btn fl-btn-danger" onClick={handleDelete}>
+                <button className="inline-flex items-center justify-center gap-[7px] px-[22px] py-[11px] rounded-full text-[15px] font-bold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-[var(--fl-red-d)] text-[var(--fl-red)] border-[rgba(255,69,96,.3)] active:bg-[rgba(255,69,96,.25)] active:scale-[.97]" onClick={handleDelete}>
                     Delete
                 </button>
             </div>
 
             {recipe.revisions && recipe.revisions.length > 0 && (
-                <section className="fl-section">
-                    <div className="fl-section-hdr">
-                        <h3 className="fl-section-ttl">History ({recipe.revisions.length})</h3>
+                <section className="mb-6">
+                    <div className="flex items-center justify-between gap-2 mb-3">
+                        <h3 className="text-[10px] font-bold text-[var(--fl-tx2)] uppercase tracking-[1px] flex items-center gap-2">History ({recipe.revisions.length})</h3>
                     </div>
-                    <div className="fl-revision-list">
+                    <div className="space-y-3">
                         {recipe.revisions.map((revision: Revision, i: number) => {
                             const afterSnap: Record<string, unknown> = i === 0
                                 ? { name: recipe.name, emoji: recipe.emoji, category: recipe.category, difficulty: recipe.difficulty, description: recipe.description, prep_time: recipe.prep_time, cook_time: recipe.cook_time, rest_time: recipe.rest_time, servings: recipe.servings, tags: recipe.tags, ingredients: recipe.ingredients, steps: recipe.steps }
@@ -406,29 +406,29 @@ export default function RecipeShow({ recipe, current_user_id }: Props) {
                             const changes = diffSnapshots(revision.snapshot as Record<string, unknown>, afterSnap, RECIPE_FIELDS);
 
                             return (
-                                <div key={revision.id} className="fl-revision-row">
-                                    <div className="fl-revision-meta">
-                                        <span className="fl-revision-user">{revision.user.first_name}</span>
-                                        <span className="fl-revision-time">
+                                <div key={revision.id} className="bg-[var(--fl-s2)] rounded-xl p-4 space-y-2">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-sm font-semibold text-[var(--fl-tx)]">{revision.user.first_name}</span>
+                                        <span className="text-xs text-[var(--fl-tx2)]">
                                             {new Date(revision.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                                         </span>
                                     </div>
                                     {changes.length > 0 ? (
-                                        <div className="fl-revision-changes">
+                                        <div className="space-y-1">
                                             {changes.map((c) => (
-                                                <div key={c.label} className="fl-revision-change">
-                                                    <span className="fl-revision-field">{c.label}</span>
-                                                    <span className="fl-revision-old">{c.before}</span>
-                                                    <span className="fl-revision-arrow">&rarr;</span>
-                                                    <span className="fl-revision-new">{c.after}</span>
+                                                <div key={c.label} className="flex items-center gap-2 text-sm flex-wrap">
+                                                    <span className="font-semibold text-[var(--fl-tx)] min-w-[100px]">{c.label}</span>
+                                                    <span className="text-[var(--fl-red)] line-through text-sm">{c.before}</span>
+                                                    <span className="text-[var(--fl-tx3)] text-xs">&rarr;</span>
+                                                    <span className="text-[var(--fl-grn)] text-sm">{c.after}</span>
                                                 </div>
                                             ))}
                                         </div>
                                     ) : (
-                                        <div className="fl-revision-summary">{revision.summary}</div>
+                                        <div className="text-sm text-[var(--fl-tx2)] italic">{revision.summary}</div>
                                     )}
                                     <button
-                                        className="fl-btn fl-btn-ghost fl-btn-sm"
+                                        className="inline-flex items-center justify-center gap-[7px] px-[14px] py-2 rounded-xl text-sm font-semibold tracking-[-.2px] cursor-pointer border-none whitespace-nowrap transition-all duration-100 bg-transparent text-[var(--fl-tx2)] active:bg-[var(--fl-s2)] active:scale-[.97]"
                                         onClick={() => {
                                             if (confirm('Revert to this version?')) {
                                                 router.post(RevisionController.revert(revision.id).url);

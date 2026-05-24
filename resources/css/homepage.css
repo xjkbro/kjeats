@@ -1,0 +1,200 @@
+/* ══════════════════════════════════════════════════════════
+   HOMEPAGE — fl-* classes used by dashboard.tsx / portal/home.tsx
+   Extracted from portal.css for easy reference.
+   These classes are still defined in portal.css (imported
+   in app.css) and used by the homepage components.
+   ══════════════════════════════════════════════════════════ */
+
+/* ── View ────────────────────────────────────────────────── */
+.fl-view { padding: var(--fl-pad); animation: fl-viewin .22s ease both; }
+
+/* ── Greeting ────────────────────────────────────────────── */
+.fl-greeting      { margin-bottom: 22px; }
+.fl-greeting-text { font-size: 24px; font-weight: 900; color: var(--fl-tx); letter-spacing: -.5px; margin-bottom: 4px; }
+.fl-greeting-sub  { font-size: 13px; color: var(--fl-tx2); }
+
+/* ── Stat Cards ──────────────────────────────────────────── */
+.fl-stats-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 10px; margin-bottom: 24px;
+}
+.fl-stat {
+    background: var(--fl-s1); border: 1px solid var(--fl-bdr-s);
+    border-radius: var(--fl-r4); padding: 16px;
+    position: relative; overflow: hidden; cursor: pointer;
+    transition: transform var(--fl-t1), border-color var(--fl-t1);
+}
+.fl-stat:active { transform: scale(.96); border-color: var(--fl-bdr); }
+.fl-stat::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 2.5px; border-radius: var(--fl-r4) var(--fl-r4) 0 0;
+}
+.fl-s-org::before  { background: linear-gradient(90deg, var(--fl-p), var(--fl-gold)); }
+.fl-s-teal::before { background: linear-gradient(90deg, var(--fl-teal), var(--fl-blue)); }
+.fl-s-gold::before { background: linear-gradient(90deg, var(--fl-gold), var(--fl-p)); }
+.fl-s-purp::before { background: linear-gradient(90deg, var(--fl-purp), var(--fl-blue)); }
+.fl-stat-val { font-size: 30px; font-weight: 900; color: var(--fl-tx); line-height: 1; letter-spacing: -1.5px; margin-bottom: 3px; }
+.fl-stat-lbl { font-size: 11px; font-weight: 500; color: var(--fl-tx2); }
+
+/* ── Section ─────────────────────────────────────────────── */
+.fl-section     { margin-bottom: 24px; }
+.fl-section-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.fl-section-ttl { font-size: 15px; font-weight: 700; color: var(--fl-tx); letter-spacing: -.2px; }
+.fl-see-all     { font-size: 13px; font-weight: 600; color: var(--fl-p); padding: 3px 8px; border-radius: var(--fl-r1); transition: background var(--fl-t1); }
+.fl-see-all:active { background: var(--fl-p-dim); }
+
+/* ── Want to Try (horizontal scroll chips) ──────────────── */
+.fl-wtt-scroll {
+    display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px;
+    scrollbar-width: none; -webkit-overflow-scrolling: touch;
+    margin-left: calc(-1 * var(--fl-pad));
+    margin-right: calc(-1 * var(--fl-pad));
+    padding-left: var(--fl-pad);
+    padding-right: var(--fl-pad);
+}
+.fl-wtt-scroll::-webkit-scrollbar { display: none; }
+.fl-wtt-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: var(--fl-rp);
+    background: var(--fl-s2); border: 1.5px solid var(--fl-bdr);
+    text-decoration: none; color: inherit; white-space: nowrap; flex-shrink: 0;
+    font-size: 13px; font-weight: 600;
+    transition: all var(--fl-t1);
+}
+.fl-wtt-chip:active { transform: scale(.95); border-color: var(--fl-p); background: var(--fl-p-dim); }
+.fl-wtt-chip-emoji { font-size: 16px; }
+.fl-wtt-chip-name { color: var(--fl-tx); }
+.fl-wtt-chip-add { color: var(--fl-p); border-color: var(--fl-p); background: var(--fl-p-dim); }
+.fl-wtt-chip-add:active { background: var(--fl-p-dmh); }
+
+/* ── Quick Actions ───────────────────────────────────────── */
+.fl-quick-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.fl-quick-action {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 6px; padding: 16px 12px; border-radius: var(--fl-r4);
+    background: var(--fl-s1); border: 1px solid var(--fl-bdr-s);
+    text-decoration: none; color: inherit; cursor: pointer;
+    transition: transform var(--fl-t1), border-color var(--fl-t1);
+}
+.fl-quick-action:active { transform: scale(.96); border-color: var(--fl-bdr); }
+.fl-qa-ico { font-size: 28px; }
+.fl-qa-label { font-size: 13px; font-weight: 700; color: var(--fl-tx); }
+.fl-qa-rest:active { background: var(--fl-p-dim); }
+.fl-qa-recipe:active { background: var(--fl-tel-d); }
+.fl-qa-revisit:active { background: var(--fl-blu-d); }
+.fl-qa-group:active { background: var(--fl-prp-d); }
+
+/* ── Activity Feed ───────────────────────────────────────── */
+.fl-feed          { display: flex; flex-direction: column; gap: 10px; }
+.fl-feed-item {
+    background: var(--fl-s1); border: 1px solid var(--fl-bdr-s);
+    border-radius: var(--fl-r4); padding: 14px 16px;
+    display: flex; gap: 14px; align-items: flex-start;
+    text-decoration: none; color: inherit;
+    transition: border-color var(--fl-t1), background var(--fl-t1);
+    cursor: pointer;
+}
+.fl-feed-item:active { background: var(--fl-s2); border-color: var(--fl-bdr); }
+.fl-feed-ico {
+    font-size: 22px; flex-shrink: 0; width: 44px; height: 44px;
+    border-radius: var(--fl-r3); background: var(--fl-s2);
+    border: 1px solid var(--fl-bdr-s);
+    display: flex; align-items: center; justify-content: center;
+}
+.fl-feed-body     { flex: 1; min-width: 0; }
+.fl-feed-actor {
+    font-size: 11px; font-weight: 600; color: var(--fl-tx3);
+    text-transform: uppercase; letter-spacing: .4px;
+    margin-bottom: 3px; display: flex; align-items: center; gap: 5px;
+}
+.fl-feed-user     { color: var(--fl-tx2); font-weight: 700; }
+.fl-feed-name {
+    font-size: 15px; font-weight: 800; color: var(--fl-tx);
+    letter-spacing: -.2px; margin-bottom: 6px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.fl-feed-meta     { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 4px; }
+.fl-feed-time     { font-size: 11px; color: var(--fl-tx3); }
+.fl-feed-chev     { color: var(--fl-tx3); flex-shrink: 0; align-self: center; margin-left: 2px; }
+
+/* ── Stars ───────────────────────────────────────────────── */
+.fl-stars     { display: inline-flex; align-items: center; gap: 2px; }
+.fl-stars span { font-size: 13px; color: var(--fl-s4); line-height: 1; }
+.fl-stars span.filled { color: var(--fl-gold); }
+
+/* ── Badges ──────────────────────────────────────────────── */
+.fl-badge {
+    display: inline-flex; align-items: center;
+    padding: 2px 8px; border-radius: var(--fl-rp);
+    font-size: 11px; font-weight: 600; white-space: nowrap;
+}
+.fl-badge-org  { background: var(--fl-p-dim);  color: var(--fl-p-lt); }
+.fl-badge-def  { background: var(--fl-s3);     color: var(--fl-tx2); }
+.fl-badge-teal { background: var(--fl-tel-d);  color: var(--fl-teal); }
+.fl-badge-grn  { background: var(--fl-grn-d);  color: var(--fl-grn); }
+.fl-badge-gold { background: var(--fl-gld-d);  color: var(--fl-gold); }
+.fl-badge-red  { background: var(--fl-red-d);  color: var(--fl-red); }
+.fl-badge-blue { background: var(--fl-blu-d);  color: var(--fl-blue); }
+.fl-badge-purp { background: var(--fl-prp-d);  color: var(--fl-purp); }
+
+/* ── Cards ───────────────────────────────────────────────── */
+.fl-card-list   { display: flex; flex-direction: column; margin-bottom: 20px; }
+.fl-card {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--fl-s1); border: 1px solid var(--fl-bdr-s);
+    border-radius: var(--fl-r4); padding: 14px;
+    transition: border-color var(--fl-t1), transform var(--fl-t1);
+    text-decoration: none; color: inherit; width: 100%;
+}
+.fl-card:active { transform: scale(.98); border-color: var(--fl-bdr); }
+.fl-card + .fl-card { margin-top: 10px; }
+.fl-card-emoji {
+    width: 48px; height: 48px; background: var(--fl-s3);
+    border-radius: var(--fl-r3); display: flex;
+    align-items: center; justify-content: center;
+    font-size: 24px; flex-shrink: 0;
+}
+.fl-card-body { flex: 1; min-width: 0; }
+.fl-card-name {
+    font-size: 15px; font-weight: 700; color: var(--fl-tx);
+    letter-spacing: -.2px; white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px;
+}
+.fl-card-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 4px; }
+.fl-card-sub {
+    font-size: 12px; color: var(--fl-tx2);
+    display: flex; align-items: center; gap: 5px; flex-wrap: wrap;
+}
+.fl-card-chev { color: var(--fl-tx3); flex-shrink: 0; align-self: center; }
+
+/* ── Buttons ─────────────────────────────────────────────── */
+.fl-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 7px; padding: 11px 22px; border-radius: 9999px;
+    font-size: 15px; font-weight: 700; letter-spacing: -.2px;
+    cursor: pointer; border: 1.5px solid transparent; white-space: nowrap;
+    transition: transform var(--fl-t1), box-shadow var(--fl-t1), background var(--fl-t1), border-color var(--fl-t1);
+}
+.fl-btn-p { background: linear-gradient(135deg, var(--fl-p), #FF7D62); color: white; box-shadow: var(--fl-p-glw); }
+.fl-btn-p:active { transform: scale(.97); box-shadow: 0 2px 8px rgba(255,96,64,.3); }
+
+/* ── Empty State ─────────────────────────────────────────── */
+.fl-empty {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 48px 16px; text-align: center;
+}
+.fl-empty-ttl  { font-size: 18px; font-weight: 700; color: var(--fl-tx); margin-bottom: 8px; letter-spacing: -.3px; }
+.fl-empty-desc { font-size: 13px; color: var(--fl-tx2); line-height: 1.6; max-width: 230px; margin-bottom: 22px; }
+
+/* ── Utility ─────────────────────────────────────────────── */
+.fl-mb-6 { margin-bottom: 24px !important; }
+
+/* ── Responsive (from portal.css) ────────────────────────── */
+@media (min-width: 600px) {
+    .fl-stats-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (min-width: 1024px) {
+    .fl-view { padding: 28px; }
+    .fl-stats-grid { grid-template-columns: repeat(4, 1fr); }
+}

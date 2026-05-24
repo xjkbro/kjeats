@@ -62,6 +62,8 @@
     --fl-t1:100ms ease;
     --fl-t2:200ms ease;
     --fl-t3:300ms cubic-bezier(.25,.46,.45,.94);
+
+    --fl-sidebar-w: 230px;
 }
 
 /* ── Portal Shell Container ──────────────────────────────── */
@@ -1328,7 +1330,6 @@ select.fl-fi {
     .fl-toasts { bottom: 24px; left: unset; right: 24px; width: 320px; }
     .fl-card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .fl-card-grid .fl-card + .fl-card { margin-top: 0; }
-    .fl-sp { left: calc(var(--fl-sidebar-w) + var(--fl-desk-gap) + (100vw - var(--fl-sidebar-w) - var(--fl-desk-gap) * 3) / 2); }
 }
 
 @media (min-width: 1280px) {
@@ -1484,7 +1485,14 @@ select.fl-fi {
     animation: fl-fadein 0.15s ease both;
 }
 .fl-sp {
-    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    position: fixed;
+    top: 50%;
+    /* left: calc(33% + var(--fl-sidebar-w) / 2); */
+    /* left: calc(33% + (100vw - 33%) / 2); */
+    left: 50%;
+/* Which simplifies mathematically to: */
+    /* left: calc(var(--fl-sidebar-w) + (100vw - var(--fl-sidebar-w)) / 2); */
+    transform: translate(-50%, -50%);
     z-index: 151; width: 90vw; max-width: 540px;
     background: var(--fl-s2); border: 1px solid var(--fl-bdr);
     border-radius: var(--fl-r4); box-shadow: var(--fl-sh3);

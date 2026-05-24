@@ -32,25 +32,25 @@ export default function GroupsIndex({ groups }: Props) {
     }
 
     return (
-        <div className="fl-view">
-            <div className="fl-view-hdr">
-                <h2 className="fl-view-ttl">Groups</h2>
+        <div className="p-4 lg:p-7 kj-anim-viewin">
+            <div className="flex items-center justify-between gap-3 mb-5">
+                <h2 className="text-[22px] font-black text-[var(--fl-tx)] tracking-[-.5px] leading-[1.2]">Groups</h2>
                 <div style={{ display: 'flex', gap: '8px' }}>
-                    <button className="fl-btn fl-btn-sec fl-btn-sm" onClick={() => setShowJoin((v) => !v)}>
+                    <button className="inline-flex items-center justify-center gap-[7px] px-[14px] py-2 rounded-xl text-sm font-semibold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-[var(--fl-s2)] text-[var(--fl-tx)] border-[var(--fl-bdr-h)] active:bg-[var(--fl-s3)] active:scale-[.97]" onClick={() => setShowJoin((v) => !v)}>
                         Join
                     </button>
-                    <Link href={GroupController.create().url} className="fl-btn fl-btn-p fl-btn-sm">
+                    <Link href={GroupController.create().url} className="inline-flex items-center justify-center gap-[7px] px-[14px] py-2 rounded-xl text-sm font-semibold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-gradient-to-br from-[var(--fl-p)] to-[#FF7D62] text-white shadow-[var(--fl-p-glw)] active:scale-[.97] active:shadow-[0_2px_8px_rgba(255,96,64,.3)]">
                         + New
                     </Link>
                 </div>
             </div>
 
             {showJoin && (
-                <form onSubmit={submitJoin} style={{ marginBottom: '16px' }}>
-                    <p className="fl-flbl" style={{ marginBottom: '8px' }}>Join with invite code</p>
+                <form onSubmit={submitJoin} className="mb-4">
+                    <p className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]" style={{ marginBottom: '8px' }}>Join with invite code</p>
                     <div style={{ display: 'flex', gap: '8px' }}>
                         <input
-                            className={`fl-fi${errors.invite_code ? ' error' : ''}`}
+                            className={`w-full bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none placeholder:text-[var(--fl-tx3)] focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none${errors.invite_code ? ' border-[var(--fl-red)] shadow-[0_0_0_3px_var(--fl-red-d)]' : ''}`}
                             type="text"
                             value={data.invite_code}
                             onChange={(e) => setData('invite_code', e.target.value.toUpperCase())}
@@ -59,11 +59,11 @@ export default function GroupsIndex({ groups }: Props) {
                             style={{ flex: 1, letterSpacing: '0.15em', fontFamily: 'monospace' }}
                             autoFocus
                         />
-                        <button type="submit" className="fl-btn fl-btn-p fl-btn-sm" disabled={processing || !data.invite_code.trim()}>
+                        <button type="submit" className="inline-flex items-center justify-center gap-[7px] px-[14px] py-2 rounded-xl text-sm font-semibold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-gradient-to-br from-[var(--fl-p)] to-[#FF7D62] text-white shadow-[var(--fl-p-glw)] active:scale-[.97] active:shadow-[0_2px_8px_rgba(255,96,64,.3)]" disabled={processing || !data.invite_code.trim()}>
                             {processing ? '…' : 'Join'}
                         </button>
                     </div>
-                    {errors.invite_code && <span className="fl-ferr">{errors.invite_code}</span>}
+                    {errors.invite_code && <span className="block text-xs text-[var(--fl-red)] mt-[5px]">{errors.invite_code}</span>}
                 </form>
             )}
 
@@ -88,7 +88,7 @@ export default function GroupsIndex({ groups }: Props) {
                             </Link>
                             <button
                                 type="button"
-                                className="fl-btn fl-btn-ghost fl-btn-sm"
+                                className="inline-flex items-center justify-center gap-[7px] px-[14px] py-2 rounded-xl text-sm font-semibold tracking-[-.2px] cursor-pointer border-none whitespace-nowrap transition-all duration-100 bg-transparent text-[var(--fl-tx2)] active:bg-[var(--fl-s2)] active:scale-[.97]"
                                 onClick={() => handleLeave(group)}
                             >
                                 Leave
@@ -97,11 +97,11 @@ export default function GroupsIndex({ groups }: Props) {
                     ))}
                 </div>
             ) : (
-                <div className="fl-empty">
-                    <span className="fl-empty-ico">👥</span>
-                    <p className="fl-empty-ttl">No groups yet</p>
-                    <p className="fl-empty-desc">Create a group to share restaurant reviews and recipes with friends or family.</p>
-                    <Link href={GroupController.create().url} className="fl-btn fl-btn-p">
+                <div className="text-center py-[40px] text-[var(--fl-tx3)]">
+                    <div className="text-3xl mb-2">👥</div>
+                    <p className="text-sm font-semibold text-[var(--fl-tx2)] mb-1">No groups yet</p>
+                    <p className="text-xs text-[var(--fl-tx3)] mb-4">Create a group to share restaurant reviews and recipes with friends or family.</p>
+                    <Link href={GroupController.create().url} className="inline-flex items-center justify-center gap-[7px] px-[22px] py-[11px] rounded-full text-[15px] font-bold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-gradient-to-br from-[var(--fl-p)] to-[#FF7D62] text-white shadow-[var(--fl-p-glw)] active:scale-[.97] active:shadow-[0_2px_8px_rgba(255,96,64,.3)]">
                         Create a Group
                     </Link>
                 </div>
@@ -111,4 +111,3 @@ export default function GroupsIndex({ groups }: Props) {
 }
 
 GroupsIndex.layout = (page: ReactNode) => <PortalLayout title="Groups">{page}</PortalLayout>;
-

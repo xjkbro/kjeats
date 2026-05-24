@@ -1,5 +1,6 @@
 import { router } from '@inertiajs/react';
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { search } from '@/routes';
 
 interface SearchResult {
@@ -118,7 +119,7 @@ export default function SearchPalette({ open, onClose }: { open: boolean; onClos
         dish: 'Dishes',
     };
 
-    return (
+    return createPortal(
         <>
             {open && <div className="fl-sp-overlay" onClick={onClose} />}
             <div className={`fl-sp${open ? ' open' : ''}`} role="dialog" aria-modal="true">
@@ -180,6 +181,7 @@ export default function SearchPalette({ open, onClose }: { open: boolean; onClos
                     <span><kbd>Esc</kbd> close</span>
                 </div>
             </div>
-        </>
+        </>,
+        document.body,
     );
 }

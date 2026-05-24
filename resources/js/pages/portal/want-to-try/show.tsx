@@ -23,36 +23,36 @@ function formatDate(isoDate: string): string {
 
 export default function WantToTryShow({ item }: Props) {
     return (
-        <div className="fl-view">
-            <div className="fl-wtt-hero">
-                <div className="fl-wtt-hero-emoji">{item.emoji}</div>
-                <h1 className="fl-wtt-hero-name">{item.name}</h1>
-                <div className="fl-wtt-hero-meta">
+        <div className="p-4 lg:p-7 kj-anim-viewin">
+            <div className="flex flex-col items-center text-center mb-8">
+                <div className="text-5xl leading-none mb-2">{item.emoji}</div>
+                <h1 className="text-2xl font-bold text-[var(--fl-tx)] tracking-tight mb-2">{item.name}</h1>
+                <div className="flex flex-wrap items-center justify-center gap-2 mb-2">
                     {item.cuisine && <span className="fl-badge fl-badge-org">{item.cuisine}</span>}
                     {item.location && <span className="fl-badge fl-badge-def">{item.location}</span>}
                 </div>
-                <p className="fl-wtt-by">
-                    Added by {item.user.first_name} · {formatDate(item.created_at)}
+                <p className="text-xs text-[var(--fl-tx2)]">
+                    Added by {item.user.name} · {formatDate(item.created_at)}
                 </p>
             </div>
 
             {item.notes && (
-                <section className="fl-section">
-                    <h3 className="fl-section-ttl">Notes</h3>
-                    <div className="fl-wtt-notes">
+                <section className="mb-6">
+                    <h3 className="text-[10px] font-bold text-[var(--fl-tx2)] uppercase tracking-[1px] flex items-center gap-2">Notes</h3>
+                    <div className="bg-[var(--fl-s2)] rounded-xl p-4 text-sm text-[var(--fl-tx)] leading-relaxed">
                         {item.notes}
                     </div>
                 </section>
             )}
 
-            <section className="fl-section">
-                <h3 className="fl-section-ttl">Actions</h3>
-                <div className="fl-wtt-actions">
+            <section className="mb-6">
+                <h3 className="text-[10px] font-bold text-[var(--fl-tx2)] uppercase tracking-[1px] flex items-center gap-2">Actions</h3>
+                <div className="flex gap-3">
                     <Link
                         href={WantToTryController.convertToReview(item.id).url}
                         method="post"
                         as="button"
-                        className="fl-btn fl-btn-p"
+                        className="inline-flex items-center justify-center gap-[7px] px-[22px] py-[11px] rounded-full text-[15px] font-bold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-gradient-to-br from-[var(--fl-p)] to-[#FF7D62] text-white shadow-[var(--fl-p-glw)] active:scale-[.97] active:shadow-[0_2px_8px_rgba(255,96,64,.3)]"
                     >
                         Convert to Review
                     </Link>
@@ -60,7 +60,7 @@ export default function WantToTryShow({ item }: Props) {
                         href={WantToTryController.destroy(item.id).url}
                         method="delete"
                         as="button"
-                        className="fl-btn fl-btn-sec"
+                        className="inline-flex items-center justify-center gap-[7px] px-[22px] py-[11px] rounded-full text-[15px] font-bold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-[var(--fl-s2)] text-[var(--fl-tx)] border-[var(--fl-bdr-h)] active:bg-[var(--fl-s3)] active:scale-[.97]"
                     >
                         Remove
                     </Link>

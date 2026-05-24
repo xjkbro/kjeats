@@ -93,35 +93,35 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
     }, []);
 
     return (
-        <div className={`portal-shell${sidebarCollapsed ? ' sidebar-collapsed' : ''}`}>
+        <div className={`fixed inset-0 flex flex-col h-dvh overflow-hidden antialiased kj-overscroll-none bg-[var(--fl-bg)] text-[var(--fl-tx)] font-sans portal-shell${sidebarCollapsed ? ' sidebar-collapsed' : ''}`}>
             {/* HEADER */}
-            <header className="fl-hdr">
-                <div className="fl-hdr-row">
+            <header className="sticky top-0 z-50 shrink-0 backdrop-blur-xl border-b border-[var(--fl-bdr-s)] bg-[var(--fl-bg)]/95 fl-hdr">
+                <div className="flex items-center px-3 h-[60px] gap-2">
                     {showBack ? (
                         <>
-                            <button className="fl-back-btn" onClick={() => window.history.back()}>
+                            <button className="flex items-center justify-center w-[34px] h-[34px] bg-[var(--fl-s2)] rounded-xl text-[var(--fl-tx)] shrink-0 transition-all duration-100 active:bg-[var(--fl-s3)] active:scale-[.92]" onClick={() => window.history.back()}>
                                 <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" viewBox="0 0 24 24">
                                     <polyline points="15 18 9 12 15 6" />
                                 </svg>
                             </button>
-                            {title && <h1 className="fl-page-ttl" style={{ flex: 1, minWidth: 0 }}>{title}</h1>}
+                            {title && <h1 className="text-[17px] font-bold text-[var(--fl-tx)] tracking-[-.3px] truncate flex-1 min-w-0">{title}</h1>}
                         </>
                     ) : (
                         <>
-                            <button className="fl-hdr-bell" aria-label="Notifications">
+                            <button className="flex items-center justify-center w-10 h-10 rounded-full shrink-0 bg-[var(--fl-s2)] text-[var(--fl-tx2)] transition-colors duration-100 active:bg-[var(--fl-s3)]" aria-label="Notifications">
                                 <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
                                     <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
                                     <path d="M13.73 21a2 2 0 0 1-3.46 0" />
                                 </svg>
                             </button>
-                            <button className="fl-hdr-search" onClick={() => setSearchOpen((v) => !v)}>
+                            <button className="flex items-center gap-2 flex-1 h-10 rounded-full bg-[var(--fl-s2)] border border-[var(--fl-bdr-s)] px-3.5 text-sm text-[var(--fl-tx3)] transition-colors duration-100 hover:bg-[var(--fl-s3)] hover:border-[var(--fl-p-lt)] hover:text-[var(--fl-tx)]" onClick={() => setSearchOpen((v) => !v)}>
                                 <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
                                     <circle cx="11" cy="11" r="8" />
                                     <line x1="21" y1="21" x2="16.65" y2="16.65" />
                                 </svg>
                                 <span>Search</span>
                             </button>
-                            <button className="fl-hdr-add" onClick={() => setAddOpen(true)} aria-label="Add">
+                            <button className="flex items-center justify-center w-10 h-10 rounded-full shrink-0 bg-[var(--fl-s2)] text-[var(--fl-tx2)] transition-colors duration-100 active:bg-[var(--fl-s3)]" onClick={() => setAddOpen(true)} aria-label="Add">
                                 <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" viewBox="0 0 24 24">
                                     <line x1="12" y1="5" x2="12" y2="19" />
                                     <line x1="5" y1="12" x2="19" y2="12" />
@@ -172,12 +172,12 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
                 <div className="fl-main-body">
                     {showBack && (
                         <div className="fl-view-nav">
-                            <button className="fl-back-btn" onClick={() => window.history.back()}>
+                            <button className="flex items-center justify-center w-[34px] h-[34px] bg-[var(--fl-s2)] rounded-xl text-[var(--fl-tx)] shrink-0 transition-all duration-100 active:bg-[var(--fl-s3)] active:scale-[.92]" onClick={() => window.history.back()}>
                                 <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" viewBox="0 0 24 24">
                                     <polyline points="15 18 9 12 15 6" />
                                 </svg>
                             </button>
-                            {title && <h1 className="fl-desk-page-ttl">{title}</h1>}
+                            {title && <h1 className="text-[17px] font-bold text-[var(--fl-tx)] tracking-[-.3px] truncate fl-desk-page-ttl">{title}</h1>}
                         </div>
                     )}
                     {children}
@@ -187,9 +187,9 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
             {/* BOTTOM NAV / SIDEBAR */}
             <nav className="fl-nav">
                 {/* Logo area (desktop only) */}
-                <div className="fl-nav-logo flex justify-between items-center">
-                    <Link href={home()} className="fl-brand">
-                        <img src="/kjeats-logo.png" alt="kjeats" style={{ height: '22px', objectFit: 'contain' }} />
+                <div className="fl-nav-logo">
+                    <Link href={home()} className="flex items-center gap-[7px] fl-brand">
+                        <img src="/kjeats-logo.png" alt="kjeats" className="h-[22px] object-contain" />
                     </Link>
                     <span className="hover:cursor-pointer fl-nav-btn inline-block !w-auto" onClick={toggleSidebar} aria-label="Toggle sidebar">
                         <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
@@ -245,7 +245,7 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
                 </Link>
 
                 {/* + Add button (desktop sidebar only) */}
-                <span className="hover:cursor-pointer fl-nav-btn -fl-nav-add text-[unset]" onClick={() => setAddOpen(true)} aria-label="Add">
+                <span className="hover:cursor-pointer fl-nav-add fl-nav-btn" onClick={() => setAddOpen(true)} aria-label="Add">
                     <div className="fl-nav-ico">
                         <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" viewBox="0 0 24 24">
                             <line x1="12" y1="5" x2="12" y2="19" />
@@ -268,69 +268,68 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
 
             {/* ADD MENU OVERLAY */}
             {addOpen && (
-                <div className="fl-overlay" onClick={() => setAddOpen(false)}>
-                    <div className="fl-sheet" onClick={(e) => e.stopPropagation()}>
-                        <div className="fl-sheet-grip" />
-                        <h2 className="fl-sheet-ttl">What are you adding?</h2>
+                <div className="fixed inset-0 z-[100] bg-black/68 backdrop-blur-sm flex items-end lg:items-center lg:justify-center kj-anim-fadein" onClick={() => setAddOpen(false)}>
+                    <div className="bg-[var(--fl-s2)] border border-[var(--fl-bdr)] rounded-[26px] rounded-b-none lg:rounded-[26px] p-3 pb-7 w-full lg:w-[420px] kj-anim-slideup" onClick={(e) => e.stopPropagation()}>
+                        <div className="w-9 h-1 bg-[var(--fl-bdr)] rounded-full mx-auto mb-[18px]" />
+                        <h2 className="text-[17px] font-extrabold text-[var(--fl-tx)] mb-4 tracking-[-.3px]">What are you adding?</h2>
                         <Link
                             href={RestaurantController.create().url}
-                            className="fl-sheet-opt fl-opt-rest"
+                            className="w-full flex items-center gap-[14px] p-[15px] rounded-[16px] mb-[10px] cursor-pointer text-left border-[1.5px] border-solid border-[var(--fl-p)] bg-[var(--fl-p-dim)] transition-opacity duration-100 active:opacity-75"
                             onClick={() => setAddOpen(false)}
                         >
-                            <span className="fl-opt-ico">📍</span>
-                            <div>
-                                <div className="fl-opt-label">Restaurant Review</div>
-                                <div className="fl-opt-desc">Rate dishes &amp; document your experience</div>
+                            <span className="text-[32px] shrink-0">📍</span>
+                            <div className="flex-1">
+                                <div className="text-[15px] font-bold text-[var(--fl-tx)]">Restaurant Review</div>
+                                <div className="text-xs text-[var(--fl-tx2)] mt-[3px]">Rate dishes &amp; document your experience</div>
                             </div>
-                            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24" className="text-[var(--fl-tx3)] shrink-0">
                                 <polyline points="9 18 15 12 9 6" />
                             </svg>
                         </Link>
                         <Link
                             href={WantToTryController.create().url}
-                            className="fl-sheet-opt fl-opt-want"
+                            className="w-full flex items-center gap-[14px] p-[15px] rounded-[16px] mb-[10px] cursor-pointer text-left border-[1.5px] border-solid border-[var(--fl-blue)] bg-[var(--fl-blu-d)] transition-opacity duration-100 active:opacity-75"
                             onClick={() => setAddOpen(false)}
                         >
-                            <span className="fl-opt-ico">🔖</span>
-                            <div>
-                                <div className="fl-opt-label">Want to Try</div>
-                                <div className="fl-opt-desc">Quick save a restaurant to try later</div>
+                            <span className="text-[32px] shrink-0">🔖</span>
+                            <div className="flex-1">
+                                <div className="text-[15px] font-bold text-[var(--fl-tx)]">Want to Try</div>
+                                <div className="text-xs text-[var(--fl-tx2)] mt-[3px]">Quick save a restaurant to try later</div>
                             </div>
-                            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24" className="text-[var(--fl-tx3)] shrink-0">
                                 <polyline points="9 18 15 12 9 6" />
                             </svg>
                         </Link>
                         <Link
                             href={RecipeController.create().url}
-                            className="fl-sheet-opt fl-opt-recipe"
+                            className="w-full flex items-center gap-[14px] p-[15px] rounded-[16px] mb-[10px] cursor-pointer text-left border-[1.5px] border-solid border-[var(--fl-teal)] bg-[var(--fl-tel-d)] transition-opacity duration-100 active:opacity-75"
                             onClick={() => setAddOpen(false)}
                         >
-                            <span className="fl-opt-ico">📋</span>
-                            <div>
-                                <div className="fl-opt-label">Recipe</div>
-                                <div className="fl-opt-desc">Ingredients, steps &amp; nutrition info</div>
+                            <span className="text-[32px] shrink-0">📋</span>
+                            <div className="flex-1">
+                                <div className="text-[15px] font-bold text-[var(--fl-tx)]">Recipe</div>
+                                <div className="text-xs text-[var(--fl-tx2)] mt-[3px]">Ingredients, steps &amp; nutrition info</div>
                             </div>
-                            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24" className="text-[var(--fl-tx3)] shrink-0">
                                 <polyline points="9 18 15 12 9 6" />
                             </svg>
                         </Link>
                         <Link
                             href={RestaurantController.index().url + '?revisit=1'}
-                            className="fl-sheet-opt"
-                            style={{ background: 'var(--fl-s3)', borderColor: 'var(--fl-bdr)' }}
+                            className="w-full flex items-center gap-[14px] p-[15px] rounded-[16px] mb-[10px] cursor-pointer text-left border-[1.5px] border-solid bg-[var(--fl-s3)] border-[var(--fl-bdr)] transition-opacity duration-100 active:opacity-75"
                             onClick={() => setAddOpen(false)}
                         >
-                            <span className="fl-opt-ico">🔁</span>
-                            <div>
-                                <div className="fl-opt-label">Revisit a Restaurant</div>
-                                <div className="fl-opt-desc">Add a new visit date, dishes or update your review</div>
+                            <span className="text-[32px] shrink-0">🔁</span>
+                            <div className="flex-1">
+                                <div className="text-[15px] font-bold text-[var(--fl-tx)]">Revisit a Restaurant</div>
+                                <div className="text-xs text-[var(--fl-tx2)] mt-[3px]">Add a new visit date, dishes or update your review</div>
                             </div>
-                            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24" className="text-[var(--fl-tx3)] shrink-0">
                                 <polyline points="9 18 15 12 9 6" />
                             </svg>
                         </Link>
 
-                        <button className="fl-sheet-cancel" onClick={() => setAddOpen(false)}>
+                        <button className="w-full p-[13px] bg-[var(--fl-s3)] rounded-xl text-[var(--fl-tx2)] text-sm font-semibold mt-[6px] cursor-pointer active:bg-[var(--fl-s4)]" onClick={() => setAddOpen(false)}>
                             Cancel
                         </button>
                     </div>
@@ -338,9 +337,9 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
             )}
 
             {/* TOASTS */}
-            <div className="fl-toasts">
+            <div className="fixed bottom-[calc(var(--fl-nav-h)+var(--fl-safe)+10px)] lg:bottom-6 left-3 right-3 lg:left-unset lg:right-6 z-[200] flex flex-col gap-2 pointer-events-none lg:w-[320px]">
                 {toasts.map((t) => (
-                    <div key={t.id} className={`fl-toast ${t.type}`}>
+                    <div key={t.id} className={`bg-[var(--fl-s3)] border border-[var(--fl-bdr)] rounded-xl px-[15px] py-[11px] text-sm font-medium text-[var(--fl-tx)] shadow-[var(--fl-sh2)] flex items-center gap-[9px] pointer-events-auto kj-anim-toastin ${t.type === 'ok' ? 'border-l-[3px] border-l-[var(--fl-grn)]' : t.type === 'err' ? 'border-l-[3px] border-l-[var(--fl-red)]' : 'border-l-[3px] border-l-[var(--fl-blue)]'}`}>
                         <span>{t.type === 'ok' ? '✓' : t.type === 'err' ? '✕' : 'ℹ'}</span>
                         {t.message}
                     </div>

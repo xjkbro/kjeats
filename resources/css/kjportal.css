@@ -1,0 +1,156 @@
+/* ══════════════════════════════════════════════════════════
+   KJ Portal — Custom utility classes (kj- prefix)
+   Tailwind CSS v4 Compatible
+   ══════════════════════════════════════════════════════════ */
+
+/* ── Design Tokens ──────────────────────────────────────── */
+:root {
+    --fl-bg:  #0C0D14;
+    --fl-s1:  #13141E;
+    --fl-s2:  #1B1D2A;
+    --fl-s3:  #232537;
+    --fl-s4:  #2D3050;
+    --fl-bdr:  #272A40;
+    --fl-bdr-s:#1C1E30;
+    --fl-bdr-h:#3E4268;
+    --fl-tx:  #DDE0F0;
+    --fl-tx2: #8890AF;
+    --fl-tx3: #52566E;
+    --fl-p:    #FF6040;
+    --fl-p-lt: #FF7D62;
+    --fl-p-dim:rgba(255,96,64,.12);
+    --fl-p-dmh:rgba(255,96,64,.22);
+    --fl-p-glw:0 4px 24px rgba(255,96,64,.4);
+    --fl-gold: #FFB400;
+    --fl-gld-d:rgba(255,180,0,.14);
+    --fl-teal: #00CDB4;
+    --fl-tel-d:rgba(0,205,180,.12);
+    --fl-blue: #4A8DF8;  --fl-blu-d:rgba(74,141,248,.12);
+    --fl-grn:  #4ECF78;  --fl-grn-d:rgba(78,207,120,.12);
+    --fl-red:  #FF4560;  --fl-red-d:rgba(255,69,96,.12);
+    --fl-purp: #8660F7;  --fl-prp-d:rgba(134,96,247,.12);
+    --fl-r1:4px; --fl-r2:8px; --fl-r3:12px; --fl-r4:16px;
+    --fl-r5:20px; --fl-r6:26px; --fl-rp:9999px;
+    --fl-sh1:0 2px 10px rgba(0,0,0,.5);
+    --fl-sh2:0 6px 24px rgba(0,0,0,.6);
+    --fl-sh3:0 12px 48px rgba(0,0,0,.7);
+    --fl-hdr-h: 60px;
+    --fl-nav-h: 76px;
+    --fl-safe:  env(safe-area-inset-bottom, 0px);
+    --fl-pad:   16px;
+    --fl-t1:100ms ease;
+    --fl-t2:200ms ease;
+    --fl-t3:300ms cubic-bezier(.25,.46,.45,.94);
+    --fl-sidebar-w: 230px;
+}
+
+/* ── Portal shell base ──────────────────────────────────── */
+.portal-shell {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.portal-shell input,
+.portal-shell textarea,
+.portal-shell select,
+.portal-shell button {
+    font-family: inherit;
+    font-size: inherit;
+    outline: none;
+}
+
+.portal-shell button {
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: inherit;
+}
+
+.portal-shell input[type="number"]::-webkit-outer-spin-button,
+.portal-shell input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
+.portal-shell input[type="number"] {
+    appearance: textfield;
+    -moz-appearance: textfield;
+}
+
+.portal-shell ::-webkit-scrollbar { width: 3px; height: 3px; }
+.portal-shell ::-webkit-scrollbar-thumb { background: var(--fl-bdr); border-radius: var(--fl-rp); }
+.portal-shell ::-webkit-scrollbar-track { background: transparent; }
+.portal-shell ::selection { background: var(--fl-p-dmh); color: var(--fl-p-lt); }
+
+/* ── kj- utility classes ────────────────────────────────── */
+
+/* Tap highlight */
+.kj-tap-highlight-transparent {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Overscroll */
+.kj-overscroll-none {
+    overscroll-behavior: none;
+}
+
+/* Hide scrollbar */
+.kj-scrollbar-none {
+    scrollbar-width: none;
+}
+.kj-scrollbar-none::-webkit-scrollbar {
+    display: none;
+}
+
+/* WebKit overflow touch */
+.kj-webkit-overflow-touch {
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Background clip text */
+.kj-bg-clip-text {
+    background-clip: text;
+    -webkit-background-clip: text;
+}
+
+/* Text fill transparent (for gradient text) */
+.kj-text-fill-transparent {
+    -webkit-text-fill-color: transparent;
+}
+
+/* Unset positioning */
+.kj-w-unset { width: unset; }
+.kj-h-unset { height: unset; }
+.kj-inset-unset { inset: unset; }
+.kj-left-unset { left: unset; }
+.kj-right-unset { right: unset; }
+.kj-bottom-unset { bottom: unset; }
+.kj-top-unset { top: unset; }
+
+/* ── Animation keyframes ────────────────────────────────── */
+@keyframes kj-bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-9px); }
+}
+@keyframes kj-viewin {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: none; }
+}
+@keyframes kj-fadein {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes kj-slideup {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+@keyframes kj-toastin {
+    from { transform: translateY(8px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.kj-anim-bob { animation: kj-bob 3s ease-in-out infinite; }
+.kj-anim-viewin { animation: kj-viewin .22s ease both; }
+.kj-anim-fadein { animation: kj-fadein .22s ease both; }
+.kj-anim-slideup { animation: kj-slideup .3s ease both; }
+.kj-anim-toastin { animation: kj-toastin .22s ease both; }

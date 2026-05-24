@@ -21,12 +21,16 @@ function SettingsNav({ active }: SettingsNavProps) {
     ];
 
     return (
-        <div className="fl-settings-tabs">
+        <div className="flex gap-[3px] p-[3px] bg-[var(--fl-s2)] rounded-2xl mb-6 overflow-x-auto kj-scrollbar-none">
             {tabs.map((tab) => (
                 <Link
                     key={tab.id}
                     href={tab.href}
-                    className={`fl-settings-tab${active === tab.id ? ' active' : ''}`}
+                    className={`flex-1 text-center px-[14px] py-[9px] text-[13px] font-bold tracking-[-.2px] transition-all duration-100 rounded-xl whitespace-nowrap no-underline${
+                        active === tab.id
+                            ? ' bg-white text-[var(--fl-tx)] shadow-[0_1px_3px_rgba(0,0,0,.08)] dark:bg-zinc-800'
+                            : ' text-[var(--fl-tx2)] hover:text-[var(--fl-tx)]'
+                    }`}
                 >
                     {tab.label}
                 </Link>
@@ -42,12 +46,12 @@ interface SettingsPageProps extends SettingsNavProps {
 
 export function SettingsPage({ active, title, children }: SettingsPageProps) {
     return (
-        <div className="fl-view">
-            <div className="fl-view-hdr">
-                <h1 className="fl-view-ttl">{title}</h1>
+        <div className="p-4 lg:p-7 kj-anim-viewin">
+            <div className="mb-5">
+                <h1 className="text-[22px] font-black text-[var(--fl-tx)] tracking-[-.5px] leading-[1.2]">{title}</h1>
             </div>
             <SettingsNav active={active} />
-            <div className="fl-settings-content">
+            <div>
                 {children}
             </div>
         </div>

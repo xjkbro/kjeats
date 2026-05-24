@@ -35,7 +35,6 @@ interface FormValues {
     recipe_photo: File | null;
     ingredients: IngredientInput[];
     steps: StepInput[];
-    // nutrition (optional, flat)
     has_nutrition: boolean;
     serving_size: string;
     servings_per_container: string;
@@ -255,26 +254,27 @@ return;
 
     return (
         <>
-        <form id="recipe-create-form" className="fl-view fl-form" onSubmit={submit}>
-            <div className="fl-fsec">
-                <div className="fl-fsec-hdr">
-                    <h3 className="fl-fsec-ttl">Basic Information</h3>
-                    <button type="button" className="fl-btn fl-btn-ghost fl-btn-sm" onClick={() => setImportOpen(true)}>
+        <form id="recipe-create-form" className="p-4 lg:p-7 kj-anim-viewin" onSubmit={submit}>
+            <div className="mb-6">
+                <div className="flex items-center justify-between gap-2 mb-3">
+                    <h3 className="text-[10px] font-bold text-[var(--fl-tx2)] uppercase tracking-[1px] flex items-center gap-2">Basic Information</h3>
+                    <button type="button" className="inline-flex items-center justify-center gap-[7px] px-[14px] py-2 rounded-xl text-sm font-semibold tracking-[-.2px] cursor-pointer border-none whitespace-nowrap transition-all duration-100 bg-transparent text-[var(--fl-tx2)] active:bg-[var(--fl-s2)] active:scale-[.97]" onClick={() => setImportOpen(true)}>
                         📥 Import URL
                     </button>
                 </div>
 
-                <div className="fl-fgrp fl-emoji-grp">
-                    <label className="fl-flbl">Icon</label>
-                    <button type="button" className="fl-emoji-btn" onClick={() => setShowEmojiPicker((v) => !v)}>
+                <div className="mb-3 relative flex flex-wrap items-center gap-3">
+                    <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px] w-full">Icon</label>
+                    <button type="button" className="w-[44px] h-[44px] rounded-xl bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] text-xl flex items-center justify-center cursor-pointer hover:border-[var(--fl-p)] transition-colors" onClick={() => setShowEmojiPicker((v) => !v)}>
                         {data.emoji}
                     </button>
                     {showEmojiPicker && (
-                        <div className="fl-emoji-picker">
+                        <div className="flex gap-1 p-2 bg-[var(--fl-s2)] rounded-xl border border-[var(--fl-bdr-s)]">
                             {EMOJIS.map((e) => (
                                 <button
                                     key={e}
                                     type="button"
+                                    className="w-[36px] h-[36px] rounded-lg text-lg flex items-center justify-center hover:bg-[var(--fl-s3)] cursor-pointer border-none"
                                     onClick={() => {
                                         setData('emoji', e);
                                         setShowEmojiPicker(false);
@@ -287,29 +287,29 @@ return;
                     )}
                 </div>
 
-                <div className="fl-fgrp">
-                    <label className="fl-flbl" htmlFor="name">Recipe Name *</label>
+                <div className="mb-3 relative">
+                    <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]" htmlFor="name">Recipe Name <span className="text-[var(--fl-red)] ml-[2px]">*</span></label>
                     <input
                         id="name"
-                        className={`fl-fi${errors.name ? ' error' : ''}`}
+                        className={`w-full bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none placeholder:text-[var(--fl-tx3)] focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none${errors.name ? ' border-[var(--fl-red)] shadow-[0_0_0_3px_var(--fl-red-d)]' : ''}`}
                         type="text"
                         value={data.name}
                         onChange={(e) => setData('name', e.target.value)}
                         placeholder="e.g. Margherita Pizza"
                         required
                     />
-                    {errors.name && <span className="fl-ferr">{errors.name}</span>}
+                    {errors.name && <span className="block text-xs text-[var(--fl-red)] mt-[5px]">{errors.name}</span>}
                 </div>
 
-                <div className="fl-frow">
-                    <div className="fl-fgrp">
-                        <label className="fl-flbl" htmlFor="category">Category</label>
-                        <select id="category" className="fl-fi" value={data.category} onChange={(e) => setData('category', e.target.value)}>
+                <div className="grid grid-cols-2 gap-3">
+                    <div className="mb-3 relative">
+                        <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]" htmlFor="category">Category</label>
+                        <select id="category" className="w-full bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none placeholder:text-[var(--fl-tx3)] focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none" value={data.category} onChange={(e) => setData('category', e.target.value)}>
                             {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
                         </select>
                     </div>
-                    <div className="fl-fgrp">
-                        <label className="fl-flbl">Difficulty</label>
+                    <div className="mb-3 relative">
+                        <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]">Difficulty</label>
                         <div className="fl-seg">
                             {DIFFICULTIES.map((d) => (
                                 <button key={d} type="button" className={`fl-seg-btn${data.difficulty === d ? ' active' : ''}`} onClick={() => setData('difficulty', d)}>
@@ -320,11 +320,11 @@ return;
                     </div>
                 </div>
 
-                <div className="fl-fgrp">
-                    <label className="fl-flbl" htmlFor="description">Description</label>
+                <div className="mb-3 relative">
+                    <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]" htmlFor="description">Description</label>
                     <textarea
                         id="description"
-                        className="fl-fi fl-ftxt"
+                        className="w-full bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none placeholder:text-[var(--fl-tx3)] focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none resize-vertical min-h-[80px]"
                         value={data.description}
                         onChange={(e) => setData('description', e.target.value)}
                         placeholder="A short description of the recipe…"
@@ -332,8 +332,8 @@ return;
                     />
                 </div>
 
-                <div className="fl-fgrp">
-                    <label className="fl-flbl">Tags</label>
+                <div className="mb-3 relative">
+                    <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]">Tags</label>
                     <TagInput
                         value={data.tags}
                         onChange={(tags) => setData('tags', tags)}
@@ -342,8 +342,8 @@ return;
                     />
                 </div>
 
-                <div className="fl-fgrp">
-                    <label className="fl-flbl">Photo</label>
+                <div className="mb-3 relative">
+                    <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]">Photo</label>
                     <input
                         ref={photoRef}
                         type="file"
@@ -354,7 +354,7 @@ return;
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                         <button
                             type="button"
-                            className="fl-btn fl-btn-ghost fl-btn-sm"
+                            className="inline-flex items-center justify-center gap-[7px] px-[14px] py-2 rounded-xl text-sm font-semibold tracking-[-.2px] cursor-pointer border-none whitespace-nowrap transition-all duration-100 bg-transparent text-[var(--fl-tx2)] active:bg-[var(--fl-s2)] active:scale-[.97]"
                             onClick={() => photoRef.current?.click()}
                         >
                             {data.recipe_photo ? '📷 Change Photo' : '📷 Add Photo'}
@@ -364,7 +364,7 @@ return;
                                 <span style={{ fontSize: '13px', color: 'var(--fl-tx2)' }}>{data.recipe_photo.name}</span>
                                 <button
                                     type="button"
-                                    className="fl-visit-chip-rm"
+                                    className="w-[22px] h-[22px] rounded-full bg-[var(--fl-s3)] border-none text-[var(--fl-tx2)] text-[10px] cursor-pointer flex items-center justify-center hover:bg-[var(--fl-red-d)] hover:text-[var(--fl-red)] shrink-0"
                                     onClick={() => {
                                         setData('recipe_photo', null);
 
@@ -381,20 +381,20 @@ photoRef.current.value = '';
                 </div>
             </div>
 
-            <div className="fl-fsec">
-                <h3 className="fl-fsec-ttl">Timing &amp; Servings</h3>
-                <div className="fl-frow fl-frow-4">
+            <div className="mb-6">
+                <h3 className="text-[10px] font-bold text-[var(--fl-tx2)] uppercase tracking-[1px] flex items-center gap-2">Timing &amp; Servings</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     {[
                         { id: 'prep_time', label: 'Prep (min)', field: 'prep_time' as const },
                         { id: 'cook_time', label: 'Cook (min)', field: 'cook_time' as const },
                         { id: 'rest_time', label: 'Rest (min)', field: 'rest_time' as const },
                         { id: 'servings', label: 'Servings', field: 'servings' as const },
                     ].map(({ id, label, field }) => (
-                        <div key={id} className="fl-fgrp">
-                            <label className="fl-flbl" htmlFor={id}>{label}</label>
+                        <div key={id} className="mb-3 relative">
+                            <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]" htmlFor={id}>{label}</label>
                             <input
                                 id={id}
-                                className="fl-fi"
+                                className="w-full bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none placeholder:text-[var(--fl-tx3)] focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none"
                                 type="number"
                                 min="0"
                                 value={data[field]}
@@ -405,64 +405,64 @@ photoRef.current.value = '';
                 </div>
             </div>
 
-            <div className="fl-fsec">
-                <div className="fl-fsec-hdr">
-                    <h3 className="fl-fsec-ttl">Ingredients</h3>
-                    <button type="button" className="fl-btn fl-btn-ghost fl-btn-sm" onClick={addIngredient}>
+            <div className="mb-6">
+                <div className="flex items-center justify-between gap-2 mb-3">
+                    <h3 className="text-[10px] font-bold text-[var(--fl-tx2)] uppercase tracking-[1px] flex items-center gap-2">Ingredients</h3>
+                    <button type="button" className="inline-flex items-center justify-center gap-[7px] px-[14px] py-2 rounded-xl text-sm font-semibold tracking-[-.2px] cursor-pointer border-none whitespace-nowrap transition-all duration-100 bg-transparent text-[var(--fl-tx2)] active:bg-[var(--fl-s2)] active:scale-[.97]" onClick={addIngredient}>
                         + Add
                     </button>
                 </div>
                 {data.ingredients.map((ing, idx) => (
-                    <div key={idx} className="fl-ing-form">
-                        <div className="fl-fgrp" style={{ flex: '0 0 70px' }}>
-                            <label className="fl-flbl">Amount</label>
-                            <input className="fl-fi" type="text" value={ing.amount} onChange={(e) => updateIngredient(idx, 'amount', e.target.value)} placeholder="1" />
+                    <div key={idx} className="flex gap-2 items-end mb-2">
+                        <div className="mb-3 relative" style={{ flex: '0 0 70px' }}>
+                            <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]">Amount</label>
+                            <input className="w-full bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none placeholder:text-[var(--fl-tx3)] focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none" type="text" value={ing.amount} onChange={(e) => updateIngredient(idx, 'amount', e.target.value)} placeholder="1" />
                         </div>
-                        <div className="fl-fgrp" style={{ flex: '0 0 80px' }}>
-                            <label className="fl-flbl">Unit</label>
-                            <input className="fl-fi" type="text" value={ing.unit} onChange={(e) => updateIngredient(idx, 'unit', e.target.value)} placeholder="cup" />
+                        <div className="mb-3 relative" style={{ flex: '0 0 80px' }}>
+                            <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]">Unit</label>
+                            <input className="w-full bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none placeholder:text-[var(--fl-tx3)] focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none" type="text" value={ing.unit} onChange={(e) => updateIngredient(idx, 'unit', e.target.value)} placeholder="cup" />
                         </div>
-                        <div className="fl-fgrp" style={{ flex: 1 }}>
-                            <label className="fl-flbl">Ingredient</label>
-                            <input className="fl-fi" type="text" value={ing.name} onChange={(e) => updateIngredient(idx, 'name', e.target.value)} placeholder="Flour" />
+                        <div className="mb-3 relative" style={{ flex: 1 }}>
+                            <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]">Ingredient</label>
+                            <input className="w-full bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none placeholder:text-[var(--fl-tx3)] focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none" type="text" value={ing.name} onChange={(e) => updateIngredient(idx, 'name', e.target.value)} placeholder="Flour" />
                         </div>
-                        <button type="button" className="fl-dish-remove" onClick={() => removeIngredient(idx)}>✕</button>
+                        <button type="button" className="w-[30px] h-[30px] min-w-[30px] rounded-lg bg-transparent border-none text-[var(--fl-tx3)] text-sm cursor-pointer flex items-center justify-center hover:bg-[var(--fl-red-d)] hover:text-[var(--fl-red)] mt-[26px]" onClick={() => removeIngredient(idx)}>✕</button>
                     </div>
                 ))}
-                {data.ingredients.length === 0 && <p className="fl-empty-inline">No ingredients added yet.</p>}
+                {data.ingredients.length === 0 && <p className="text-xs text-[var(--fl-tx3)] italic px-1">No ingredients added yet.</p>}
             </div>
 
-            <div className="fl-fsec">
-                <div className="fl-fsec-hdr">
-                    <h3 className="fl-fsec-ttl">Instructions</h3>
-                    <button type="button" className="fl-btn fl-btn-ghost fl-btn-sm" onClick={addStep}>
+            <div className="mb-6">
+                <div className="flex items-center justify-between gap-2 mb-3">
+                    <h3 className="text-[10px] font-bold text-[var(--fl-tx2)] uppercase tracking-[1px] flex items-center gap-2">Instructions</h3>
+                    <button type="button" className="inline-flex items-center justify-center gap-[7px] px-[14px] py-2 rounded-xl text-sm font-semibold tracking-[-.2px] cursor-pointer border-none whitespace-nowrap transition-all duration-100 bg-transparent text-[var(--fl-tx2)] active:bg-[var(--fl-s2)] active:scale-[.97]" onClick={addStep}>
                         + Add Step
                     </button>
                 </div>
                 {data.steps.map((step, idx) => (
-                    <div key={idx} className="fl-step-form">
-                        <div className="fl-step-num-badge">{idx + 1}</div>
-                        <div className="fl-fgrp" style={{ flex: 1 }}>
+                    <div key={idx} className="flex gap-2 items-start mb-3">
+                        <div className="w-[28px] h-[28px] min-w-[28px] rounded-full bg-[var(--fl-p-dim)] text-[var(--fl-p)] text-xs font-bold flex items-center justify-center mt-[10px]">{idx + 1}</div>
+                        <div className="mb-3 relative" style={{ flex: 1 }}>
                             <textarea
-                                className="fl-fi fl-ftxt"
+                                className="w-full bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none placeholder:text-[var(--fl-tx3)] focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none resize-vertical min-h-[80px]"
                                 value={step.instruction}
                                 onChange={(e) => updateStep(idx, e.target.value)}
                                 placeholder={`Describe step ${idx + 1}…`}
                                 rows={2}
                             />
                         </div>
-                        <button type="button" className="fl-dish-remove" onClick={() => removeStep(idx)}>✕</button>
+                        <button type="button" className="w-[30px] h-[30px] min-w-[30px] rounded-lg bg-transparent border-none text-[var(--fl-tx3)] text-sm cursor-pointer flex items-center justify-center hover:bg-[var(--fl-red-d)] hover:text-[var(--fl-red)] mt-[26px]" onClick={() => removeStep(idx)}>✕</button>
                     </div>
                 ))}
-                {data.steps.length === 0 && <p className="fl-empty-inline">No steps added yet.</p>}
+                {data.steps.length === 0 && <p className="text-xs text-[var(--fl-tx3)] italic px-1">No steps added yet.</p>}
             </div>
 
-            <div className="fl-fsec">
-                <div className="fl-fsec-hdr">
-                    <h3 className="fl-fsec-ttl">Nutrition Facts</h3>
+            <div className="mb-6">
+                <div className="flex items-center justify-between gap-2 mb-3">
+                    <h3 className="text-[10px] font-bold text-[var(--fl-tx2)] uppercase tracking-[1px] flex items-center gap-2">Nutrition Facts</h3>
                     <button
                         type="button"
-                        className="fl-btn fl-btn-sm fl-btn-sec"
+                        className="inline-flex items-center justify-center gap-[7px] px-[14px] py-2 rounded-xl text-sm font-semibold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-[var(--fl-s2)] text-[var(--fl-tx)] border-[var(--fl-bdr-h)] active:bg-[var(--fl-s3)] active:scale-[.97]"
                         disabled={aiLoading || data.ingredients.length === 0}
                         onClick={calculateNutrition}
                         title={data.ingredients.length === 0 ? 'Add ingredients first' : 'Calculate nutrition with AI'}
@@ -471,19 +471,19 @@ photoRef.current.value = '';
                     </button>
                 </div>
                 {aiError && <p style={{ color: 'var(--fl-red)', fontSize: '13px', marginBottom: '8px' }}>{aiError}</p>}
-                <div className="fl-nutrition-form">
-                    <div className="fl-frow">
-                        <div className="fl-fgrp">
-                            <label className="fl-flbl">Serving Size</label>
-                            <input className="fl-fi" type="text" value={data.serving_size} onChange={(e) => setData('serving_size', e.target.value)} placeholder="e.g. 1 slice (85g)" />
+                <div>
+                    <div className="grid grid-cols-2 gap-3">
+                        <div className="mb-3 relative">
+                            <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]">Serving Size</label>
+                            <input className="w-full bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none placeholder:text-[var(--fl-tx3)] focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none" type="text" value={data.serving_size} onChange={(e) => setData('serving_size', e.target.value)} placeholder="e.g. 1 slice (85g)" />
                         </div>
-                        <div className="fl-fgrp">
-                            <label className="fl-flbl">Servings / Container</label>
-                            <input className="fl-fi" type="number" value={data.servings_per_container} onChange={(e) => setData('servings_per_container', e.target.value)} max={99999} />
+                        <div className="mb-3 relative">
+                            <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]">Servings / Container</label>
+                            <input className="w-full bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none placeholder:text-[var(--fl-tx3)] focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none" type="number" value={data.servings_per_container} onChange={(e) => setData('servings_per_container', e.target.value)} max={99999} />
                         </div>
                     </div>
-                    <div className="fl-nutr-rows">
-                        <div className="fl-nutr-row">
+                    <div>
+                        <div className="flex items-center justify-between gap-3 py-[6px] px-0 border-b border-[var(--fl-bdr-s)] text-sm">
                             <span>Calories</span>
                             <input type="number" step="any" max={99999} value={data.calories} onChange={(e) => setData('calories', e.target.value)} />
                         </div>
@@ -503,7 +503,7 @@ photoRef.current.value = '';
                             ['Iron (mg)', 'iron_mg'],
                             ['Potassium (mg)', 'potassium_mg'],
                         ] as [string, keyof FormValues][]).map(([label, field]) => (
-                            <div key={field} className="fl-nutr-row">
+                            <div key={field} className="flex items-center justify-between gap-3 py-[6px] px-0 border-b border-[var(--fl-bdr-s)] text-sm">
                                 <span>{label}</span>
                                 <input
                                     type="number"
@@ -518,22 +518,21 @@ photoRef.current.value = '';
                 </div>
             </div>
 
-            {/* IMPORT FROM URL DIALOG */}
             {importOpen && (
-                <div className="fl-overlay" onClick={() => {
+                <div className="fixed inset-0 bg-black/40 z-50 flex items-end justify-center" onClick={() => {
  setImportOpen(false); setImportError('');
 }}>
-                    <div className="fl-sheet" onClick={(e) => e.stopPropagation()}>
-                        <div className="fl-sheet-grip" />
-                        <h2 className="fl-sheet-ttl">Import Recipe from URL</h2>
+                    <div className="bg-[var(--fl-s1)] rounded-t-2xl w-full max-w-lg p-6 flex flex-col" onClick={(e) => e.stopPropagation()}>
+                        <div className="w-10 h-1 bg-[var(--fl-tx3)] rounded-full mx-auto mb-4" />
+                        <h2 className="text-lg font-bold text-[var(--fl-tx)] mb-4">Import Recipe from URL</h2>
                         <p style={{ fontSize: '13px', color: 'var(--fl-tx2)', marginBottom: '14px', lineHeight: '1.5' }}>
                             Paste a link to a recipe from any cooking website. Our AI will extract the ingredients, steps, and details.
                         </p>
-                        <div className="fl-fgrp">
-                            <label className="fl-flbl" htmlFor="import-url">Recipe URL</label>
+                        <div className="mb-3 relative">
+                            <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]" htmlFor="import-url">Recipe URL</label>
                             <input
                                 id="import-url"
-                                className="fl-fi"
+                                className="w-full bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none placeholder:text-[var(--fl-tx3)] focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none"
                                 type="url"
                                 value={importUrl}
                                 onChange={(e) => setImportUrl(e.target.value)}
@@ -544,13 +543,13 @@ photoRef.current.value = '';
                         {importError && <p style={{ color: 'var(--fl-red)', fontSize: '13px', marginBottom: '10px' }}>{importError}</p>}
                         <button
                             type="button"
-                            className="fl-btn fl-btn-p fl-btn-full"
+                            className="inline-flex items-center justify-center gap-[7px] px-[22px] py-[11px] rounded-full text-[15px] font-bold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-gradient-to-br from-[var(--fl-p)] to-[#FF7D62] text-white shadow-[var(--fl-p-glw)] active:scale-[.97] active:shadow-[0_2px_8px_rgba(255,96,64,.3)] w-full"
                             disabled={importLoading || !importUrl.trim()}
                             onClick={importFromUrl}
                         >
                             {importLoading ? 'Importing…' : '✨ Import Recipe'}
                         </button>
-                        <button type="button" className="fl-sheet-cancel" onClick={() => {
+                        <button type="button" className="text-sm text-[var(--fl-tx2)] text-center mt-3 bg-transparent border-none cursor-pointer hover:text-[var(--fl-tx)]" onClick={() => {
  setImportOpen(false); setImportError('');
 }}>
                             Cancel
@@ -560,7 +559,7 @@ photoRef.current.value = '';
             )}
         </form>
         <div className="fl-form-footer">
-            <button type="submit" form="recipe-create-form" className="fl-btn fl-btn-p" disabled={processing}>
+            <button type="submit" form="recipe-create-form" className="inline-flex items-center justify-center gap-[7px] px-[22px] py-[11px] rounded-full text-[15px] font-bold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-gradient-to-br from-[var(--fl-p)] to-[#FF7D62] text-white shadow-[var(--fl-p-glw)] active:scale-[.97] active:shadow-[0_2px_8px_rgba(255,96,64,.3)]" disabled={processing}>
                 {processing ? 'Saving…' : 'Save Recipe'}
             </button>
         </div>

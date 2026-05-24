@@ -41,65 +41,66 @@ export default function GroupsShow({ group, isOwner, maxMembers }: Props) {
     }
 
     return (
-        <div className="fl-view">
-            <div className="fl-hero">
-                <div className="fl-hero-emoji">👥</div>
-                <h1 className="fl-hero-name">{group.name}</h1>
-                {group.description && <p className="fl-hero-sub">{group.description}</p>}
-                <div className="fl-hero-meta">
+        <div className="p-4 lg:p-7 kj-anim-viewin">
+            <div className="flex flex-col items-center text-center mb-8">
+                <div className="text-5xl leading-none mb-2">👥</div>
+                <h1 className="text-2xl font-bold text-[var(--fl-tx)] tracking-tight mb-2">{group.name}</h1>
+                {group.description && <p className="text-sm text-[var(--fl-tx2)] mb-2 max-w-md">{group.description}</p>}
+                <div className="flex flex-wrap items-center justify-center gap-2">
                     <span className="fl-badge fl-badge-def">
                         {group.group_members.length}/{maxMembers} members
                     </span>
                 </div>
             </div>
 
-            <div className="fl-info-grid">
-                <div className="fl-info-item">
-                    <div className="fl-info-ico">🔑</div>
-                    <div className="fl-info-body">
-                        <div className="fl-info-lbl">Invite Code</div>
-                        <div className="fl-info-val">
-                            <code style={{ letterSpacing: '0.15em', fontFamily: 'monospace', background: 'var(--surface-alt)', padding: '2px 6px', borderRadius: '4px' }}>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+                <div className="flex items-center gap-3 bg-[var(--fl-s2)] rounded-xl p-4">
+                    <div className="text-2xl leading-none">🔑</div>
+                    <div>
+                        <div className="text-xs text-[var(--fl-tx2)]">Invite Code</div>
+                        <div className="text-sm font-semibold text-[var(--fl-tx)]">
+                            <code style={{ letterSpacing: '0.15em', fontFamily: 'monospace', background: 'var(--fl-s3)', padding: '2px 6px', borderRadius: '4px' }}>
                                 {group.invite_code}
                             </code>
                         </div>
                     </div>
                 </div>
-                <div className="fl-info-item">
-                    <div className="fl-info-ico">📍</div>
-                    <div className="fl-info-body">
-                        <div className="fl-info-lbl">Reviews</div>
-                        <div className="fl-info-val">{group.restaurants.length}</div>
+                <div className="flex items-center gap-3 bg-[var(--fl-s2)] rounded-xl p-4">
+                    <div className="text-2xl leading-none">📍</div>
+                    <div>
+                        <div className="text-xs text-[var(--fl-tx2)]">Reviews</div>
+                        <div className="text-sm font-semibold text-[var(--fl-tx)]">{group.restaurants.length}</div>
                     </div>
                 </div>
-                <div className="fl-info-item">
-                    <div className="fl-info-ico">📋</div>
-                    <div className="fl-info-body">
-                        <div className="fl-info-lbl">Recipes</div>
-                        <div className="fl-info-val">{group.recipes.length}</div>
+                <div className="flex items-center gap-3 bg-[var(--fl-s2)] rounded-xl p-4">
+                    <div className="text-2xl leading-none">📋</div>
+                    <div>
+                        <div className="text-xs text-[var(--fl-tx2)]">Recipes</div>
+                        <div className="text-sm font-semibold text-[var(--fl-tx)]">{group.recipes.length}</div>
                     </div>
                 </div>
             </div>
 
-            <section className="fl-section">
-                <div className="fl-section-hdr">
-                    <h3 className="fl-section-ttl">Members</h3>
+            <section className="mb-6">
+                <div className="flex items-center justify-between gap-2 mb-3">
+                    <h3 className="text-[10px] font-bold text-[var(--fl-tx2)] uppercase tracking-[1px] flex items-center gap-2">Members ({group.group_members.length})</h3>
                 </div>
-                <div className="fl-member-list">
+                <div className="space-y-[2px]">
                     {group.group_members.map((member) => (
-                        <div key={member.id} className="fl-member-row">
-                            <div className="fl-avatar fl-avatar-sm">{getInitials(member.user.first_name)}</div>
-                            <div className="fl-member-body">
-                                <div className="fl-member-name">{member.user.first_name}</div>
-                                <div className="fl-member-email">{member.user.email}</div>
+                        <div key={member.id} className="flex items-center gap-3 px-3 py-3 bg-[var(--fl-s2)] rounded-xl">
+                            <div className="w-[34px] h-[34px] min-w-[34px] rounded-full bg-gradient-to-br from-[var(--fl-p)] to-[#FF7D62] text-white text-xs font-bold flex items-center justify-center">
+                                {getInitials(member.user.name)}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <div className="text-sm font-semibold text-[var(--fl-tx)] truncate">{member.user.name}</div>
+                                <div className="text-xs text-[var(--fl-tx2)] truncate">{member.user.email}</div>
                             </div>
                             <span className={`fl-badge ${member.role === 'owner' ? 'fl-badge-org' : 'fl-badge-def'}`}>
                                 {member.role}
                             </span>
                             {isOwner && member.role !== 'owner' && (
                                 <button
-                                    className="fl-btn fl-btn-ghost fl-btn-sm"
-                                    style={{ color: 'var(--text-muted)' }}
+                                    className="inline-flex items-center justify-center gap-[7px] px-[14px] py-2 rounded-xl text-sm font-semibold tracking-[-.2px] cursor-pointer border-none whitespace-nowrap transition-all duration-100 bg-transparent text-[var(--fl-tx2)] hover:bg-[var(--fl-red-d)] hover:text-[var(--fl-red)] active:scale-[.97]"
                                     onClick={() => handleRemoveMember(member)}
                                 >
                                     Remove
@@ -111,9 +112,9 @@ export default function GroupsShow({ group, isOwner, maxMembers }: Props) {
             </section>
 
             {group.restaurants.length > 0 && (
-                <section className="fl-section">
-                    <div className="fl-section-hdr">
-                        <h3 className="fl-section-ttl">Restaurant Reviews ({group.restaurants.length})</h3>
+                <section className="mb-6">
+                    <div className="flex items-center justify-between gap-2 mb-3">
+                        <h3 className="text-[10px] font-bold text-[var(--fl-tx2)] uppercase tracking-[1px] flex items-center gap-2">Restaurant Reviews ({group.restaurants.length})</h3>
                     </div>
                     <div className="fl-card-list">
                         {group.restaurants.map((r) => (
@@ -130,9 +131,9 @@ export default function GroupsShow({ group, isOwner, maxMembers }: Props) {
             )}
 
             {group.recipes.length > 0 && (
-                <section className="fl-section">
-                    <div className="fl-section-hdr">
-                        <h3 className="fl-section-ttl">Recipes ({group.recipes.length})</h3>
+                <section className="mb-6">
+                    <div className="flex items-center justify-between gap-2 mb-3">
+                        <h3 className="text-[10px] font-bold text-[var(--fl-tx2)] uppercase tracking-[1px] flex items-center gap-2">Recipes ({group.recipes.length})</h3>
                     </div>
                     <div className="fl-card-list">
                         {group.recipes.map((recipe) => (
@@ -148,8 +149,8 @@ export default function GroupsShow({ group, isOwner, maxMembers }: Props) {
                 </section>
             )}
 
-            <div className="fl-actions">
-                <button className="fl-btn fl-btn-danger" onClick={handleLeave}>
+            <div className="flex gap-[10px] mt-8 pt-6 border-t border-[var(--fl-bdr-s)]">
+                <button className="inline-flex items-center justify-center gap-[7px] px-[22px] py-[11px] rounded-full text-[15px] font-bold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-[var(--fl-red-d)] text-[var(--fl-red)] border-[rgba(255,69,96,.3)] active:bg-[rgba(255,69,96,.25)] active:scale-[.97]" onClick={handleLeave}>
                     Leave Group
                 </button>
             </div>

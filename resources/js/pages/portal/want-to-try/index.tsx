@@ -86,18 +86,18 @@ return a.name.localeCompare(b.name);
     }
 
     return (
-        <div className="fl-view">
-            <div className="fl-view-hdr">
-                <h1 className="fl-view-ttl">Want to Try</h1>
-                <Link href={WantToTryController.create().url} className="fl-btn fl-btn-p fl-btn-sm">
+        <div className="p-4 lg:p-7 kj-anim-viewin">
+            <div className="flex items-center justify-between gap-3 mb-5">
+                <h1 className="text-[22px] font-black text-[var(--fl-tx)] tracking-[-.5px] leading-[1.2]">Want to Try</h1>
+                <Link href={WantToTryController.create().url} className="inline-flex items-center justify-center gap-[7px] px-[14px] py-2 rounded-xl text-sm font-semibold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-gradient-to-br from-[var(--fl-p)] to-[#FF7D62] text-white shadow-[var(--fl-p-glw)] active:scale-[.97] active:shadow-[0_2px_8px_rgba(255,96,64,.3)]">
                     + Add
                 </Link>
             </div>
 
             {groups.length > 0 && (
-                <div className="fl-scope-toggle">
+                <div className="flex items-center gap-[3px] bg-[var(--fl-s2)] rounded-2xl p-[3px] overflow-x-auto kj-scrollbar-none mb-4">
                     <button
-                        className={`fl-scope-btn${scope === 'mine' ? ' active' : ''}`}
+                        className={`flex-1 px-[14px] py-[9px] text-[13px] font-bold tracking-[-.2px] transition-all duration-100 rounded-xl whitespace-nowrap border-none cursor-pointer${scope === 'mine' ? ' bg-white text-[var(--fl-tx)] shadow-[0_1px_3px_rgba(0,0,0,.08)] dark:bg-zinc-800' : ' text-[var(--fl-tx2)] hover:text-[var(--fl-tx)] bg-transparent'}`}
                         onClick={() => setScope('mine')}
                     >
                         Mine
@@ -105,7 +105,7 @@ return a.name.localeCompare(b.name);
                     {groups.map((g) => (
                         <button
                             key={g.id}
-                            className={`fl-scope-btn${scope === String(g.id) ? ' active' : ''}`}
+                            className={`flex-1 px-[14px] py-[9px] text-[13px] font-bold tracking-[-.2px] transition-all duration-100 rounded-xl whitespace-nowrap border-none cursor-pointer${scope === String(g.id) ? ' bg-white text-[var(--fl-tx)] shadow-[0_1px_3px_rgba(0,0,0,.08)] dark:bg-zinc-800' : ' text-[var(--fl-tx2)] hover:text-[var(--fl-tx)] bg-transparent'}`}
                             onClick={() => setScope(String(g.id))}
                         >
                             {g.name}
@@ -114,20 +114,20 @@ return a.name.localeCompare(b.name);
                 </div>
             )}
 
-            <div className="fl-filters">
-                <select className="fl-filter-sel" value={locationFilter} onChange={(e) => setLocationFilter(e.target.value)}>
+            <div className="flex gap-2 mb-4 overflow-x-auto kj-scrollbar-none">
+                <select className="bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none min-w-0 flex-1" value={locationFilter} onChange={(e) => setLocationFilter(e.target.value)}>
                     {locations.map((loc) => (
                         <option key={loc.name} value={loc.name}>{loc.display_name}</option>
                     ))}
                 </select>
                 {cuisines.length > 1 && (
-                    <select className="fl-filter-sel" value={cuisineFilter} onChange={(e) => setCuisineFilter(e.target.value)}>
+                    <select className="bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none min-w-0 flex-1" value={cuisineFilter} onChange={(e) => setCuisineFilter(e.target.value)}>
                         {cuisines.map((c) => (
                             <option key={c} value={c}>{c === ALL ? 'All Cuisines' : c}</option>
                         ))}
                     </select>
                 )}
-                <select className="fl-filter-sel" value={sort} onChange={(e) => setSort(e.target.value)}>
+                <select className="bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none min-w-0 flex-1" value={sort} onChange={(e) => setSort(e.target.value)}>
                     <option value={SORT_NEWEST}>Newest</option>
                     <option value={SORT_OLDEST}>Oldest</option>
                     <option value={SORT_AZ}>A → Z</option>
@@ -159,11 +159,11 @@ return a.name.localeCompare(b.name);
                     ))}
                 </div>
             ) : (
-                <div className="fl-empty">
-                    <span>🍽️</span>
-                    <p className="fl-empty-ttl">No restaurants to try yet</p>
-                    <p className="fl-empty-desc">Quickly save restaurants you want to visit later</p>
-                    <Link href={WantToTryController.create().url} className="fl-btn fl-btn-p">
+                <div className="text-center py-[40px] text-[var(--fl-tx3)]">
+                    <div className="text-3xl mb-2">🍽️</div>
+                    <p className="text-sm font-semibold text-[var(--fl-tx2)] mb-1">No restaurants to try yet</p>
+                    <p className="text-xs text-[var(--fl-tx3)] mb-4">Quickly save restaurants you want to visit later</p>
+                    <Link href={WantToTryController.create().url} className="inline-flex items-center justify-center gap-[7px] px-[22px] py-[11px] rounded-full text-[15px] font-bold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-gradient-to-br from-[var(--fl-p)] to-[#FF7D62] text-white shadow-[var(--fl-p-glw)] active:scale-[.97] active:shadow-[0_2px_8px_rgba(255,96,64,.3)]">
                         Add your first one
                     </Link>
                 </div>

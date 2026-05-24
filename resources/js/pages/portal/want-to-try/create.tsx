@@ -59,17 +59,17 @@ export default function WantToTryCreate() {
     }
 
     return (
-        <form className="fl-view fl-form" onSubmit={submit}>
-            <div className="fl-fsec">
-                <h3 className="fl-fsec-ttl">Quick Save</h3>
+        <form className="p-4 lg:p-7 kj-anim-viewin pb-[calc(var(--fl-nav-h)+var(--fl-safe)+80px)] lg:pb-[100px]" onSubmit={submit}>
+            <div className="mb-6">
+                <h3 className="text-[10px] font-bold text-[var(--fl-tx2)] uppercase tracking-[1px] flex items-center gap-2">Quick Save</h3>
 
-                <div className="fl-fgrp">
-                    <label className="fl-flbl" htmlFor="name">
-                        Restaurant Name <span className="fl-req">*</span>
+                <div className="mb-3 relative">
+                    <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]" htmlFor="name">
+                        Restaurant Name <span className="text-[var(--fl-red)] ml-[2px]">*</span>
                     </label>
                     <input
                         id="name"
-                        className={`fl-fi${errors.name ? ' error' : ''}`}
+                        className={`w-full bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none placeholder:text-[var(--fl-tx3)] focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none${errors.name ? ' border-[var(--fl-red)] shadow-[0_0_0_3px_var(--fl-red-d)]' : ''}`}
                         type="text"
                         value={data.name}
                         onChange={(e) => setData('name', e.target.value)}
@@ -77,27 +77,27 @@ export default function WantToTryCreate() {
                         required
                         autoFocus
                     />
-                    {errors.name && <span className="fl-ferr">{errors.name}</span>}
+                    {errors.name && <span className="block text-xs text-[var(--fl-red)] mt-[5px]">{errors.name}</span>}
                 </div>
 
-                <div className="fl-frow">
-                    <div className="fl-fgrp">
-                        <label className="fl-flbl" htmlFor="cuisine">Cuisine</label>
+                <div className="grid grid-cols-2 gap-3">
+                    <div className="mb-3 relative">
+                        <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]" htmlFor="cuisine">Cuisine</label>
                         <input
                             id="cuisine"
-                            className="fl-fi"
+                            className="w-full bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none placeholder:text-[var(--fl-tx3)] focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none"
                             type="text"
                             value={data.cuisine}
                             onChange={(e) => setData('cuisine', e.target.value)}
                             placeholder="e.g. Italian"
                         />
                     </div>
-                    <div className="fl-fgrp">
-                        <label className="fl-flbl" htmlFor="location">Location</label>
+                    <div className="mb-3 relative">
+                        <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]" htmlFor="location">Location</label>
                         <input
                             id="location"
                             ref={locationInputRef}
-                            className="fl-fi"
+                            className="w-full bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none placeholder:text-[var(--fl-tx3)] focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none"
                             type="text"
                             value={data.location}
                             onChange={(e) => {
@@ -110,12 +110,12 @@ export default function WantToTryCreate() {
                             autoComplete="off"
                         />
                         {showLocationSuggestions && (
-                            <div className="fl-autocomplete-dropdown">
+                            <div className="absolute top-full left-0 right-0 bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl mt-1 shadow-[var(--fl-sh2)] z-40 overflow-hidden">
                                 {filteredLocations.slice(0, 8).map((loc) => (
                                     <button
                                         key={loc.name}
                                         type="button"
-                                        className="fl-autocomplete-item"
+                                        className="w-full px-[13px] py-[10px] text-left text-sm text-[var(--fl-tx)] transition-colors duration-100 hover:bg-[var(--fl-s3)] active:bg-[var(--fl-s3)]"
                                         onMouseDown={(e) => {
                                             e.preventDefault();
                                             selectLocation(loc.name);
@@ -129,11 +129,11 @@ export default function WantToTryCreate() {
                     </div>
                 </div>
 
-                <div className="fl-fgrp">
-                    <label className="fl-flbl" htmlFor="notes">Notes</label>
+                <div className="mb-3 relative">
+                    <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]" htmlFor="notes">Notes</label>
                     <textarea
                         id="notes"
-                        className="fl-fi fl-ftxt"
+                        className="w-full bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none placeholder:text-[var(--fl-tx3)] focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none resize-vertical min-h-[80px]"
                         value={data.notes}
                         onChange={(e) => setData('notes', e.target.value)}
                         placeholder="Why do you want to try it?"
@@ -143,7 +143,7 @@ export default function WantToTryCreate() {
             </div>
 
             <div className="fl-form-footer">
-                <button type="submit" className="fl-btn fl-btn-p" disabled={processing}>
+                <button type="submit" className="inline-flex items-center justify-center gap-[7px] px-[22px] py-[11px] rounded-full text-[15px] font-bold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-gradient-to-br from-[var(--fl-p)] to-[#FF7D62] text-white shadow-[var(--fl-p-glw)] active:scale-[.97] active:shadow-[0_2px_8px_rgba(255,96,64,.3)]" disabled={processing}>
                     {processing ? 'Saving…' : 'Save'}
                 </button>
             </div>

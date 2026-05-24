@@ -72,18 +72,18 @@ export default function PortalLocations({ locations: initialLocations, your_loca
     }
 
     return (
-        <div className="fl-view">
-            <div className="fl-form">
-                <div className="fl-fsec">
-                    <h3 className="fl-fsec-ttl">Request a Location</h3>
-                    <p className="fl-fsec-sub">
+        <div className="p-4 lg:p-7 kj-anim-viewin">
+            <div className="pb-[calc(var(--fl-nav-h)+var(--fl-safe)+80px)] lg:pb-[100px]">
+                <div className="mb-6">
+                    <h3 className="text-[10px] font-bold text-[var(--fl-tx2)] uppercase tracking-[1px] mb-3 flex items-center gap-2">Request a Location</h3>
+                    <p className="text-xs text-[var(--fl-tx3)] mb-3 leading-[1.5]">
                         Add a location so it appears in autocomplete. Use "City, State" or "Neighborhood, City, State".
                     </p>
 
                     <form onSubmit={handleSubmit} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                        <div className="fl-fgrp" style={{ flex: 1 }}>
+                        <div className="mb-3 relative" style={{ flex: 1, marginBottom: 0 }}>
                             <input
-                                className="fl-fi"
+                                className="w-full bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none placeholder:text-[var(--fl-tx3)] focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none"
                                 type="text"
                                 value={name}
                                 onChange={(e) => {
@@ -96,7 +96,7 @@ export default function PortalLocations({ locations: initialLocations, your_loca
                         </div>
                         <button
                             type="submit"
-                            className="fl-btn fl-btn-p"
+                            className="inline-flex items-center justify-center gap-[7px] px-[22px] py-[11px] rounded-full text-[15px] font-bold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-gradient-to-br from-[var(--fl-p)] to-[#FF7D62] text-white shadow-[var(--fl-p-glw)] active:scale-[.97] active:shadow-[0_2px_8px_rgba(255,96,64,.3)] shrink-0"
                             disabled={submitting || !name.trim()}
                         >
                             {submitting ? 'Adding…' : 'Add'}
@@ -104,7 +104,7 @@ export default function PortalLocations({ locations: initialLocations, your_loca
                     </form>
 
                     {suggestion && (
-                        <div className="fl-toast-inline" style={{ borderColor: 'var(--fl-gold)', color: 'var(--fl-gold)' }}>
+                        <div className="text-sm font-semibold px-[14px] py-[10px] rounded-xl mb-3 bg-[color-mix(in_srgb,var(--fl-gold)_12%,transparent)] text-[var(--fl-gold)] border border-[color-mix(in_srgb,var(--fl-gold)_30%,transparent)] mt-3" style={{ background: 'color-mix(in srgb, var(--fl-gold) 12%, transparent)' }}>
                             Did you mean{' '}
                             <button
                                 type="button"
@@ -116,17 +116,17 @@ export default function PortalLocations({ locations: initialLocations, your_loca
                             ?
                         </div>
                     )}
-                    {message && <p className="fl-toast-inline fl-toast-ok">{message}</p>}
-                    {error && <p className="fl-toast-inline fl-toast-err">{error}</p>}
+                    {message && <div className="text-sm font-semibold px-[14px] py-[10px] rounded-xl mb-3 bg-[color-mix(in_srgb,var(--fl-grn)_12%,transparent)] text-[var(--fl-grn)] border border-[color-mix(in_srgb,var(--fl-grn)_30%,transparent)] mt-3">{message}</div>}
+                    {error && <div className="text-sm font-semibold px-[14px] py-[10px] rounded-xl mb-3 bg-[color-mix(in_srgb,var(--fl-red)_12%,transparent)] text-[var(--fl-red)] border border-[color-mix(in_srgb,var(--fl-red)_30%,transparent)] mt-3">{error}</div>}
                 </div>
 
-                <div className="fl-fsec">
+                <div className="mb-6">
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 12 }}>
-                        <h3 className="fl-fsec-ttl" style={{ marginBottom: 0 }}>
+                        <h3 className="text-[10px] font-bold text-[var(--fl-tx2)] uppercase tracking-[1px] flex items-center gap-2" style={{ marginBottom: 0 }}>
                             All Locations ({locations.length})
                         </h3>
                         <input
-                            className="fl-fi"
+                            className="w-full bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none placeholder:text-[var(--fl-tx3)] focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none"
                             style={{ maxWidth: 160, padding: '6px 12px', fontSize: 13 }}
                             type="text"
                             value={search}
@@ -135,11 +135,11 @@ export default function PortalLocations({ locations: initialLocations, your_loca
                         />
                     </div>
 
-                    <div className="fl-chips">
+                    <div className="flex flex-wrap gap-[6px]">
                         {filteredLocations.map((l) => (
                             <span
                                 key={l.id}
-                                className={`fl-chip${your_locations.includes(l.name) ? ' active' : ''}`}
+                                className={`inline-flex items-center gap-[4px] px-[10px] py-[5px] rounded-full text-[12px] font-semibold tracking-[-.1px] bg-[var(--fl-s2)] text-[var(--fl-tx2)] border border-[var(--fl-bdr-s)]${your_locations.includes(l.name) ? ' bg-[var(--fl-p-dim)] text-[var(--fl-p-lt)] border-[var(--fl-p)]' : ''}`}
                             >
                                 {l.display_name}
                                 {your_locations.includes(l.name) && <span style={{ marginLeft: 4, opacity: 0.6, fontSize: 10 }}>✓</span>}
