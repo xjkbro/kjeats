@@ -168,7 +168,7 @@ inputRef.current.value = '';
             <input ref={inputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleChange} />
             <button
                 type="button"
-                className="inline-flex items-center justify-center gap-[7px] px-[22px] py-[11px] rounded-full text-[15px] font-bold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-transparent text-[var(--fl-tx2)] border-[var(--fl-bdr-h)] active:bg-[var(--fl-s2)] active:scale-[.97] px-[14px] py-2 text-sm font-semibold rounded-xl"
+                className="flex items-center justify-center w-full gap-[7px] px-[22px] py-[11px] rounded-full text-[15px] font-bold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-transparent text-[var(--fl-tx2)] border-[var(--fl-bdr-h)] active:bg-[var(--fl-s2)] active:scale-[.97] px-[14px] py-2 text-sm font-semibold rounded-xl"
                 disabled={form.processing}
                 onClick={() => inputRef.current?.click()}
             >
@@ -277,8 +277,8 @@ export default function RestaurantShow({ restaurant, can_add_dish, current_user_
             )}
 
             {(restaurant.images.length > 0 || can_add_dish) && (
-                <section className="mb-6">
-                    <div className="flex items-center justify-between mb-3">
+                <section className="my-6">
+                    <div className="flex flex-col items-start justify-between mb-3">
                         <h3 className="text-[15px] font-bold text-[var(--fl-tx)] tracking-[-.2px]">Photos</h3>
                         {can_add_dish && <ImageUploadForm action={MediaController.storeRestaurant(restaurant.id).url} />}
                     </div>
@@ -294,42 +294,49 @@ export default function RestaurantShow({ restaurant, can_add_dish, current_user_
                         </h3>
                     </div>
                     {restaurant.dishes.length > 0 && (
-                        <div className="flex flex-col">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
                             {restaurant.dishes.map((dish) => (
-                                <div key={dish.id} className="bg-[var(--fl-s1)] border border-[var(--fl-bdr-s)] rounded-xl px-[14px] py-3 flex items-start gap-3">
-                                    <div className="flex items-center justify-between mb-[5px]">
-                                        <span className="text-sm font-bold text-[var(--fl-tx)] mb-[3px] truncate">{dish.name}</span>
-                                        <span className="inline-flex items-center gap-[1px]">
-                                            {Array.from({ length: 5 }, (_, i) => (
-                                                <span key={i} className={i < Math.round(parseFloat(dish.rating)) ? 'filled' : ''}>
-                                                    {'\u2605'}
-                                                </span>
-                                            ))}
-                                        </span>
-                                        {dish.user && dish.user.id === current_user_id && (
-                                            <button
-                                                className="inline-flex items-center justify-center gap-[7px] px-[22px] py-[11px] rounded-full text-[15px] font-bold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-transparent text-[var(--fl-tx2)] border-[var(--fl-bdr-h)] active:bg-[var(--fl-s2)] active:scale-[.97] px-[14px] py-2 text-sm font-semibold rounded-xl"
-                                                style={{ marginLeft: 'auto', fontSize: '11px', padding: '2px 8px' }}
-                                                onClick={() => deleteDish(dish.id)}
-                                            >
-                                                Remove
-                                            </button>
+                                <div key={dish.id} className="bg-[var(--fl-s1)] border border-[var(--fl-bdr-s)] rounded-xl px-[14px] py-3 flex flex-col items-start gap-3">
+
+                                    <div className="flex items-start justify-between gap-3 w-full">
+                                        <div className="flex flex-col items-start justify-between mb-[5px]">
+                                            <span className="text-sm font-bold text-[var(--fl-tx)] mb-[3px] truncate">{dish.name}</span>
+                                            <span className="inline-flex items-center gap-[1px]">
+                                                {Array.from({ length: 5 }, (_, i) => (
+                                                    <span key={i} className={i < Math.round(parseFloat(dish.rating)) ? 'filled' : ''}>
+                                                        {'\u2605'}
+                                                    </span>
+                                                ))}
+                                            </span>
+                                            {dish.user && dish.user.id !== current_user_id && (
+                                                <p className="text-xs text-[var(--fl-tx3)] m-0">by {dish.user.first_name}</p>
+                                            )}
+                                            {dish.notes && <p className="text-xs text-[var(--fl-tx2)] leading-relaxed m-0">{dish.notes}</p>}
+
+                                        </div>
+                                        <div>
+                                            {dish.user && dish.user.id === current_user_id && (
+                                                <button
+                                                    className="inline-flex items-center justify-center gap-[7px] px-[22px] py-[11px] rounded-full text-[15px] font-bold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-transparent text-[var(--fl-tx2)] border-[var(--fl-bdr-h)] active:bg-[var(--fl-s2)] active:scale-[.97] px-[14px] py-2 text-sm font-semibold rounded-xl"
+                                                    style={{ marginLeft: 'auto', fontSize: '11px', padding: '2px 8px' }}
+                                                    onClick={() => deleteDish(dish.id)}
+                                                >
+                                                    Remove
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <ImageGallery images={dish.images} />
+                                    <div className="flex justify-center gap-2 w-full ">
+                                        {can_add_dish && (
+                                                <ImageUploadForm action={MediaController.storeDish(dish.id).url} />
                                         )}
                                     </div>
-                                    {dish.user && dish.user.id !== current_user_id && (
-                                        <p className="text-xs text-[var(--fl-tx3)] m-0">by {dish.user.first_name}</p>
-                                    )}
-                                    {dish.notes && <p className="text-xs text-[var(--fl-tx2)] leading-relaxed m-0">{dish.notes}</p>}
-                                    <ImageGallery images={dish.images} />
-                                    {can_add_dish && (
-                                        <div style={{ marginTop: '6px' }}>
-                                            <ImageUploadForm action={MediaController.storeDish(dish.id).url} />
-                                        </div>
-                                    )}
                                 </div>
                             ))}
                         </div>
                     )}
+
                     {can_add_dish && (
                         <form onSubmit={addDish} className="mt-3 p-[14px] bg-[var(--fl-s2)] border-[1.5px] border-dashed border-[var(--fl-bdr)] rounded-xl flex flex-col gap-[10px]">
                             <div className="flex flex-col gap-2">
@@ -377,57 +384,59 @@ export default function RestaurantShow({ restaurant, can_add_dish, current_user_
                     Delete
                 </button>
             </div>
+            <div className="border-t border-[var(--fl-bdr-s)] pt-6">
+                {restaurant.revisions && restaurant.revisions.length > 0 && (
+                    <section className="mb-6">
+                        <div className="flex items-center justify-between mb-3">
+                            <h3 className="text-[15px] font-bold text-[var(--fl-tx)] tracking-[-.2px]">History ({restaurant.revisions.length})</h3>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            {restaurant.revisions.map((revision: Revision, i: number) => {
+                                const afterSnap: Record<string, unknown> = i === 0
+                                    ? { name: restaurant.name, emoji: restaurant.emoji, cuisine: restaurant.cuisine, location: restaurant.location, date_visited: restaurant.date_visited, overall_rating: restaurant.overall_rating, price_range: restaurant.price_range, atmosphere_rating: restaurant.atmosphere_rating, service_rating: restaurant.service_rating, value_rating: restaurant.value_rating, review: restaurant.review, tags: restaurant.tags, dishes: restaurant.dishes }
+                                    : (restaurant.revisions![i - 1].snapshot as Record<string, unknown>);
+                                const changes = diffSnapshots(revision.snapshot as Record<string, unknown>, afterSnap, RESTAURANT_FIELDS);
 
-            {restaurant.revisions && restaurant.revisions.length > 0 && (
-                <section className="mb-6">
-                    <div className="flex items-center justify-between mb-3">
-                        <h3 className="text-[15px] font-bold text-[var(--fl-tx)] tracking-[-.2px]">History ({restaurant.revisions.length})</h3>
-                    </div>
-                    <div className="flex flex-col gap-2">
-                        {restaurant.revisions.map((revision: Revision, i: number) => {
-                            const afterSnap: Record<string, unknown> = i === 0
-                                ? { name: restaurant.name, emoji: restaurant.emoji, cuisine: restaurant.cuisine, location: restaurant.location, date_visited: restaurant.date_visited, overall_rating: restaurant.overall_rating, price_range: restaurant.price_range, atmosphere_rating: restaurant.atmosphere_rating, service_rating: restaurant.service_rating, value_rating: restaurant.value_rating, review: restaurant.review, tags: restaurant.tags, dishes: restaurant.dishes }
-                                : (restaurant.revisions![i - 1].snapshot as Record<string, unknown>);
-                            const changes = diffSnapshots(revision.snapshot as Record<string, unknown>, afterSnap, RESTAURANT_FIELDS);
-
-                            return (
-                                <div key={revision.id} className="flex flex-col gap-[6px] px-[14px] py-3 bg-[var(--fl-s1)] border border-[var(--fl-bdr-s)] rounded-xl">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-sm font-semibold text-[var(--fl-tx)]">{revision.user.first_name}</span>
-                                        <span className="text-xs text-[var(--fl-tx3)]">
-                                            {new Date(revision.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                                        </span>
-                                    </div>
-                                    {changes.length > 0 ? (
-                                        <div className="flex flex-col gap-1 my-[2px]">
-                                            {changes.map((c) => (
-                                                <div key={c.label} className="flex items-baseline flex-wrap gap-1 text-xs leading-relaxed">
-                                                    <span className="font-bold text-[var(--fl-tx2)] shrink-0 min-w-[72px]">{c.label}</span>
-                                                    <span className="text-[var(--fl-red)] line-through break-all">{c.before}</span>
-                                                    <span className="text-[var(--fl-tx3)] shrink-0">{'\u2192'}</span>
-                                                    <span className="text-[var(--fl-grn)] break-all">{c.after}</span>
-                                                </div>
-                                            ))}
+                                return (
+                                    <div key={revision.id} className="flex flex-col gap-[6px] px-[14px] py-3 bg-[var(--fl-s1)] border border-[var(--fl-bdr-s)] rounded-xl">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-sm font-semibold text-[var(--fl-tx)]">{revision.user.first_name}</span>
+                                            <span className="text-xs text-[var(--fl-tx3)]">
+                                                {new Date(revision.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                            </span>
                                         </div>
-                                    ) : (
-                                        <div className="text-xs text-[var(--fl-tx2)]">{revision.summary}</div>
-                                    )}
-                                    <button
-                                        className="inline-flex items-center justify-center gap-[7px] px-[22px] py-[11px] rounded-full text-[15px] font-bold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-transparent text-[var(--fl-tx2)] border-[var(--fl-bdr-h)] active:bg-[var(--fl-s2)] active:scale-[.97] px-[14px] py-2 text-sm font-semibold rounded-xl"
-                                        onClick={() => {
-                                            if (confirm('Revert to this version?')) {
-                                                router.post(RevisionController.revert(revision.id).url);
-                                            }
-                                        }}
-                                    >
-                                        Revert
-                                    </button>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </section>
-            )}
+                                        {changes.length > 0 ? (
+                                            <div className="flex flex-col gap-1 my-[2px]">
+                                                {changes.map((c) => (
+                                                    <div key={c.label} className="flex items-baseline flex-wrap gap-1 text-xs leading-relaxed">
+                                                        <span className="font-bold text-[var(--fl-tx2)] shrink-0 min-w-[72px]">{c.label}</span>
+                                                        <span className="text-[var(--fl-red)] line-through break-all">{c.before}</span>
+                                                        <span className="text-[var(--fl-tx3)] shrink-0">{'\u2192'}</span>
+                                                        <span className="text-[var(--fl-grn)] break-all">{c.after}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="text-xs text-[var(--fl-tx2)]">{revision.summary}</div>
+                                        )}
+                                        <button
+                                            className="inline-flex items-center justify-center gap-[7px] px-[22px] py-[11px] rounded-full text-[15px] font-bold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-transparent text-[var(--fl-tx2)] border-[var(--fl-bdr-h)] active:bg-[var(--fl-s2)] active:scale-[.97] px-[14px] py-2 text-sm font-semibold rounded-xl"
+                                            onClick={() => {
+                                                if (confirm('Revert to this version?')) {
+                                                    router.post(RevisionController.revert(revision.id).url);
+                                                }
+                                            }}
+                                        >
+                                            Revert
+                                        </button>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </section>
+                )}
+            </div>
+
         </div>
     );
 }

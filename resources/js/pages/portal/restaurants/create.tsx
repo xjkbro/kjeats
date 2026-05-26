@@ -548,7 +548,7 @@ restaurantPhotoRef.current.value = '';
                             <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]">Photo</label>
                             <input
                                 ref={(el) => {
- dishPhotoRefs.current[idx] = el; 
+ dishPhotoRefs.current[idx] = el;
 }}
                                 type="file"
                                 accept="image/*"

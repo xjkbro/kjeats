@@ -46,8 +46,8 @@ export default function WantToTryShow({ item }: Props) {
             )}
 
             <section className="mb-6">
-                <h3 className="text-[10px] font-bold text-[var(--fl-tx2)] uppercase tracking-[1px] flex items-center gap-2">Actions</h3>
-                <div className="flex gap-3">
+                <h3 className="text-[10px] font-bold text-[var(--fl-tx2)] uppercase tracking-[1px] flex items-center gap-2 mb-4 justify-center">Actions</h3>
+                <div className="flex gap-3 justify-center">
                     <Link
                         href={WantToTryController.convertToReview(item.id).url}
                         method="post"

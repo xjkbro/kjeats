@@ -40,7 +40,10 @@ const navLinks: NavLink[] = [
 
 export default function PortalLayout({ children, title, showBack = false }: Props) {
     const { url, props } = usePage();
-    const auth = props.auth as { user: { name: string; email: string; avatar_url?: string | null } };
+    const auth = props.auth as { user: {
+        first_name: ReactNode;
+        last_name(first_name: any, last_name: any): import("react").ReactNode; name: string; email: string; avatar_url?: string | null
+} };
     const flash = props.flash as { type?: string; message?: string } | undefined;
 
     const [searchOpen, setSearchOpen] = useState(false);
