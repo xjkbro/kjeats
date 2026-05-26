@@ -342,7 +342,7 @@ export default function RestaurantShow({ restaurant, can_add_dish, current_user_
                                     required
                                 />
                                 <select
-                                    className="w-full bg-[var(--fl-bg)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-3 py-[9px] text-sm text-[var(--fl-tx)] outline-none transition-[border-color] duration-150 appearance-none placeholder:text-[var(--fl-tx3)] focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_rgba(255,96,64,.12)]"
+                                    className="w-full bg-[var(--fl-bg)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-3 py-[9px] text-sm text-[var(--fl-tx)] outline-none transition-[border-color] duration-150 placeholder:text-[var(--fl-tx3)] focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_rgba(255,96,64,.12)]"
                                     value={dishForm.data.rating}
                                     onChange={(e) => dishForm.setData('rating', e.target.value)}
                                 >

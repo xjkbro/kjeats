@@ -304,7 +304,7 @@ return;
                 <div className="grid grid-cols-2 gap-3">
                     <div className="mb-3 relative">
                         <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]" htmlFor="category">Category</label>
-                        <select id="category" className="w-full bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none placeholder:text-[var(--fl-tx3)] focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none" value={data.category} onChange={(e) => setData('category', e.target.value)}>
+                        <select id="category" className="w-full bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 placeholder:text-[var(--fl-tx3)] focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none" value={data.category} onChange={(e) => setData('category', e.target.value)}>
                             {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
                         </select>
                     </div>

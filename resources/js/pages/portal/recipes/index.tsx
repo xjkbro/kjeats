@@ -3,6 +3,7 @@ import { useState } from 'react';
 import type { ReactNode } from 'react';
 import * as RecipeController from '@/actions/App/Http/Controllers/RecipeController';
 import PortalLayout from '@/layouts/portal/portal-layout';
+import PortalPageHeader from '@/components/portal-page-header';
 import { index as recipesIndexRoute } from '@/routes/recipes';
 import type { Recipe } from '@/types/portal';
 
@@ -43,40 +44,21 @@ export default function RecipesIndex({ recipes, groups, scope }: Props) {
 
     return (
         <div className="p-4 lg:p-7 kj-anim-viewin">
-            <div className="flex items-center justify-between mb-4">
-                <h2 className="text-[22px] font-black text-[var(--fl-tx)] tracking-[-.5px]">Recipes</h2>
-                <Link href={RecipeController.create().url} className="inline-flex items-center justify-center gap-[7px] px-[22px] py-[11px] rounded-full text-[15px] font-bold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-gradient-to-br from-[var(--fl-p)] to-[#FF7D62] text-white shadow-[var(--fl-p-glw)] active:scale-[.97] active:shadow-[0_2px_8px_rgba(255,96,64,.3)] px-[14px] py-2 text-sm font-semibold rounded-xl">
-                    + Add
-                </Link>
-            </div>
-
-            {groups.length > 0 && (
-                <div className="flex gap-1 bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl p-1 mb-[14px]">
-                    <button
-                        className={`flex-1 px-[10px] py-[7px] rounded-[10px] text-sm font-semibold text-[var(--fl-tx2)] bg-transparent transition-all duration-100 cursor-pointer${scope === 'mine' ? ' bg-[var(--fl-s3)] text-[var(--fl-tx)]' : ''}`}
-                        onClick={() => setScope('mine')}
-                    >
-                        Mine
-                    </button>
-                    {groups.map((g) => (
-                        <button
-                            key={g.id}
-                            className={`flex-1 px-[10px] py-[7px] rounded-[10px] text-sm font-semibold text-[var(--fl-tx2)] bg-transparent transition-all duration-100 cursor-pointer${scope === String(g.id) ? ' bg-[var(--fl-s3)] text-[var(--fl-tx)]' : ''}`}
-                            onClick={() => setScope(String(g.id))}
-                        >
-                            {g.name}
-                        </button>
-                    ))}
-                </div>
-            )}
+            <PortalPageHeader
+                title="Recipes"
+                addHref={RecipeController.create().url}
+                groups={groups}
+                scope={scope}
+                onScopeChange={setScope}
+            />
 
             <div className="flex gap-2 mb-[14px]">
-                <select className="flex-1 appearance-none bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-full px-[13px] py-[7px] pr-[30px] text-sm font-semibold text-[var(--fl-tx2)] cursor-pointer whitespace-nowrap transition-colors duration-100 focus:outline-none focus:border-[var(--fl-p)]" value={catFilter} onChange={(e) => setCatFilter(e.target.value)}>
+                <select className="flex-1 bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-full px-[13px] py-[7px] pr-[30px] text-sm font-semibold text-[var(--fl-tx2)] cursor-pointer whitespace-nowrap transition-colors duration-100 focus:outline-none focus:border-[var(--fl-p)]" value={catFilter} onChange={(e) => setCatFilter(e.target.value)}>
                     {categories.map((c) => (
                         <option key={c} value={c}>{c === ALL ? 'All Categories' : c}</option>
                     ))}
                 </select>
-                <select className="flex-1 appearance-none bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-full px-[13px] py-[7px] pr-[30px] text-sm font-semibold text-[var(--fl-tx2)] cursor-pointer whitespace-nowrap transition-colors duration-100 focus:outline-none focus:border-[var(--fl-p)]" value={diffFilter} onChange={(e) => setDiffFilter(e.target.value)}>
+                <select className="flex-1 bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-full px-[13px] py-[7px] pr-[30px] text-sm font-semibold text-[var(--fl-tx2)] cursor-pointer whitespace-nowrap transition-colors duration-100 focus:outline-none focus:border-[var(--fl-p)]" value={diffFilter} onChange={(e) => setDiffFilter(e.target.value)}>
                     <option value="">Any Difficulty</option>
                     {difficulties.map((d) => (
                         <option key={d} value={d}>{d}</option>

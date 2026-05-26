@@ -158,7 +158,7 @@ export default function RestaurantRevisit({ restaurant }: Props) {
                             </div>
                             <div className="mb-3 relative">
                                 <label className="block text-xs font-semibold text-[var(--fl-tx2)] mb-[6px]">Rating</label>
-                                <select className="w-full bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none placeholder:text-[var(--fl-tx3)] focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none" value={dish.rating} onChange={(e) => updateDish(idx, 'rating', e.target.value)}>
+                                <select className="w-full bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 placeholder:text-[var(--fl-tx3)] focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none" value={dish.rating} onChange={(e) => updateDish(idx, 'rating', e.target.value)}>
                                     {[1, 2, 3, 4, 5].map((n) => <option key={n} value={n}>{n} {'\u2605'}</option>)}
                                 </select>
                             </div>

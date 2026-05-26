@@ -3,6 +3,7 @@ import { useState } from 'react';
 import type { ReactNode } from 'react';
 import * as WantToTryController from '@/actions/App/Http/Controllers/WantToTryController';
 import PortalLayout from '@/layouts/portal/portal-layout';
+import PortalPageHeader from '@/components/portal-page-header';
 import { index as wantToTryIndexRoute } from '@/routes/want-to-try';
 
 interface Props {
@@ -87,47 +88,28 @@ return a.name.localeCompare(b.name);
 
     return (
         <div className="p-4 lg:p-7 kj-anim-viewin">
-            <div className="flex items-center justify-between gap-3 mb-5">
-                <h1 className="text-[22px] font-black text-[var(--fl-tx)] tracking-[-.5px] leading-[1.2]">Want to Try</h1>
-                <Link href={WantToTryController.create().url} className="inline-flex items-center justify-center gap-[7px] px-[14px] py-2 rounded-xl text-sm font-semibold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-gradient-to-br from-[var(--fl-p)] to-[#FF7D62] text-white shadow-[var(--fl-p-glw)] active:scale-[.97] active:shadow-[0_2px_8px_rgba(255,96,64,.3)]">
-                    + Add
-                </Link>
-            </div>
-
-            {groups.length > 0 && (
-                <div className="flex items-center gap-[3px] bg-[var(--fl-s2)] rounded-2xl p-[3px] overflow-x-auto kj-scrollbar-none mb-4">
-                    <button
-                        className={`flex-1 px-[14px] py-[9px] text-[13px] font-bold tracking-[-.2px] transition-all duration-100 rounded-xl whitespace-nowrap border-none cursor-pointer${scope === 'mine' ? ' bg-white text-[var(--fl-tx)] shadow-[0_1px_3px_rgba(0,0,0,.08)] dark:bg-zinc-800' : ' text-[var(--fl-tx2)] hover:text-[var(--fl-tx)] bg-transparent'}`}
-                        onClick={() => setScope('mine')}
-                    >
-                        Mine
-                    </button>
-                    {groups.map((g) => (
-                        <button
-                            key={g.id}
-                            className={`flex-1 px-[14px] py-[9px] text-[13px] font-bold tracking-[-.2px] transition-all duration-100 rounded-xl whitespace-nowrap border-none cursor-pointer${scope === String(g.id) ? ' bg-white text-[var(--fl-tx)] shadow-[0_1px_3px_rgba(0,0,0,.08)] dark:bg-zinc-800' : ' text-[var(--fl-tx2)] hover:text-[var(--fl-tx)] bg-transparent'}`}
-                            onClick={() => setScope(String(g.id))}
-                        >
-                            {g.name}
-                        </button>
-                    ))}
-                </div>
-            )}
+            <PortalPageHeader
+                title="Want to Try"
+                addHref={WantToTryController.create().url}
+                groups={groups}
+                scope={scope}
+                onScopeChange={setScope}
+            />
 
             <div className="flex gap-2 mb-4 overflow-x-auto kj-scrollbar-none">
-                <select className="bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none min-w-0 flex-1" value={locationFilter} onChange={(e) => setLocationFilter(e.target.value)}>
+                <select className="bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none min-w-0 flex-1" value={locationFilter} onChange={(e) => setLocationFilter(e.target.value)}>
                     {locations.map((loc) => (
                         <option key={loc.name} value={loc.name}>{loc.display_name}</option>
                     ))}
                 </select>
                 {cuisines.length > 1 && (
-                    <select className="bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none min-w-0 flex-1" value={cuisineFilter} onChange={(e) => setCuisineFilter(e.target.value)}>
+                    <select className="bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none min-w-0 flex-1" value={cuisineFilter} onChange={(e) => setCuisineFilter(e.target.value)}>
                         {cuisines.map((c) => (
                             <option key={c} value={c}>{c === ALL ? 'All Cuisines' : c}</option>
                         ))}
                     </select>
                 )}
-                <select className="bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 appearance-none focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none min-w-0 flex-1" value={sort} onChange={(e) => setSort(e.target.value)}>
+                <select className="bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl px-[13px] py-[11px] text-[15px] text-[var(--fl-tx)] transition-all duration-100 focus:border-[var(--fl-p)] focus:shadow-[0_0_0_3px_var(--fl-p-dim)] focus:outline-none min-w-0 flex-1" value={sort} onChange={(e) => setSort(e.target.value)}>
                     <option value={SORT_NEWEST}>Newest</option>
                     <option value={SORT_OLDEST}>Oldest</option>
                     <option value={SORT_AZ}>A → Z</option>

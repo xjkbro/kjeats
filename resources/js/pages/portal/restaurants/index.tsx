@@ -3,6 +3,7 @@ import { useState } from 'react';
 import type { ReactNode } from 'react';
 import * as RestaurantController from '@/actions/App/Http/Controllers/RestaurantController';
 import PortalLayout from '@/layouts/portal/portal-layout';
+import PortalPageHeader from '@/components/portal-page-header';
 import { index as restaurantsIndexRoute } from '@/routes/restaurants';
 import type { Restaurant } from '@/types/portal';
 
@@ -59,14 +60,13 @@ export default function RestaurantsIndex({ restaurants, groups, scope, all_cuisi
 
     return (
         <div className="p-4 lg:p-7 kj-anim-viewin">
-            <div className="flex items-center justify-between mb-4">
-                <h2 className="text-[22px] font-black text-[var(--fl-tx)] tracking-[-.5px]">{revisitMode ? 'Select a Restaurant' : 'Restaurant Reviews'}</h2>
-                {!revisitMode && (
-                    <Link href={RestaurantController.create().url} className="inline-flex items-center justify-center gap-[7px] px-[22px] py-[11px] rounded-full text-[15px] font-bold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-gradient-to-br from-[var(--fl-p)] to-[#FF7D62] text-white shadow-[var(--fl-p-glw)] active:scale-[.97] active:shadow-[0_2px_8px_rgba(255,96,64,.3)] px-[14px] py-2 text-sm font-semibold rounded-xl">
-                        + Add
-                    </Link>
-                )}
-            </div>
+            <PortalPageHeader
+                title={revisitMode ? 'Select a Restaurant' : 'Restaurant Reviews'}
+                addHref={revisitMode ? undefined : RestaurantController.create().url}
+                groups={revisitMode ? [] : groups}
+                scope={scope}
+                onScopeChange={setScope}
+            />
 
             {revisitMode && (
                 <div style={{ padding: '10px 14px', background: 'var(--fl-p-dim)', border: '1.5px solid var(--fl-p)', borderRadius: 'var(--fl-r3)', marginBottom: '12px', fontSize: '13px', color: 'var(--fl-p)' }}>
@@ -74,33 +74,13 @@ export default function RestaurantsIndex({ restaurants, groups, scope, all_cuisi
                 </div>
             )}
 
-            {groups.length > 0 && !revisitMode && (
-                <div className="flex gap-1 bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-xl p-1 mb-[14px]">
-                    <button
-                        className={`flex-1 px-[10px] py-[7px] rounded-[10px] text-sm font-semibold text-[var(--fl-tx2)] bg-transparent transition-all duration-100 cursor-pointer${scope === 'mine' ? ' bg-[var(--fl-s3)] text-[var(--fl-tx)]' : ''}`}
-                        onClick={() => setScope('mine')}
-                    >
-                        Mine
-                    </button>
-                    {groups.map((g) => (
-                        <button
-                            key={g.id}
-                            className={`flex-1 px-[10px] py-[7px] rounded-[10px] text-sm font-semibold text-[var(--fl-tx2)] bg-transparent transition-all duration-100 cursor-pointer${scope === String(g.id) ? ' bg-[var(--fl-s3)] text-[var(--fl-tx)]' : ''}`}
-                            onClick={() => setScope(String(g.id))}
-                        >
-                            {g.name}
-                        </button>
-                    ))}
-                </div>
-            )}
-
             <div className="flex gap-2 mb-[14px]">
-                <select className="flex-1 appearance-none bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-full px-[13px] py-[7px] pr-[30px] text-sm font-semibold text-[var(--fl-tx2)] cursor-pointer whitespace-nowrap transition-colors duration-100 focus:outline-none focus:border-[var(--fl-p)]" value={filter} onChange={(e) => setFilter(e.target.value)}>
+                <select className="flex-1 bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-full px-[13px] py-[7px] pr-[30px] text-sm font-semibold text-[var(--fl-tx2)] cursor-pointer whitespace-nowrap transition-colors duration-100 focus:outline-none focus:border-[var(--fl-p)]" value={filter} onChange={(e) => setFilter(e.target.value)}>
                     {cuisines.map((c) => (
                         <option key={c} value={c}>{c === ALL_CUISINES ? 'All Cuisines' : c}</option>
                     ))}
                 </select>
-                <select className="flex-1 appearance-none bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-full px-[13px] py-[7px] pr-[30px] text-sm font-semibold text-[var(--fl-tx2)] cursor-pointer whitespace-nowrap transition-colors duration-100 focus:outline-none focus:border-[var(--fl-p)]" value={sort} onChange={(e) => setSort(e.target.value as 'recent' | 'rating')}>
+                <select className="flex-1 bg-[var(--fl-s2)] border-[1.5px] border-solid border-[var(--fl-bdr)] rounded-full px-[13px] py-[7px] pr-[30px] text-sm font-semibold text-[var(--fl-tx2)] cursor-pointer whitespace-nowrap transition-colors duration-100 focus:outline-none focus:border-[var(--fl-p)]" value={sort} onChange={(e) => setSort(e.target.value as 'recent' | 'rating')}>
                     <option value="recent">Most Recent</option>
                     <option value="rating">Top Rated</option>
                 </select>
