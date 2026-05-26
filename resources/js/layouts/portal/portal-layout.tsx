@@ -152,7 +152,7 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
             <SearchPalette open={searchOpen} onClose={() => setSearchOpen(false)} />
 
             {/* Grid wrapper: sidebar + main — nav first, main second */}
-            <div className={`flex-1 min-h-0 lg:grid lg:grid-rows-1 lg:p-[var(--fl-desk-gap)] lg:gap-[var(--fl-desk-gap)] lg:transition-[grid-template-columns] lg:duration-200 lg:ease-in-out${sidebarCollapsed ? ' lg:grid-cols-[var(--fl-sidebar-collapsed-w)_1fr]' : ' lg:grid-cols-[var(--fl-sidebar-w)_1fr]'}`}>
+            <div className={`flex flex-col flex-1 min-h-0 lg:grid lg:grid-rows-1 lg:p-[var(--fl-desk-gap)] lg:gap-[var(--fl-desk-gap)] lg:transition-[grid-template-columns] lg:duration-200 lg:ease-in-out${sidebarCollapsed ? ' lg:grid-cols-[var(--fl-sidebar-collapsed-w)_1fr]' : ' lg:grid-cols-[var(--fl-sidebar-w)_1fr]'}`}>
 
             {/* SIDEBAR / NAV */}
             <nav className="
@@ -288,7 +288,7 @@ export default function PortalLayout({ children, title, showBack = false }: Prop
                     </div>
                 </div>
                 {/* Scrollable content */}
-                <div className="overflow-y-auto flex-1 min-h-0">
+                <div className="lg:overflow-y-auto lg:flex-1 lg:min-h-0">
                     {showBack && (
                         <div className="hidden lg:flex lg:items-center lg:gap-[10px] lg:pt-5 lg:px-7">
                             <button className="flex items-center justify-center w-[34px] h-[34px] bg-[var(--fl-s2)] rounded-xl text-[var(--fl-tx)] shrink-0 transition-all duration-100 active:scale-[.92]" onClick={() => window.history.back()}>

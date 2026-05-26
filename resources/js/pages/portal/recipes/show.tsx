@@ -1,4 +1,4 @@
-import { useForm, router } from '@inertiajs/react';
+import { router } from '@inertiajs/react';
 import React from 'react';
 import type { ReactNode } from 'react';
 import * as MediaController from '@/actions/App/Http/Controllers/MediaController';
@@ -220,24 +220,23 @@ function ImageGallery({ images }: { images: MediaItem[] }) {
 }
 
 function ImageUploadForm({ action }: { action: string }) {
-    const form = useForm<{ image: File | null }>({ image: null });
+    const [uploading, setUploading] = React.useState(false);
     const inputRef = React.useRef<HTMLInputElement>(null);
 
     function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-        const file = e.target.files?.[0] ?? null;
+        const file = e.target.files?.[0];
 
-        if (!file) {
-return;
-}
+        if (!file || uploading) return;
 
-        form.setData('image', file);
-        form.post(action, { forceFormData: true, preserveScroll: true, onSuccess: () => {
-            form.reset();
-
-            if (inputRef.current) {
-inputRef.current.value = '';
-}
-        }});
+        setUploading(true);
+        router.post(action, { image: file }, {
+            forceFormData: true,
+            preserveScroll: true,
+            onFinish: () => {
+                setUploading(false);
+                if (inputRef.current) inputRef.current.value = '';
+            },
+        });
     }
 
     return (
@@ -246,10 +245,10 @@ inputRef.current.value = '';
             <button
                 type="button"
                 className="inline-flex items-center justify-center gap-[7px] px-[14px] py-2 rounded-xl text-sm font-semibold tracking-[-.2px] cursor-pointer border-none whitespace-nowrap transition-all duration-100 bg-transparent text-[var(--fl-tx2)] active:bg-[var(--fl-s2)] active:scale-[.97]"
-                disabled={form.processing}
+                disabled={uploading}
                 onClick={() => inputRef.current?.click()}
             >
-                {form.processing ? 'Uploading…' : '📷 Photo'}
+                {uploading ? 'Uploading…' : '📷 Photo'}
             </button>
         </>
     );
@@ -384,7 +383,7 @@ export default function RecipeShow({ recipe, current_user_id }: Props) {
                 </section>
             )}
 
-            <div className="flex gap-[10px] mt-8 pt-6 border-t border-[var(--fl-bdr-s)]">
+            <div className="flex gap-[10px] mt-8 pt-6 pb-4">
                 <button className="inline-flex items-center justify-center gap-[7px] px-[22px] py-[11px] rounded-full text-[15px] font-bold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-[var(--fl-s2)] text-[var(--fl-tx)] border-[var(--fl-bdr-h)] active:bg-[var(--fl-s3)] active:scale-[.97]" onClick={() => router.visit(RecipeController.edit(recipe.id).url, { replace: true })}>
                     Edit Recipe
                 </button>
@@ -393,56 +392,58 @@ export default function RecipeShow({ recipe, current_user_id }: Props) {
                 </button>
             </div>
 
-            {recipe.revisions && recipe.revisions.length > 0 && (
-                <section className="mb-6">
-                    <div className="flex items-center justify-between gap-2 mb-3">
-                        <h3 className="text-[10px] font-bold text-[var(--fl-tx2)] uppercase tracking-[1px] flex items-center gap-2">History ({recipe.revisions.length})</h3>
-                    </div>
-                    <div className="space-y-3">
-                        {recipe.revisions.map((revision: Revision, i: number) => {
-                            const afterSnap: Record<string, unknown> = i === 0
-                                ? { name: recipe.name, emoji: recipe.emoji, category: recipe.category, difficulty: recipe.difficulty, description: recipe.description, prep_time: recipe.prep_time, cook_time: recipe.cook_time, rest_time: recipe.rest_time, servings: recipe.servings, tags: recipe.tags, ingredients: recipe.ingredients, steps: recipe.steps }
-                                : (recipe.revisions![i - 1].snapshot as Record<string, unknown>);
-                            const changes = diffSnapshots(revision.snapshot as Record<string, unknown>, afterSnap, RECIPE_FIELDS);
+            <div className="border-t border-[var(--fl-bdr-s)] pt-6">
+                {recipe.revisions && recipe.revisions.length > 0 && (
+                    <section className="mb-6">
+                        <div className="flex items-center justify-between gap-2 mb-3">
+                            <h3 className="text-[10px] font-bold text-[var(--fl-tx2)] uppercase tracking-[1px] flex items-center gap-2">History ({recipe.revisions.length})</h3>
+                        </div>
+                        <div className="space-y-3">
+                            {recipe.revisions.map((revision: Revision, i: number) => {
+                                const afterSnap: Record<string, unknown> = i === 0
+                                    ? { name: recipe.name, emoji: recipe.emoji, category: recipe.category, difficulty: recipe.difficulty, description: recipe.description, prep_time: recipe.prep_time, cook_time: recipe.cook_time, rest_time: recipe.rest_time, servings: recipe.servings, tags: recipe.tags, ingredients: recipe.ingredients, steps: recipe.steps }
+                                    : (recipe.revisions![i - 1].snapshot as Record<string, unknown>);
+                                const changes = diffSnapshots(revision.snapshot as Record<string, unknown>, afterSnap, RECIPE_FIELDS);
 
-                            return (
-                                <div key={revision.id} className="bg-[var(--fl-s2)] rounded-xl p-4 space-y-2">
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-sm font-semibold text-[var(--fl-tx)]">{revision.user.first_name}</span>
-                                        <span className="text-xs text-[var(--fl-tx2)]">
-                                            {new Date(revision.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                                        </span>
-                                    </div>
-                                    {changes.length > 0 ? (
-                                        <div className="space-y-1">
-                                            {changes.map((c) => (
-                                                <div key={c.label} className="flex items-center gap-2 text-sm flex-wrap">
-                                                    <span className="font-semibold text-[var(--fl-tx)] min-w-[100px]">{c.label}</span>
-                                                    <span className="text-[var(--fl-red)] line-through text-sm">{c.before}</span>
-                                                    <span className="text-[var(--fl-tx3)] text-xs">&rarr;</span>
-                                                    <span className="text-[var(--fl-grn)] text-sm">{c.after}</span>
-                                                </div>
-                                            ))}
+                                return (
+                                    <div key={revision.id} className="bg-[var(--fl-s2)] rounded-xl p-4 space-y-2">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-sm font-semibold text-[var(--fl-tx)]">{revision.user.first_name}</span>
+                                            <span className="text-xs text-[var(--fl-tx2)]">
+                                                {new Date(revision.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                            </span>
                                         </div>
-                                    ) : (
-                                        <div className="text-sm text-[var(--fl-tx2)] italic">{revision.summary}</div>
-                                    )}
-                                    <button
-                                        className="inline-flex items-center justify-center gap-[7px] px-[14px] py-2 rounded-xl text-sm font-semibold tracking-[-.2px] cursor-pointer border-none whitespace-nowrap transition-all duration-100 bg-transparent text-[var(--fl-tx2)] active:bg-[var(--fl-s2)] active:scale-[.97]"
-                                        onClick={() => {
-                                            if (confirm('Revert to this version?')) {
-                                                router.post(RevisionController.revert(revision.id).url);
-                                            }
-                                        }}
-                                    >
-                                        Revert
-                                    </button>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </section>
-            )}
+                                        {changes.length > 0 ? (
+                                            <div className="space-y-1">
+                                                {changes.map((c) => (
+                                                    <div key={c.label} className="flex items-center gap-2 text-sm flex-wrap">
+                                                        <span className="font-semibold text-[var(--fl-tx)] min-w-[100px]">{c.label}</span>
+                                                        <span className="text-[var(--fl-red)] line-through text-sm">{c.before}</span>
+                                                        <span className="text-[var(--fl-tx3)] text-xs">&rarr;</span>
+                                                        <span className="text-[var(--fl-grn)] text-sm">{c.after}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="text-sm text-[var(--fl-tx2)] italic">{revision.summary}</div>
+                                        )}
+                                        <button
+                                            className="inline-flex items-center justify-center gap-[7px] px-[14px] py-2 rounded-xl text-sm font-semibold tracking-[-.2px] cursor-pointer border-none whitespace-nowrap transition-all duration-100 bg-transparent text-[var(--fl-tx2)] active:bg-[var(--fl-s2)] active:scale-[.97]"
+                                            onClick={() => {
+                                                if (confirm('Revert to this version?')) {
+                                                    router.post(RevisionController.revert(revision.id).url);
+                                                }
+                                            }}
+                                        >
+                                            Revert
+                                        </button>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </section>
+                )}
+            </div>
         </div>
     );
 }

@@ -143,24 +143,23 @@ function ImageGallery({ images }: { images: MediaItem[] }) {
 }
 
 function ImageUploadForm({ action }: { action: string }) {
-    const form = useForm<{ image: File | null }>({ image: null });
+    const [uploading, setUploading] = React.useState(false);
     const inputRef = React.useRef<HTMLInputElement>(null);
 
     function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-        const file = e.target.files?.[0] ?? null;
+        const file = e.target.files?.[0];
 
-        if (!file) {
-return;
-}
+        if (!file || uploading) return;
 
-        form.setData('image', file);
-        form.post(action, { forceFormData: true, preserveScroll: true, onSuccess: () => {
-            form.reset();
-
-            if (inputRef.current) {
-inputRef.current.value = '';
-}
-        }});
+        setUploading(true);
+        router.post(action, { image: file }, {
+            forceFormData: true,
+            preserveScroll: true,
+            onFinish: () => {
+                setUploading(false);
+                if (inputRef.current) inputRef.current.value = '';
+            },
+        });
     }
 
     return (
@@ -169,10 +168,10 @@ inputRef.current.value = '';
             <button
                 type="button"
                 className="flex items-center justify-center w-full gap-[7px] px-[22px] py-[11px] rounded-full text-[15px] font-bold tracking-[-.2px] cursor-pointer border-[1.5px] border-solid border-transparent whitespace-nowrap transition-all duration-100 bg-transparent text-[var(--fl-tx2)] border-[var(--fl-bdr-h)] active:bg-[var(--fl-s2)] active:scale-[.97] px-[14px] py-2 text-sm font-semibold rounded-xl"
-                disabled={form.processing}
+                disabled={uploading}
                 onClick={() => inputRef.current?.click()}
             >
-                {form.processing ? 'Uploading\u2026' : '\uD83D\uDCF7 Photo'}
+                {uploading ? 'Uploading…' : '📷 Photo'}
             </button>
         </>
     );
@@ -384,6 +383,7 @@ export default function RestaurantShow({ restaurant, can_add_dish, current_user_
                     Delete
                 </button>
             </div>
+
             <div className="border-t border-[var(--fl-bdr-s)] pt-6">
                 {restaurant.revisions && restaurant.revisions.length > 0 && (
                     <section className="mb-6">
