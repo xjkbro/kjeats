@@ -15,6 +15,17 @@ self.addEventListener("install", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
+    // Don't intercept POST requests or API calls
+    if (event.request.method !== 'GET') {
+        return;
+    }
+
+    // Don't intercept requests to /register, /login, etc.
+    const url = new URL(event.request.url);
+    if (url.pathname.match(/^\/(register|login|logout|api)/)) {
+        return;
+    }
+
     if (event.request.mode === 'navigate') {
         event.respondWith(
             fetch(event.request)
