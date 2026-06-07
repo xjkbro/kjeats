@@ -18,45 +18,45 @@ RUN composer install \
 
 # =============================================================================
 # Stage 2: Build frontend assets
-# Needs PHP because the @laravel/vite-plugin-wayfinder plugin calls
-# `php artisan wayfinder:generate` at build time.
+# Uses the PHP image as base so `php artisan` works for the Wayfinder plugin.
 # =============================================================================
-FROM node:20.19-alpine AS node-builder
+FROM php:8.3-cli-bookworm AS node-builder
+
+# Install Node.js 20.x
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y --no-install-recommends nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
+# Minimal PHP extensions needed for artisan to bootstrap
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libsqlite3-dev \
+        libxml2-dev \
+        libonig-dev \
+    && rm -rf /var/lib/apt/lists/* \
+    && docker-php-ext-install pdo_sqlite mbstring xml tokenizer
 
 WORKDIR /app
-
-# Install a minimal PHP 8.3 so `php artisan` can run during `npm run build`
-RUN apk add --no-cache \
-    php83 \
-    php83-phar \
-    php83-mbstring \
-    php83-tokenizer \
-    php83-xml \
-    php83-dom \
-    php83-xmlwriter \
-    php83-simplexml \
-    php83-fileinfo \
-    php83-ctype \
-    php83-openssl \
-    php83-session \
-    php83-pdo \
-    php83-pdo_sqlite \
-    php83-sqlite3 \
-    && ln -sf /usr/bin/php83 /usr/local/bin/php
 
 COPY package.json package-lock.json pnpm-workspace.yaml ./
 RUN npm ci --ignore-scripts
 
-# Copy the full app (source + vendor) so artisan can bootstrap
+# Copy the full app + vendor from the composer stage
 COPY --from=composer-builder /app ./
 
-# Create a minimal .env so `php artisan` can bootstrap during Vite build.
-# The Wayfinder plugin runs `php artisan wayfinder:generate` at build time
-# and requires a valid APP_KEY. This .env is only used at build time.
+# Ensure writable directories exist for artisan to bootstrap
+RUN mkdir -p \
+        storage/framework/views \
+        storage/framework/cache/data \
+        storage/framework/sessions \
+        storage/framework/testing \
+        bootstrap/cache \
+    && chmod -R 777 storage bootstrap/cache
+
+# Create a throw-away .env so artisan can generate an APP_KEY and boot.
+# This is only used at build time and never copied to the final image.
 RUN php -r "echo 'APP_KEY=base64:' . base64_encode(random_bytes(32)) . PHP_EOL;" > .env \
-    && echo "APP_ENV=production" >> .env \
-    && echo "DB_CONNECTION=sqlite" >> .env \
-    && echo "DB_DATABASE=:memory:" >> .env
+    && printf 'APP_ENV=local\nDB_CONNECTION=sqlite\nDB_DATABASE=/tmp/build.sqlite\n' >> .env \
+    && touch /tmp/build.sqlite
 
 RUN npm run build
 
