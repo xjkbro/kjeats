@@ -16,7 +16,7 @@ RUN npm run build
 # =============================================================================
 # Stage 2: Install PHP dependencies (production only)
 # =============================================================================
-FROM composer:2 AS composer-builder/
+FROM composer:2 AS composer-builder
 
 WORKDIR /app
 
