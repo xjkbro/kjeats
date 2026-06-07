@@ -22,18 +22,16 @@ RUN composer install \
 # =============================================================================
 FROM php:8.3-cli-bookworm AS node-builder
 
-# Install Node.js 20.x
+# Install Node.js 20.x and minimal PHP extensions for artisan bootstrap
+# Note: tokenizer, ctype, fileinfo are already compiled into PHP 8.3 core
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt-get install -y --no-install-recommends nodejs \
-    && rm -rf /var/lib/apt/lists/*
-
-# Minimal PHP extensions needed for artisan to bootstrap
-RUN apt-get update && apt-get install -y --no-install-recommends \
+    && apt-get install -y --no-install-recommends \
+        nodejs \
         libsqlite3-dev \
         libxml2-dev \
         libonig-dev \
     && rm -rf /var/lib/apt/lists/* \
-    && docker-php-ext-install pdo_sqlite mbstring xml tokenizer
+    && docker-php-ext-install pdo_sqlite mbstring xml
 
 WORKDIR /app
 
