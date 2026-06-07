@@ -1,20 +1,5 @@
 # =============================================================================
-# Stage 1: Build frontend assets
-# =============================================================================
-FROM node:20.19-alpine AS node-builder
-
-WORKDIR /app
-
-COPY package.json package-lock.json pnpm-workspace.yaml ./
-RUN npm ci --ignore-scripts
-
-COPY vite.config.ts tsconfig.json components.json ./
-COPY resources/ ./resources/
-
-RUN npm run build
-
-# =============================================================================
-# Stage 2: Install PHP dependencies (production only)
+# Stage 1: Install PHP dependencies (production only)
 # =============================================================================
 FROM composer:2 AS composer-builder
 
@@ -30,6 +15,42 @@ RUN composer install \
     --optimize-autoloader \
     --ignore-platform-reqs \
     --quiet
+
+# =============================================================================
+# Stage 2: Build frontend assets
+# Needs PHP because the @laravel/vite-plugin-wayfinder plugin calls
+# `php artisan wayfinder:generate` at build time.
+# =============================================================================
+FROM node:20.19-alpine AS node-builder
+
+WORKDIR /app
+
+# Install a minimal PHP 8.3 so `php artisan` can run during `npm run build`
+RUN apk add --no-cache \
+    php83 \
+    php83-phar \
+    php83-mbstring \
+    php83-tokenizer \
+    php83-xml \
+    php83-dom \
+    php83-xmlwriter \
+    php83-simplexml \
+    php83-fileinfo \
+    php83-ctype \
+    php83-openssl \
+    php83-session \
+    php83-pdo \
+    php83-pdo_sqlite \
+    php83-sqlite3 \
+    && ln -sf /usr/bin/php83 /usr/local/bin/php
+
+COPY package.json package-lock.json pnpm-workspace.yaml ./
+RUN npm ci --ignore-scripts
+
+# Copy the full app (source + vendor) so artisan can bootstrap
+COPY --from=composer-builder /app ./
+
+RUN npm run build
 
 # =============================================================================
 # Stage 3: Production image
