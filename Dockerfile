@@ -16,23 +16,20 @@ RUN npm run build
 # =============================================================================
 # Stage 2: Install PHP dependencies (production only)
 # =============================================================================
-FROM composer:2 AS composer-builder
+FROM composer:2 AS composer-builder/
 
 WORKDIR /app
 
-COPY composer.json composer.lock* ./
+COPY . .
 
 RUN composer install \
     --no-dev \
     --no-scripts \
-    --no-autoloader \
+    --no-interaction \
     --prefer-dist \
+    --optimize-autoloader \
     --ignore-platform-reqs \
     --quiet
-
-COPY . .
-
-RUN composer dump-autoload --optimize --no-dev
 
 # =============================================================================
 # Stage 3: Production image
