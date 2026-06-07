@@ -50,6 +50,14 @@ RUN npm ci --ignore-scripts
 # Copy the full app (source + vendor) so artisan can bootstrap
 COPY --from=composer-builder /app ./
 
+# Create a minimal .env so `php artisan` can bootstrap during Vite build.
+# The Wayfinder plugin runs `php artisan wayfinder:generate` at build time
+# and requires a valid APP_KEY. This .env is only used at build time.
+RUN php -r "echo 'APP_KEY=base64:' . base64_encode(random_bytes(32)) . PHP_EOL;" > .env \
+    && echo "APP_ENV=production" >> .env \
+    && echo "DB_CONNECTION=sqlite" >> .env \
+    && echo "DB_DATABASE=:memory:" >> .env
+
 RUN npm run build
 
 # =============================================================================
