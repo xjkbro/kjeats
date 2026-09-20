@@ -1,0 +1,15 @@
+{
+    "name": "savorylogs",
+    "private": true,
+    "packageManager": "pnpm@8.15.9",
+    "engines": {
+        "node": ">=20.19.0"
+    },
+    "scripts": {
+        "dev:web": "pnpm --filter web dev",
+        "dev:mobile": "pnpm --filter mobile start",
+        "build:web": "pnpm --filter web build",
+        "typecheck": "pnpm -r types:check",
+        "lint:check": "pnpm -r lint:check"
+    }
+}

@@ -1,0 +1,9 @@
+**/node_modules
+**/vendor
+**/.git
+**/.env
+**/.env.*
+**/storage
+**/*.log
+apps/mobile
+apps/web/database
