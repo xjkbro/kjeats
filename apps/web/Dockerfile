@@ -47,7 +47,7 @@ WORKDIR /app
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY apps/web/package.json apps/web/package.json
 COPY apps/mobile/package.json apps/mobile/package.json
-COPY packages/shared/package.json packages/shared/package.json
+COPY packages/shared packages/shared
 RUN pnpm install --frozen-lockfile --ignore-scripts --filter @savorylogs/web...
 
 # Copy the full app + vendor from the composer stage
@@ -69,7 +69,7 @@ RUN cd apps/web \
     && printf 'APP_ENV=local\nDB_CONNECTION=sqlite\nDB_DATABASE=/tmp/build.sqlite\n' >> .env \
     && touch /tmp/build.sqlite
 
-RUN pnpm --filter @savorylogs/web build
+RUN cd apps/web && pnpm --filter @savorylogs/web build
 
 # =============================================================================
 # Stage 3: Production image
