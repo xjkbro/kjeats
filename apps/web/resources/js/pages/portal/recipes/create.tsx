@@ -1,4 +1,5 @@
 import { useForm } from '@inertiajs/react';
+import { DIFFICULTY_LEVELS as DIFFICULTIES, RECIPE_CATEGORIES as CATEGORIES, RECIPE_EMOJIS as EMOJIS } from '@savorylogs/shared';
 import { useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import * as NutritionController from '@/actions/App/Http/Controllers/NutritionController';
@@ -54,10 +55,6 @@ interface FormValues {
     iron_mg: string;
     potassium_mg: string;
 }
-
-const EMOJIS = ['📋', '🍕', '🍣', '🌮', '🍜', '🥩', '🥗', '🍔', '🥐', '🍱', '🍛', '🍝', '🥧', '🧁', '🍰'];
-const CATEGORIES = ['Breakfast', 'Lunch', 'Dinner', 'Dessert', 'Snack', 'Drink', 'Side', 'Other'];
-const DIFFICULTIES = ['Easy', 'Medium', 'Hard'];
 
 export default function RecipeCreate({ all_tags }: Props) {
     const { data, setData, post, processing, errors } = useForm<FormValues>({

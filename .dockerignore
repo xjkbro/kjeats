@@ -4,6 +4,6 @@
 **/.env
 **/.env.*
 **/storage
+**/public/build
 **/*.log
-apps/mobile
 apps/web/database

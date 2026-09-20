@@ -1,4 +1,5 @@
 import { router, useForm } from '@inertiajs/react';
+import { FOOD_EMOJIS as EMOJIS, PRICE_RANGES } from '@savorylogs/shared';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import * as RestaurantController from '@/actions/App/Http/Controllers/RestaurantController';
@@ -12,9 +13,6 @@ interface Props {
     restaurant: Restaurant;
     all_tags: string[];
 }
-
-const EMOJIS = ['\uD83C\uDF7D\uFE0F', '\uD83C\uDF55', '\uD83C\uDF63', '\uD83C\uDF2E', '\uD83C\uDF5C', '\uD83E\uDD69', '\uD83E\uDD57', '\uD83C\uDF54', '\uD83E\uDD50', '\uD83C\uDF71', '\uD83C\uDF5B', '\uD83C\uDF5D'];
-const PRICE_RANGES = ['$', '$$', '$$$', '$$$$'];
 
 function StarInput({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
     const [hovered, setHovered] = useState(0);

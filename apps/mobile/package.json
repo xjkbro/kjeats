@@ -1,9 +1,10 @@
 {
-  "name": "savorylogs-expo",
+  "name": "@savorylogs/mobile",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "dependencies": {
     "@expo/ui": "~56.0.18",
+    "@savorylogs/shared": "workspace:*",
     "expo": "~56.0.12",
     "expo-constants": "~56.0.18",
     "expo-device": "~56.0.4",

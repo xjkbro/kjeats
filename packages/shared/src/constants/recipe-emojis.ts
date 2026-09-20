@@ -1,0 +1,17 @@
+export const RECIPE_EMOJIS = [
+    '\uD83D\uDCCB',
+    '\uD83C\uDF55',
+    '\uD83C\uDF63',
+    '\uD83C\uDF2E',
+    '\uD83C\uDF5C',
+    '\uD83E\uDD69',
+    '\uD83E\uDD57',
+    '\uD83C\uDF54',
+    '\uD83E\uDD50',
+    '\uD83C\uDF71',
+    '\uD83C\uDF5B',
+    '\uD83C\uDF5D',
+    '\uD83E\uDDE7',
+    '\uD83E\uDDC1',
+    '\uD83C\uDF70',
+] as const;
