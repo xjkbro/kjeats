@@ -1,0 +1,16 @@
+{
+    "name": "kjeats",
+    "short_name": "kjeats",
+    "background_color": "#0f0f11",
+    "display": "standalone",
+    "description": "Your personal food log \u2014 restaurant reviews and recipes.",
+    "theme_color": "#ff6040",
+    "start_url": "/app/launch",
+    "icons": [
+        {
+            "src": "logo.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

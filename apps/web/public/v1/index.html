@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="theme-color" content="#0C0D14">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>FoodLog — Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- ░░ LOADING ░░ -->
+  <div id="loading" class="ls">
+    <div class="ls-body">
+      <div class="ls-icon">🍽️</div>
+      <div class="ls-brand">FoodLog</div>
+      <p class="ls-tag">Your personal food journal</p>
+      <div class="ls-bar"><div class="ls-prog"></div></div>
+    </div>
+  </div>
+
+  <!-- ░░ SHELL ░░ -->
+  <div id="shell" class="shell hidden">
+
+    <!-- HEADER -->
+    <header class="hdr" id="hdr">
+      <div class="hdr-row">
+        <div class="hdr-l">
+          <button class="back-btn hidden" id="backBtn" onclick="back()">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <div class="brand" id="brand">
+            <span class="brand-ico">🍽️</span>
+            <span class="brand-name">FoodLog</span>
+          </div>
+          <h1 class="page-ttl hidden" id="pageTtl"></h1>
+        </div>
+        <div class="hdr-r">
+          <button class="hdr-btn" id="srchBtn" onclick="toggleSearch()">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </button>
+          <div class="avatar" onclick="go('profile')">AJ</div>
+        </div>
+      </div>
+      <div class="srch-bar hidden" id="srchBar">
+        <div class="srch-inner">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input id="srchInput" type="text" placeholder="Search restaurants or recipes…">
+          <button onclick="toggleSearch()">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN -->
+    <main class="main" id="main"></main>
+
+    <!-- BOTTOM NAV -->
+    <nav class="nav" id="nav">
+      <button class="nav-btn" data-view="dashboard" onclick="go('dashboard')">
+        <div class="nav-ico">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24">
+            <rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/>
+            <rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/>
+          </svg>
+        </div>
+        <span>Home</span>
+      </button>
+      <button class="nav-btn" data-view="restaurants" onclick="go('restaurants')">
+        <div class="nav-ico">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24">
+            <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/>
+            <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
+          </svg>
+        </div>
+        <span>Reviews</span>
+      </button>
+      <button class="nav-btn nav-add" onclick="openAddMenu()">
+        <div class="nav-add-ring">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+        </div>
+        <span>Add</span>
+      </button>
+      <button class="nav-btn" data-view="recipes" onclick="go('recipes')">
+        <div class="nav-ico">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/>
+          </svg>
+        </div>
+        <span>Recipes</span>
+      </button>
+      <button class="nav-btn" data-view="profile" onclick="go('profile')">
+        <div class="nav-ico">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+        <span>Profile</span>
+      </button>
+    </nav>
+
+  </div><!-- /shell -->
+
+  <!-- ADD MENU OVERLAY -->
+  <div class="overlay hidden" id="addMenu" onclick="closeAddMenu()">
+    <div class="sheet" onclick="event.stopPropagation()">
+      <div class="sheet-grip"></div>
+      <h2 class="sheet-ttl">What are you adding?</h2>
+      <button class="sheet-opt opt-rest" onclick="closeAddMenu();go('add-restaurant')">
+        <span class="opt-ico">📍</span>
+        <div>
+          <div class="opt-label">Restaurant Review</div>
+          <div class="opt-desc">Rate dishes &amp; document your experience</div>
+        </div>
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <button class="sheet-opt opt-recipe" onclick="closeAddMenu();go('add-recipe')">
+        <span class="opt-ico">📋</span>
+        <div>
+          <div class="opt-label">Recipe</div>
+          <div class="opt-desc">Ingredients, steps &amp; nutrition info</div>
+        </div>
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <button class="sheet-cancel" onclick="closeAddMenu()">Cancel</button>
+    </div>
+  </div>
+
+  <!-- TOASTS -->
+  <div class="toasts" id="toasts"></div>
+
+</div><!-- /app -->
+<script src="app.js"></script>
+</body>
+</html>
